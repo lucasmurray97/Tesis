@@ -1,11 +1,10 @@
 from enviroment.firegrid import FireGrid
+import time
 env = FireGrid(20)
-env.reset()
-env.show_state()
-# env.show_state()
-for i in range(100):
-    state, r, done = env.step(env.random_action())
-    # env.show_state()
-env.show_state()
-print(done)
-print(r)
+start = time.time()
+for i in range(10000):
+    env.reset()
+    for i in range(100):
+        state, r, done = env.step(env.random_action())
+end = time.time()
+print(f"Test took {end-start} secs")
