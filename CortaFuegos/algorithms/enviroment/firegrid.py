@@ -3,9 +3,7 @@ import itertools
 import numpy as np
 import random
 import sys
-sys.path.insert(1, "utils")
-sys.path.insert(1, "../../Simulador/Cell2Fire/cell2fire")
-from final_reward import write_firewall_file, generate_reward 
+from enviroment.utils.final_reward import write_firewall_file, generate_reward 
 # Clase que genera el ambiente y permite interactuar con el
 class FireGrid:
     def __init__(self, size, agent_id = -1, agent_dim = 2):
