@@ -32,6 +32,12 @@ class FireGrid:
         """Función que retorna el mapa de acciones"""
         return self._action_map
 
+    def get_space_dims(self):
+        return (self.size, self.size)
+
+    def get_action_space_dims(self):
+        return (len(self._action_map), 1)
+
     def mark_agent(self):
         """Función que dada la ubicación del agente, marca esta en la grilla"""
         self._space[self._agent_location[0], self._agent_location[1]] = 1
@@ -58,6 +64,10 @@ class FireGrid:
     def step(self, action):
         """Función que genera la transicion del ambiente desde un estado a otro generada por la acción action. Retorna: espacio, reward, done"""
         action_tuple = self._action_map[action]
+        r = 0
+        for i in action_tuple:
+            if i == -1:
+                r -= 1
         self._space[self._agent_location[0], self._agent_location[1]] = action_tuple[0]
         self._space[self._agent_location[0], self._agent_location[1] + 1] = action_tuple[1]
         self._space[self._agent_location[0] +1, self._agent_location[1]] = action_tuple[2]
@@ -69,10 +79,10 @@ class FireGrid:
             self._agent_location[1] += self.agent_dim
         else:
             write_firewall_file(self._space)
-            final_reward = generate_reward()
+            final_reward = generate_reward()*10
             return self._space, final_reward,  True
         self.mark_agent()
-        return self._space, -1, False
+        return self._space, r, False
     
     def sample_space(self):
         self.reset()
