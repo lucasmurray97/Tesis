@@ -3,10 +3,10 @@ import itertools
 import numpy as np
 import random
 import sys
-from utils.final_reward import write_firewall_file, generate_reward 
+from enviroment.utils.final_reward import write_firewall_file, generate_reward 
 # Clase que genera el ambiente y permite interactuar con el
 class FireGrid:
-    def __init__(self, size, agent_id = -1, agent_dim = 2):
+    def __init__(self, size, agent_id = -1, agent_dim = 2, burn_value = 10):
         # Revisamos que la dimensión de la grilla sea divisible por 2
         assert size%2 == 0
         self.size = size # Dimensión de la grilla
@@ -19,6 +19,7 @@ class FireGrid:
         combinations = list(itertools.product([0, -1], repeat=agent_dim**2))
         for i in range(2**(agent_dim**2)):
             self._action_map[i] = combinations[i]
+        self.burn_value = burn_value
 
     def get_space(self):
         """Función que retorna el espacio del ambiente"""
@@ -79,7 +80,7 @@ class FireGrid:
             self._agent_location[1] += self.agent_dim
         else:
             write_firewall_file(self._space)
-            final_reward = generate_reward()*10
+            final_reward = generate_reward()*self.burn_value
             return self._space, final_reward,  True
         self.mark_agent()
         return self._space, r, False

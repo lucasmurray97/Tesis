@@ -22,7 +22,7 @@ def test_step():
     example[3,1] = 1
     assert np.array_equal(space,example) == True
     assert done == False
-    assert r == -1
+    assert r == 0
 
 def test_done():
     env = FireGrid(20)
@@ -31,5 +31,4 @@ def test_done():
     for i in range(100):
         state, r, done = env.step(env.random_action())
     assert done == True
-
 

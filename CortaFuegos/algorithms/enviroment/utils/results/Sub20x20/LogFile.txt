@@ -20,14 +20,21 @@ Forest DataFrame from instance /home/lucas/Escritorio/Universidad/Tesis/Simulado
 Number of cells: 400
 
 To Harvest Cells :
- 1: 1 21 81 101 161 181 243 263 363 383 
+ 1: 6 8 12 14 15 16 19 23 24 25 26 27 29 30 31 32 33 35 36 37 38 40 41 42 43 45 46 49 50 51 52 55 56 60 65 66 67 68 72 73 74 76 79 83 89 93 94 96 97 101 102 103 105 107 108 109 111 112 113 115 117 120 121 122 123 124 125 127 131 132 135 137 139 140 143 146 147 149 154 155 156 157 159 161 165 166 167 168 169 170 171 173 175 176 177 182 184 186 187 190 192 200 204 205 206 207 217 218 219 220 221 223 224 226 229 230 231 233 234 236 241 242 243 244 246 247 249 250 251 252 257 258 259 261 262 267 269 273 278 279 280 281 283 284 287 290 293 294 296 297 299 302 304 305 306 307 311 312 315 318 320 321 324 331 332 334 335 337 339 340 344 347 351 353 356 357 359 360 364 365 371 372 373 374 376 377 379 382 384 386 387 388 390 392 393 395 398 
 
 Weather DataFrame from instance /home/lucas/Escritorio/Universidad/Tesis/Simulador/Cell2Fire/data/Sub20x20/Weather.csv
 Weather file selected: /home/lucas/Escritorio/Universidad/Tesis/Simulador/Cell2Fire/data/Sub20x20/Weathers/Weather1.csv
 
-Selected ignition point for Year 1, sim 1: 384
+Selected ignition point for Year 1, sim 1: 384Next year...
+
 ----------------------------- Results -----------------------------
-Total Available Cells:    28 - % of the Forest: 7%
-Total Burnt Cells:        272 - % of the Forest: 68%
-Total Non-Burnable Cells: 90 - % of the Forest: 22.5%
-Total Harvested Cells: 10 - % of the Forest: 2.5%
+Total Available Cells:    161 - % of the Forest: 40.25%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 42 - % of the Forest: 10.5%
+Total Harvested Cells: 197 - % of the Forest: 49.25%
+
+----------------------------- Results -----------------------------
+Total Available Cells:    161 - % of the Forest: 40.25%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 42 - % of the Forest: 10.5%
+Total Harvested Cells: 197 - % of the Forest: 49.25%
