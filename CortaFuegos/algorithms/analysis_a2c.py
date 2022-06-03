@@ -8,7 +8,7 @@ import numpy as np
 from enviroment.parallel_firegrid import Parallel_Firegrid
 from a2c import actor_critic
 # We create the enviroment
-env = Parallel_Firegrid(20, burn_value=20)
+env = Parallel_Firegrid(20, burn_value=50)
 start_state = env.reset()
 space_dims = env.get_space_dims()[0]**2
 action_dims = env.get_action_space_dims()
@@ -53,37 +53,35 @@ a = value_net(start_tensor).detach().numpy().squeeze()
 print(f"Value of initial state before training: {a}")
 
 
-stats = actor_critic(env, policy, value_net, 100)
+stats = actor_critic(env, policy, value_net, 1000)
 
 figure2 = plt.figure()
 plt.clf()
-plt.plot(np.arange(100), stats["Returns"])
+plt.plot(np.arange(1000), stats["Returns"])
 plt.xlabel("Episode") 
 plt.ylabel("Returns") 
-plt.title("Returns for 100 episodes")
+plt.title("Returns for 1000 episodes")
 plt.savefig("figures/a2c/returns.png")
 plt.show() 
 
 
 figure3 = plt.figure()
 plt.clf()
-plt.plot(np.arange(100), stats["Actor Loss"])
+plt.plot(np.arange(1000), stats["Actor Loss"])
 plt.xlabel("Episode") 
 plt.ylabel("Loss") 
-plt.title("Loss for 100 episodes")
+plt.title("Loss for 1000 episodes")
 plt.savefig("figures/a2c/actor_loss.png")
 plt.show() 
 
 figure4 = plt.figure()
 plt.clf()
-plt.plot(np.arange(100), stats["Critic Loss"])
+plt.plot(np.arange(1000), stats["Critic Loss"])
 plt.xlabel("Episode") 
 plt.ylabel("Loss") 
-plt.title("Loss for 100 episodes")
+plt.title("Loss for 1000 episodes")
 plt.savefig("figures/a2c/critic_loss.png")
 plt.show() 
-
-
 
 
 # Let's check the policy's output in the initial state after training
@@ -114,7 +112,15 @@ plt.savefig("figures/a2c/trajectory/initial_state.png")
 plt.show()
 for i in range(100):
     mat = state[0].reshape(20,20).numpy()
-    a = policy(state)
+    a = policy(state[0])
+    f2 = plt.figure()
+    plt.clf()
+    plt.bar(np.arange(16), a.detach().numpy().squeeze())
+    plt.xlabel("Actions") 
+    plt.ylabel("Action Probability") 
+    plt.title("Action probabilities in trajectory " + str(i) + " state after training")
+    plt.savefig("figures/a2c/probabilities/probs_after_training_"+ str(i) +".png")
+    plt.show()
     selected = [a.argmax() for i in range(12)]
     torch.Tensor(selected)
     state, done, _ = env.step(selected)

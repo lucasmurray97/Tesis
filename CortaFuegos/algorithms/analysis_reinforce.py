@@ -8,7 +8,7 @@ import numpy as np
 from enviroment.parallel_firegrid import Parallel_Firegrid
 from reinforce import reinforce
 # We create the enviroment
-env = Parallel_Firegrid(20)
+env = Parallel_Firegrid(20, burn_value=100)
 start_state = env.reset()
 space_dims = env.get_space_dims()[0]**2
 action_dims = env.get_action_space_dims()
@@ -37,11 +37,11 @@ plt.savefig("figures/reinforce/initial_probs.png")
 plt.show()
 
 
-stats = reinforce(env, policy, 10)
+stats = reinforce(env, policy, 100)
 
 figure2 = plt.figure()
 plt.clf()
-plt.plot(np.arange(10), stats["Returns"])
+plt.plot(np.arange(100), stats["Returns"])
 plt.xlabel("Episode") 
 plt.ylabel("Returns") 
 plt.title("Returns for 500 episodes")
@@ -50,7 +50,7 @@ plt.show()
 
 figure3 = plt.figure()
 plt.clf()
-plt.plot(np.arange(10), stats["Loss"])
+plt.plot(np.arange(100), stats["Loss"])
 plt.xlabel("Episode") 
 plt.ylabel("Loss") 
 plt.title("Loss for 500 episodes")
@@ -83,7 +83,15 @@ for i in range(100):
     plt.matshow(mat)
     plt.savefig("figures/reinforce/trajectory/" + str(i) + ".png")
     plt.show()
-    a = policy(state)
+    a = policy(state[0])
+    f2 = plt.figure()
+    plt.clf()
+    plt.bar(np.arange(16), a.detach().numpy().squeeze())
+    plt.xlabel("Actions") 
+    plt.ylabel("Action Probability") 
+    plt.title("Action probabilities in trajectory " + str(i) + " state after training")
+    plt.savefig("figures/reinforce/probabilities/probs_ater_training_"+ str(i) +".png")
+    plt.show()
     selected = [a.argmax() for i in range(12)]
     torch.Tensor(selected)
     state, _, _ = env.step(selected)

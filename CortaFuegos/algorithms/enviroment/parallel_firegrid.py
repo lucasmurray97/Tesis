@@ -1,5 +1,5 @@
 import threading
-from enviroment.firegrid import FireGrid
+from enviroment.firegrid_v2 import FireGrid_V2
 import torch
 from torch import nn as nn
 import numpy as np
@@ -11,7 +11,7 @@ class Parallel_Firegrid():
         self.envs = [] 
         self.lock = threading.Lock()
         for i in range(n_cores):
-            env = FireGrid(size, agent_id, agent_dim, burn_value)
+            env = FireGrid_V2(size, agent_id, agent_dim, burn_value)
             self.envs.append(env)
     
     def reset(self):
@@ -63,5 +63,10 @@ class Parallel_Firegrid():
         return self.envs[0].get_space_dims()
     def get_action_space_dims(self):
         return self.envs[0].get_action_space_dims() 
+
+    def show_state(self):
+        for i in range(n_cores):
+            print(f"Agente {i}:")
+            self.envs[i].show_state()
 
 
