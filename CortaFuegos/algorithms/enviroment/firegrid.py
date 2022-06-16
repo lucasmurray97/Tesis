@@ -3,6 +3,7 @@ import itertools
 import numpy as np
 import random
 import sys
+import torch
 from enviroment.utils.final_reward import write_firewall_file, generate_reward 
 # Clase que genera el ambiente y permite interactuar con el
 class FireGrid:
@@ -48,7 +49,7 @@ class FireGrid:
     
     def random_action(self):
         """Función que retorna una acción aleatoria del espacio de acciones"""
-        return self._random.randint(0, 15)
+        return torch.Tensor([self._random.randint(0, 15)])
 
     def set_seed(self, seed):
         """Función que establece una semilla para los numeros aleatorios"""
@@ -60,11 +61,11 @@ class FireGrid:
         self._agent_location[0] = 0
         self._agent_location[1] = 0
         self.mark_agent()
-        return self._space
+        return torch.Tensor([self._space]).reshape(1, self.size**2)
 
     def step(self, action):
         """Función que genera la transicion del ambiente desde un estado a otro generada por la acción action. Retorna: espacio, reward, done"""
-        action_tuple = self._action_map[action]
+        action_tuple = self._action_map[action.item()]
         r = 0
         for i in action_tuple:
             if i == -1:
@@ -81,16 +82,16 @@ class FireGrid:
         else:
             write_firewall_file(self._space)
             final_reward = generate_reward()*self.burn_value
-            return self._space, final_reward,  True
+            return torch.Tensor([self._space]).reshape((1,self.size**2)), torch.Tensor([final_reward]).reshape((1, 1)),  True
         self.mark_agent()
-        return self._space, r, False
+        return torch.Tensor([self._space]).reshape((1,self.size**2)), torch.Tensor([r]).reshape((1, 1)),  False
     
     def sample_space(self):
         self.reset()
         iterations = self._random.randint(0, (self.size/self.agent_dim)**2)
         for i in range(iterations):
             self.step(self.random_action())
-        return self._space
+        return torch.Tensor(self._space).reshape((1,self.size**2))
     def show_state(self):
         """Función que printea el estado del ambiente"""
         print(f"Posicion del agente: {self._agent_location}")

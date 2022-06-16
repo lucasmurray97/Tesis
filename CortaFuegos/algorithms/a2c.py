@@ -10,7 +10,7 @@ import torch.nn.functional as F
 
 
 # A2C algorithm:
-def actor_critic(env, policy, value_net, episodes, alpha = 1e-4, gamma = 0.99):
+def actor_critic(env, policy, value_net, episodes, alpha = 1e-4, gamma = 0.99, beta = 0.01):
     policy_optim = AdamW(policy.parameters(), lr = alpha)
     value_net_optim = AdamW(value_net.parameters(), lr = alpha)
     stats = {"Actor Loss": [], "Critic Loss": [], "Returns": []}
@@ -35,7 +35,7 @@ def actor_critic(env, policy, value_net, episodes, alpha = 1e-4, gamma = 0.99):
             log_probs = torch.log(probs + 1e-6)
             action_log_probs = log_probs.gather(1, action)
             entropy = -torch.sum(probs * log_probs, dim = -1, keepdim = True)
-            actor_loss = -I * action_log_probs * advantage - 0.01*entropy
+            actor_loss = -I * action_log_probs * advantage - beta*entropy
             actor_loss = actor_loss.mean()
             policy.zero_grad()
             actor_loss.backward()

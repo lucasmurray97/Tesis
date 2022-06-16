@@ -20,7 +20,7 @@ Forest DataFrame from instance /home/lucas/Escritorio/Universidad/Tesis/Simulado
 Number of cells: 400
 
 To Harvest Cells :
- 1: 379 399 400 
+ 1: 
 
 Weather DataFrame from instance /home/lucas/Escritorio/Universidad/Tesis/Simulador/Cell2Fire/data/Sub20x20/Weather.csv
 Weather file selected: /home/lucas/Escritorio/Universidad/Tesis/Simulador/Cell2Fire/data/Sub20x20/Weathers/Weather1.csv
@@ -28,6 +28,6 @@ Weather file selected: /home/lucas/Escritorio/Universidad/Tesis/Simulador/Cell2F
 Selected ignition point for Year 1, sim 1: 384
 ----------------------------- Results -----------------------------
 Total Available Cells:    29 - % of the Forest: 7.25%
-Total Burnt Cells:        275 - % of the Forest: 68.75%
+Total Burnt Cells:        278 - % of the Forest: 69.5%
 Total Non-Burnable Cells: 93 - % of the Forest: 23.25%
-Total Harvested Cells: 3 - % of the Forest: 0.75%
+Total Harvested Cells: 0 - % of the Forest: 0%

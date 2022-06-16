@@ -69,4 +69,14 @@ class Parallel_Firegrid():
             print(f"Agente {i}:")
             self.envs[i].show_state()
 
+    def sample_space(self):
+        sample = []
+        for i in range(n_cores):
+            sample.append(torch.Tensor(self.envs[i].sample_space()).reshape(-1))
+        a = torch.Tensor(12, self.size**2)
+        torch.cat(sample, out=a)
+        return torch.reshape(a, (12, self.size**2))
+        
+
+
 
