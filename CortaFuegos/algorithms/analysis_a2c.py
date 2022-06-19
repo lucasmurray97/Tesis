@@ -48,7 +48,7 @@ value_net= nn.Sequential(
     nn.Linear(64, 1)
 )
 
-episodes = 1000
+episodes = 100
 # Let's plot the output of the policy net before training
 state = env.reset()
 for i in range(100):
