@@ -1,4 +1,3 @@
-from asyncore import write
 import itertools
 import numpy as np
 import random
@@ -7,7 +6,7 @@ import torch
 from enviroment.utils.final_reward import write_firewall_file, generate_reward 
 # Clase que genera el ambiente y permite interactuar con el
 class FireGrid:
-    def __init__(self, size, agent_id = -1, agent_dim = 2, burn_value = 10):
+    def __init__(self, size, agent_id = -1, agent_dim = 2, burn_value = 10, n_sims = 10):
         # Revisamos que la dimensión de la grilla sea divisible por 2
         assert size%2 == 0
         self.size = size # Dimensión de la grilla
@@ -21,6 +20,7 @@ class FireGrid:
         for i in range(2**(agent_dim**2)):
             self._action_map[i] = combinations[i]
         self.burn_value = burn_value
+        self.n_sims = n_sims
 
     def get_space(self):
         """Función que retorna el espacio del ambiente"""
@@ -61,7 +61,7 @@ class FireGrid:
         self._agent_location[0] = 0
         self._agent_location[1] = 0
         self.mark_agent()
-        return torch.Tensor([self._space]).reshape(1, self.size**2)
+        return torch.Tensor([self._space]).reshape(1, self.size, self.size)
 
     def step(self, action):
         """Función que genera la transicion del ambiente desde un estado a otro generada por la acción action. Retorna: espacio, reward, done"""
@@ -81,17 +81,18 @@ class FireGrid:
             self._agent_location[1] += self.agent_dim
         else:
             write_firewall_file(self._space)
-            final_reward = generate_reward()*self.burn_value
-            return torch.Tensor([self._space]).reshape((1,self.size**2)), torch.Tensor([final_reward]).reshape((1, 1)),  True
+            final_reward = generate_reward(self.n_sims)*self.burn_value
+            return torch.Tensor([self._space]).reshape((1,self.size, self.size)), torch.Tensor([final_reward]).reshape((1, 1)),  True
         self.mark_agent()
-        return torch.Tensor([self._space]).reshape((1,self.size**2)), torch.Tensor([r]).reshape((1, 1)),  False
+        return torch.Tensor([self._space]).reshape((1,self.size, self.size)), torch.Tensor([r]).reshape((1, 1)),  False
     
     def sample_space(self):
+        """Función que genera un estado aleatorio del sistema"""
         self.reset()
         iterations = self._random.randint(0, (self.size/self.agent_dim)**2)
         for i in range(iterations):
             self.step(self.random_action())
-        return torch.Tensor(self._space).reshape((1,self.size**2))
+        return torch.Tensor(self._space).reshape((1,self.size, self.size))
     def show_state(self):
         """Función que printea el estado del ambiente"""
         print(f"Posicion del agente: {self._agent_location}")

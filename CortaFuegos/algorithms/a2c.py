@@ -33,7 +33,7 @@ def actor_critic(env, policy, value_net, episodes, alpha = 1e-4, gamma = 0.99, b
             advantage = (target - value).detach()
             probs = policy(state)
             log_probs = torch.log(probs + 1e-6)
-            action_log_probs = log_probs.gather(1, action)
+            action_log_probs = log_probs.gather(0, action)
             entropy = -torch.sum(probs * log_probs, dim = -1, keepdim = True)
             actor_loss = -I * action_log_probs * advantage - beta*entropy
             actor_loss = actor_loss.mean()

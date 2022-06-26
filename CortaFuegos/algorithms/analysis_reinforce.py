@@ -5,33 +5,28 @@ from tqdm import tqdm
 from torch import nn as nn, tanh
 from torch.optim import AdamW
 import numpy as np
-from enviroment.firegrid import FireGrid
+from enviroment.firegrid_v3 import FireGrid_V3
 from reinforce import reinforce
 # We create the enviroment
-env = FireGrid(20, burn_value=50)
+env = FireGrid_V3(20, burn_value=50)
 start_state = env.reset()
 space_dims = env.get_space_dims()[0]**2
 action_dims = env.get_action_space_dims()
 
 # We create the policy:
 policy = nn.Sequential(
-    nn.Linear(space_dims, 2048),
+    nn.Conv2d(in_channels=2, out_channels=20, kernel_size=(5,5)),
     nn.LeakyReLU(),
-    nn.Linear(2048, 1024),
+    nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
+    nn.Conv2d(in_channels=20, out_channels=20, kernel_size=(5,5)),
     nn.LeakyReLU(),
-    nn.Linear(1024, 512),
-    nn.LeakyReLU(),
-    nn.Linear(512, 256),
-    nn.LeakyReLU(),
-    nn.Linear(256, 128),
-    nn.LeakyReLU(),
-    nn.Linear(128, 64),
-    nn.LeakyReLU(),
-    nn.Linear(64, action_dims[0]),
+    nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
+    nn.Flatten(0,2),
+    nn.Linear(80, 16),
     nn.Softmax(dim = -1)
 )
 
-episodes = 1000
+episodes = 10000
 # Let's plot the output of the policy net before training
 state = env.reset()
 for i in range(100):
@@ -69,14 +64,14 @@ plt.show()
 
 # Let's reconstruct the trajectory obtained
 state = env.reset()
-mat = state.reshape(20,20).numpy()
+mat = state[0].reshape(20,20).numpy()
 figure5 = plt.figure()
 plt.clf()
 plt.matshow(mat)
 plt.savefig(f"figures/reinforce/{episodes}_ep/trajectory/initial_state.png")
 plt.show()
 for i in range(100):
-    mat = state.reshape(20,20).numpy()
+    mat = state[0].reshape(20,20).numpy()
     a = policy(state)
     f2 = plt.figure()
     plt.clf()
@@ -90,7 +85,9 @@ for i in range(100):
     state, done, _ = env.step(selected)
     figure5 = plt.figure()
     plt.clf()
-    plt.matshow(mat)
+    plt.imshow(mat)
+    plt.colorbar()
+    plt.title(f"State {i} in agent's trajectory")
     plt.savefig(f"figures/reinforce/{episodes}_ep/trajectory/" + str(i) + ".png")
     plt.show()
 

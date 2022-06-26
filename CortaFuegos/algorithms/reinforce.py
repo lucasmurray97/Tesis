@@ -27,7 +27,7 @@ def reinforce(env, policy, episodes, alpha = 1e-4, gamma = 0.99):
             G = reward_t + gamma * G
             probs_t = policy(state_t)
             log_probs_t = torch.log(probs_t + 1e-6)
-            action_log_prob_t = log_probs_t.gather(1, action_t)
+            action_log_prob_t = log_probs_t.gather(-1, action_t)
             entropy_t = -torch.sum(probs_t * log_probs_t, dim = -1, keepdim = True)
             gamma_t = gamma**t
             pg_loss_t = -gamma_t * action_log_prob_t * G
