@@ -2,6 +2,7 @@ import sys
 sys.path.append("/home/lucas/Escritorio/Universidad/Tesis/CortaFuegos/algorithms/")
 from enviroment.firegrid import FireGrid
 from enviroment.firegrid_v3 import FireGrid_V3
+from enviroment.firegrid_v4 import FireGrid_V4
 import torch
 import numpy as np
 
