@@ -8,10 +8,12 @@ from enviroment.firegrid_v3 import FireGrid_V3
 from enviroment.firegrid_v4 import FireGrid_V4
 from a2c import actor_critic
 # We create the enviroment
-env = FireGrid_V4(20, burn_value=10)
+env = FireGrid_V4(20, burn_value=10, n_sims=50)
 start_state = env.reset()
 space_dims = env.get_space_dims()[0]**2
 action_dims = env.get_action_space_dims()
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # We create the policy:
 policy = nn.Sequential(
@@ -26,6 +28,7 @@ policy = nn.Sequential(
     nn.Softmax(dim = -1)
 )
 
+policy.to(device)
 # We create the value network:
 value_net= nn.Sequential(
     nn.Conv2d(in_channels=3, out_channels=20, kernel_size=(5,5)),
@@ -37,7 +40,7 @@ value_net= nn.Sequential(
     nn.Flatten(0,2),
     nn.Linear(80, 1)
 )
-
+value_net.to(device)
 episodes = 30000
 version = "v4"
 # Let's plot the output of the policy net before training

@@ -17,12 +17,13 @@ def plot_prog(env,episodes, policy,version, path,algorithm):
         plt.show()
         selected = a.multinomial(1).detach()
         state, done, _ = env.step(selected)
-        figure5 = plt.figure()
-        plt.imshow(mat)
-        plt.colorbar()
-        plt.title(f"State {i} in agent's trajectory")
-        plt.savefig(f"{path}/{version}/{algorithm}/{episodes}_ep/trajectory/" + str(i) + ".png")
-        plt.show()
+        if i == 99:
+            figure5 = plt.figure()
+            plt.imshow(mat)
+            plt.colorbar()
+            plt.title(f"Agent's trajectory")
+            plt.savefig(f"{path}/{version}/{algorithm}/{episodes}_ep/trajectory/trajectory.png")
+            plt.show()
 
 
 
