@@ -24,7 +24,11 @@ policy = nn.Sequential(
     nn.LeakyReLU(),
     nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
     nn.Flatten(0,2),
-    nn.Linear(80, 16),
+    nn.Linear(80, 64),
+    nn.LeakyReLU(),
+    nn.Linear(64, 32),
+    nn.LeakyReLU(),
+    nn.Linear(32, 16),
     nn.Softmax(dim = -1)
 )
 
@@ -38,10 +42,14 @@ value_net= nn.Sequential(
     nn.LeakyReLU(),
     nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
     nn.Flatten(0,2),
-    nn.Linear(80, 1)
+    nn.Linear(80, 64),
+    nn.LeakyReLU(),
+    nn.Linear(64, 32),
+    nn.LeakyReLU(),
+    nn.Linear(32, 1)
 )
 value_net.to(device)
-episodes = 30000
+episodes = 5000
 version = "v4"
 # Let's plot the output of the policy net before training
 state = env.reset()
