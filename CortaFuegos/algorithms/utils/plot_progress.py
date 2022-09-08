@@ -2,11 +2,14 @@ import matplotlib.pyplot as plt
 from torch import nn as nn
 import numpy as np
 
-def plot_prog(env,episodes, policy,version, path,algorithm):
+def plot_prog(env,episodes, net,version, path,algorithm):
     state = env.reset()
     for i in range(100):
         mat = state[0].reshape(20,20).numpy()
-        a = policy(state)
+        if algorithm == "reinforce":
+            a = net.forward(state)
+        else:
+            a, _ = net.forward(state)
         f2 = plt.figure()
         plt.clf()
         plt.bar(np.arange(16), a.detach().numpy().squeeze())

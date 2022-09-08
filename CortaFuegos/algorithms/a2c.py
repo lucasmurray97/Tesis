@@ -8,11 +8,10 @@ import numpy as np
 from enviroment.parallel_firegrid import Parallel_Firegrid
 import torch.nn.functional as F
 from utils.plot_progress import plot_prog
-
+import copy
 # A2C algorithm:
-def actor_critic(env, policy, value_net, episodes, version, plot_episode, alpha = 1e-4, gamma = 0.99, beta = 0.01):
-    policy_optim = AdamW(policy.parameters(), lr = alpha)
-    value_net_optim = AdamW(value_net.parameters(), lr = alpha)
+def actor_critic(env, net, episodes, version, plot_episode, alpha = 1e-4, gamma = 0.99, beta = 0.01):
+    optimizer = AdamW(net.parameters(), lr = alpha)
     stats = {"Actor Loss": [], "Critic Loss": [], "Returns": []}
     
     for episode in tqdm(range(1, episodes + 1)):
@@ -21,25 +20,23 @@ def actor_critic(env, policy, value_net, episodes, version, plot_episode, alpha 
         ep_return  = 0
         I = 1.
         while not done:
-            action = policy(state).multinomial(1).detach()
-            next_state, reward, done = env.step(action)
-            value = value_net(state)
-            target = reward + gamma * value_net(next_state).detach()
+            policy, value = net.forward(copy.copy(state))
+            action = policy.multinomial(1)
+            next_state, reward, done = env.step(action.detach())
+            _, value_next_state = net.forward(next_state)
+            target = reward + gamma * value_next_state
+            net.zero_grad()
             critic_loss = F.mse_loss(value, target)
-            value_net.zero_grad()
-            critic_loss.backward()
-            value_net_optim.step()
-            
-            advantage = (target - value).detach()
-            probs = policy(state)
-            log_probs = torch.log(probs + 1e-6)
-            action_log_probs = log_probs.gather(0, action)
-            entropy = -torch.sum(probs * log_probs, dim = -1, keepdim = True)
+            critic_loss.backward(retain_graph=True)
+            advantage = (target - value)
+            log_probs = torch.log(policy + 1e-6)
+            # print(log_probs.shape)
+            # print(action.shape)
+            action_log_probs = log_probs.gather(1, action)
+            entropy = -torch.sum(policy * log_probs, dim = -1, keepdim = True)
             actor_loss = -I * action_log_probs * advantage - beta*entropy
-            policy.zero_grad()
             actor_loss.backward()
-            policy_optim.step()
-            
+            optimizer.step()
             ep_return += reward
             state = next_state
             I *= gamma
@@ -47,6 +44,6 @@ def actor_critic(env, policy, value_net, episodes, version, plot_episode, alpha 
         stats["Critic Loss"].append(critic_loss.item())
         stats["Returns"].append(ep_return.mean().item())
         if episode in plot_episode:
-            plot_prog(env, episode, policy, version ,"figures", "a2c" )
+            plot_prog(env, episode, net, version ,"figures", "a2c" )
     return stats
 

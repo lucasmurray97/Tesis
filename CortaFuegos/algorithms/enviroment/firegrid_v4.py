@@ -23,7 +23,7 @@ class FireGrid_V4:
         self.burn_value = burn_value
         self.n_sims = n_sims
         # Se incorpora la información correspondiente al tipo de combustible
-        forest_data = np.loadtxt("/home/lucas/Escritorio/Universidad/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/Forest.asc", skiprows=6)
+        forest_data = np.loadtxt("/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/Forest.asc", skiprows=6)
         norm = np.linalg.norm(forest_data)
         forest_data = forest_data/norm
         self._space[2] = torch.Tensor(forest_data)
@@ -98,7 +98,8 @@ class FireGrid_V4:
             final_reward = generate_reward(self.n_sims)*self.burn_value
             return self._space, torch.Tensor([final_reward]).reshape((1, 1)),  True
         self.mark_agent()
-        return self._space, torch.Tensor([r]).reshape((1, 1)),  False
+        s = self._space
+        return s, torch.Tensor([r]).reshape((1, 1)),  False
     
     def sample_space(self):
         """Función que genera un estado aleatorio del sistema"""

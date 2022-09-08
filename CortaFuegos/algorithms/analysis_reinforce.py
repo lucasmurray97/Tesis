@@ -8,31 +8,22 @@ import numpy as np
 from enviroment.firegrid_v3 import FireGrid_V3
 from enviroment.firegrid_v4 import FireGrid_V4
 from reinforce import reinforce
+from cnn_reinforce import CNN
 # We create the enviroment
-env = FireGrid_V3(20, burn_value=10)
+env = FireGrid_V4(20, burn_value=10)
 start_state = env.reset()
 space_dims = env.get_space_dims()[0]**2
 action_dims = env.get_action_space_dims()
 
 # We create the policy:
-policy = nn.Sequential(
-    nn.Conv2d(in_channels=2, out_channels=20, kernel_size=(5,5)),
-    nn.LeakyReLU(),
-    nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
-    nn.Conv2d(in_channels=20, out_channels=20, kernel_size=(5,5)),
-    nn.LeakyReLU(),
-    nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
-    nn.Flatten(0,2),
-    nn.Linear(80, 16),
-    nn.Softmax(dim = -1)
-)
+net = CNN()
 
-episodes = 30000
-version = "v3"
+episodes = 500
+version = "v4"
 # Let's plot the output of the policy net before training
 state = env.reset()
 for i in range(100):
-    a = policy(state)
+    a = net.forward(state)
     f2 = plt.figure()
     plt.clf()
     plt.bar(np.arange(16), a.detach().numpy().squeeze())
@@ -43,7 +34,7 @@ for i in range(100):
     plt.show()
     state = env.sample_space()
 plot_episode = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 20000, 30000, 40000]
-stats = reinforce(env, policy, episodes, version, plot_episode)
+stats = reinforce(env, net, episodes, version, plot_episode)
 
 figure2 = plt.figure()
 plt.clf()
