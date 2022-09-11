@@ -7,7 +7,8 @@ from enviroment.firegrid import FireGrid
 from enviroment.firegrid_v3 import FireGrid_V3
 from enviroment.firegrid_v4 import FireGrid_V4
 from reinforce_baseline import reinforce_baseline
-from cnn_a2c import CNN
+from cnn_policy_value_v2 import CNN
+
 # We create the enviroment
 env = FireGrid_V4(20, burn_value=10, n_sims=50)
 start_state = env.reset()
@@ -17,8 +18,9 @@ action_dims = env.get_action_space_dims()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 net = CNN()
 net.to(device)
-episodes = 5000
+episodes = 10000
 version = "v4"
+save = True
 # Let's plot the output of the policy net before training
 state = env.reset()
 for i in range(100):
@@ -41,6 +43,11 @@ print(f"Value of initial state before training: {a}")
 plot_episode = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 20000, 30000]
 stats = reinforce_baseline(env, net, episodes, version, plot_episode, beta=0.1)
 
+# Guardamos los parametros de la red
+if save:
+    path = "./weights/reinforce_baseline.pth"
+    torch.save(net.state_dict(), path)
+############################# Plots #################################################################
 figure2 = plt.figure()
 plt.clf()
 plt.plot(np.arange(episodes), stats["Returns"])

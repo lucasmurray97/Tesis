@@ -18,7 +18,7 @@ action_dims = env.get_action_space_dims()
 # We create the policy:
 net = CNN()
 
-episodes = 500
+episodes = 10000
 version = "v4"
 # Let's plot the output of the policy net before training
 state = env.reset()

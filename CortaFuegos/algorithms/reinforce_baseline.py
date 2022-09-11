@@ -36,14 +36,16 @@ def reinforce_baseline(env, net, episodes, version, plot_episode, alpha = 1e-4, 
             target = reward_t + gamma * value_next_state_t
             net.zero_grad()
             critic_loss = F.mse_loss(value_t.squeeze(), target)
-            critic_loss.backward(retain_graph=True)
+            # critic_loss.backward(retain_graph=True)
             # now = datetime.datetime.now()
             advantage = (target - value_t).squeeze()
             log_probs = torch.log(policy_t.squeeze() + 1e-6)
             action_log_probs = log_probs.gather(1, action_t.squeeze().unsqueeze(1))
             entropy = -torch.sum(policy_t.squeeze() * log_probs.squeeze(), dim = -1, keepdim = True)
             actor_loss = torch.sum(- discounts * action_log_probs * advantage - 0.02*entropy)
-            actor_loss.backward()
+            # actor_loss.backward()
+            total_loss = critic_loss + actor_loss
+            total_loss.backward()
             # later = datetime.datetime.now()
             optimizer.step()
             # print(later-now)
