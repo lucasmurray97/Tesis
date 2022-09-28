@@ -8,7 +8,7 @@ import numpy as np
 from utils.plot_progress import plot_prog
 import copy
 # Reinforce Algorithm:
-def reinforce(env, net, episodes, version, plot_episode, alpha = 1e-4, gamma = 0.99):
+def reinforce(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-4, gamma = 0.99):
     optim = AdamW(net.parameters(), lr = alpha)
     stats = {"Loss": [], "Returns": []}
     for episode in tqdm(range(1, episodes + 1)):
@@ -27,6 +27,7 @@ def reinforce(env, net, episodes, version, plot_episode, alpha = 1e-4, gamma = 0
         G = torch.zeros(1)
         for t, (state_t, action_t, reward_t) in reversed(list(enumerate(transitions))):
             G = reward_t + gamma * G
+            # print(t)
             probs_t = net.forward(state_t)
             log_probs_t = torch.log(probs_t + 1e-6)
             action_log_prob_t = log_probs_t.gather(-1, action_t)
@@ -38,7 +39,7 @@ def reinforce(env, net, episodes, version, plot_episode, alpha = 1e-4, gamma = 0
             total_loss_t.backward()
             optim.step()
         if episode in plot_episode:
-            plot_prog(env, episode, net, version ,"figures", "reinforce" )
+            plot_prog(env, episode, net, env_version, net_version ,"figures", "reinforce" )
         stats["Loss"].append(total_loss_t.item())
         stats["Returns"].append(ep_return.mean().item())
     return stats

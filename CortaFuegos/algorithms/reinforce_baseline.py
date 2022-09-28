@@ -12,7 +12,7 @@ from torch.utils.data import Dataset, DataLoader
 import datetime
 import copy
 # reinforce with baseline algorithm:
-def reinforce_baseline(env, net, episodes, version, plot_episode, alpha = 1e-4, gamma = 0.99, beta = 0.01, update_steps = 10):
+def reinforce_baseline(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-4, gamma = 0.99, beta = 0.02, update_steps = 10):
     optimizer = AdamW(net.parameters(), lr = alpha)
     stats = {"Actor Loss": [], "Critic Loss": [], "Returns": []}
     for episode in tqdm(range(1, episodes + 1)):
@@ -22,37 +22,35 @@ def reinforce_baseline(env, net, episodes, version, plot_episode, alpha = 1e-4, 
         I = 1.
         step_data = []
         while not done:
-            policy, value = net.forward(copy.copy(state))
+            state_c = state.clone()
+            policy, value = net.forward(state_c.unsqueeze(0))
             action = policy.multinomial(1)
             next_state, reward, done = env.step(action.detach())
-            _, value_next_state = net.forward(copy.copy(next_state))
+            next_state_c = next_state.clone()
+            _, value_next_state = net.forward(next_state_c.unsqueeze(0))
+            step_data.append([action, reward, policy, value, value_next_state*done, I])
             I *= gamma
-            step_data.append([action, reward, policy, value, value_next_state, I])
             state = next_state
             ep_return += reward
+        step_data.reverse()
         data = DataLoader(step_data, len(step_data), shuffle=False)
         for action_t, reward_t, policy_t, value_t, value_next_state_t, discounts in data:
-            # now = datetime.datetime.now()
             target = reward_t + gamma * value_next_state_t
             net.zero_grad()
             critic_loss = F.mse_loss(value_t.squeeze(), target)
-            # critic_loss.backward(retain_graph=True)
-            # now = datetime.datetime.now()
-            advantage = (target - value_t).squeeze()
             log_probs = torch.log(policy_t.squeeze() + 1e-6)
             action_log_probs = log_probs.gather(1, action_t.squeeze().unsqueeze(1))
             entropy = -torch.sum(policy_t.squeeze() * log_probs.squeeze(), dim = -1, keepdim = True)
-            actor_loss = torch.sum(- discounts * action_log_probs * advantage - 0.02*entropy)
-            # actor_loss.backward()
+            discounted_rewards = discounts.flip(0) * reward_t.squeeze()
+            G = torch.cumsum(discounted_rewards, dim=0)
+            actor_loss = torch.sum(- (G - value_t) * action_log_probs * discounts - beta*entropy)
             total_loss = critic_loss + actor_loss
             total_loss.backward()
-            # later = datetime.datetime.now()
             optimizer.step()
-            # print(later-now)
         stats["Actor Loss"].append(actor_loss.item())
         stats["Critic Loss"].append(critic_loss.item())
         stats["Returns"].append(ep_return.mean().item())
         if episode in plot_episode:
-            plot_prog(env, episode, net, version ,"figures", "reinforce_baseline" )
+            plot_prog(env, episode, net, env_version, net_version ,"figures", "reinforce_baseline" )
     return stats
 

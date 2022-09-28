@@ -64,13 +64,3 @@ class CNN(torch.nn.Module):
     h_4 = F.relu(u_4)
     value_pred = self.linear_3(h_4)
     return value_pred
-
-# net = CNN()
-# # optimizer = AdamW(net.parameters(), lr = 1e-4)
-# env = FireGrid_V4(20, burn_value=10, n_sims=100)
-# # states = []
-# state = env.reset()
-# x = net.forward(state)
-# print(x.shape)
-# pytorch_total_params = sum(p.numel() for p in net.parameters())
-# print(pytorch_total_params)

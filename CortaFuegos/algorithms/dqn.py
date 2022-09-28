@@ -10,33 +10,6 @@ import copy
 import random
 import torch.nn.functional as F
 import torch.utils.data as data_utils
-env = FireGrid_V4(20, burn_value=50)
-start_state = env.reset()
-space_dims = env.get_space_dims()[0]**2
-action_dims = env.get_action_space_dims()
-
-q_network = nn.Sequential(
-    nn.Conv2d(in_channels=3, out_channels=20, kernel_size=(5,5)),
-    nn.LeakyReLU(),
-    nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
-    nn.Conv2d(in_channels=20, out_channels=20, kernel_size=(5,5)),
-    nn.LeakyReLU(),
-    nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2)),
-    nn.Flatten(0,2),
-    nn.Linear(80, 16)
-)
-
-target_q_network = copy.deepcopy(q_network).eval()
-
-def policy(env, state, epsilon=0.):
-    if torch.rand(1) < epsilon:
-        return env.random_action()
-    else:
-        av = q_network(state).detach()
-        max_a = torch.argmax(av, dim=-1, keepdim=True).to(torch.float)
-        return max_a
-# action = policy(env, start_state, epsilon=0.1)
-# print(action)
 
 class ReplayMemory:
     

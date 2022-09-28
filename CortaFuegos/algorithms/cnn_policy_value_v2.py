@@ -8,30 +8,30 @@ import sys
 import time
 from enviroment.firegrid_v4 import FireGrid_V4
 import copy
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 from torch.optim import AdamW
 import datetime
+from tqdm import tqdm
 # Red estilo pytorch
 class CNN(torch.nn.Module):
   def __init__(self):
     super(CNN, self).__init__()
-    
     # Definimos capas (automáticamente se registran como parametros)
     # Capas compartidas
-    self.conv1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=(1,1), stride=1, padding = 3, bias = True)
-    self.max_p1 = nn.MaxPool2d(2, stride=1)
-    self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=(2,2), stride=1, padding = 3, bias = True)
+    self.conv1 = nn.Conv2d(in_channels=3, out_channels=64, kernel_size=(2,2), stride=2, padding = 0, bias = True)
+    # self.max_p1 = nn.MaxPool2d(2, stride=1)
+    self.conv2 = nn.Conv2d(in_channels=64, out_channels=128, kernel_size=(2,2), stride=1, padding = 0, bias = True)
     self.max_p2 = nn.MaxPool2d(2, stride=2)
-    self.conv3 = nn.Conv2d(in_channels=64, out_channels=64, kernel_size=(5,5), padding = 1, bias = True)
+    self.conv3 = nn.Conv2d(in_channels=128, out_channels=256, kernel_size=(3,3), padding = 1, bias = True)
     self.max_p3 = nn.MaxPool2d(2, stride=3)
 
     # FCN para policy
-    self.linear1 = nn.Linear(1024, 256)
-    self.linear2 = nn.Linear(256, 64)
+    self.linear1 = nn.Linear(256, 128)
+    self.linear2 = nn.Linear(128, 64)
     self.linear3 = nn.Linear(64, 16)
     # FCN para value
-    self.linear_1 = nn.Linear(1024, 256)
-    self.linear_2 = nn.Linear(256, 64)
+    self.linear_1 = nn.Linear(256, 128)
+    self.linear_2 = nn.Linear(128, 64)
     self.linear_3 = nn.Linear(64, 1)
 
     # Inicializamos los parametros de la red:
@@ -47,22 +47,24 @@ class CNN(torch.nn.Module):
 
   # Computa la pasada hacia adelante
   def forward(self, x):
-    if len(x.shape) == 3:
-      x = x.unsqueeze(0)
   # Forward común
     u1 = self.conv1(x)
     h1 = F.relu(u1)
-    f1 = self.max_p1(h1)
+    # print(h1.shape)
+    # f1 = self.max_p1(h1)
     # print(f1.shape)
-    u2 = self.conv2(f1)
+    u2 = self.conv2(h1)
     h2 = F.relu(u2)
+    # print(h2.shape)
     f2 = self.max_p2(h2)
     # print(f2.shape)
     u3 = self.conv3(f2)
     h3 = F.relu(u3)
+    # print(h3.shape)
     f3 = self.max_p3(h3)
     # print(f3.shape)
-    m = torch.flatten(input = f3, start_dim=1)
+    m = torch.flatten(input = f3, start_dim = 1)
+    # print(m.shape)
     # Forward Policy
     u3 = self.linear1(m)
     h3 = F.relu(u3)
@@ -77,13 +79,3 @@ class CNN(torch.nn.Module):
     h_4 = F.relu(u_4)
     value_pred = self.linear_3(h_4)
     return y_pred, value_pred
-
-# net = CNN()
-# optimizer = AdamW(net.parameters(), lr = 1e-4)
-# env = FireGrid_V4(20, burn_value=10, n_sims=100)
-# states = []
-# state = env.reset()
-# x, y = net.forward(state)
-# print(x.shape)
-# pytorch_total_params = sum(p.numel() for p in net.parameters())
-# print(pytorch_total_params)
