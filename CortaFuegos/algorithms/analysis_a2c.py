@@ -1,4 +1,5 @@
 import os
+from xmlrpc.client import boolean
 import torch
 import matplotlib.pyplot as plt
 from torch import nn as nn
@@ -10,26 +11,53 @@ from enviroment.firegrid_v5 import FireGrid_V5
 from enviroment.firegrid_v6 import FireGrid_V6
 from enviroment.firegrid_v7 import FireGrid_V7
 from enviroment.firegrid_v8 import FireGrid_V8
-from a2c import a2c
-from cnn_policy_value_v2_2 import CNN as CNN_2
-from cnn_policy_value_v3_2 import CNN as CNN_3
+from algorithms.a2c import a2c
+from nets.cnn_policy_value_v2_2 import CNN as CNN_2
+from nets.cnn_policy_value_v3_2 import CNN as CNN_3
 from utils.plot_progress import plot_moving_av
+from enviroment.utils.parallel_wrapper import Parallel_Wrapper 
+import sys
+n_envs = 8
+# We retrieve the arguments from standard input
+_, size, env_version, net_version, episodess, window_, gamma_, alpha_, beta_, instance, test_ = sys.argv
+size = int(size)
+window = int(window_)
+episodes = int(episodess)
+gamma = float(gamma_)
+alpha = float(alpha_)
+beta = float(beta_)
+test = bool(test_)
 # We create the enviroment
-env = FireGrid_V6(20, burn_value=10, n_sims=50)
-start_state = env.reset()
-space_dims = env.get_space_dims()[0]**2
-action_dims = env.get_action_space_dims()
-
+if env_version == "v6":
+    env = Parallel_Wrapper(FireGrid_V6, n_envs = n_envs, parameters = {"size": size, "burn_value": 10, "n_sims" : 50})
+elif env_version == "v7":
+    env = Parallel_Wrapper(FireGrid_V7, n_envs = n_envs, parameters = {"size": size, "burn_value": 10, "n_sims" : 5, "n_sims_final" : 50})
+elif env_version == "v8":
+    env = Parallel_Wrapper(FireGrid_V8, n_envs = n_envs, parameters = {"size": size, "burn_value": 10, "n_sims" : 5, "n_sims_final" : 50})
+else:
+    raise("Non existent version of enviroment")
+start_state = env.reset()[0]
+space_dims = env.envs[0].get_space_dims()[0]**2
+action_dims = env.envs[0].get_action_space_dims()
+# We create net
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-net = CNN_2()
+if net_version == "net_2_2":
+    net = CNN_2(env.size)
+elif net_version == "net_3_2":
+    net = CNN_3(env.size)
+else:
+    raise("Non existent version of network")
 net.to(device)
-episodes = 10
-env_version = "v6"
-net_version = "net_2_2"
 save = True
+update = 1
 # Let's plot the output of the policy net before training
-state = env.reset()
-for i in range(100):
+if test:
+    path = "figures_tuning"
+else:
+    path = "figures"
+print("Plotting pre-probs")
+state = env.reset()[0]
+for i in range((env.size//2)**2):
     _, a = net.forward(state.unsqueeze(0))
     f2 = plt.figure()
     plt.clf()
@@ -37,45 +65,36 @@ for i in range(100):
     plt.xlabel("Actions") 
     plt.ylabel("Action Probability") 
     plt.title(f"Action probabilities in state {i} before training")
-    plt.savefig(f"figures/{env_version}/{net_version}/a2c/pre_train/probs_before_training_"+ str(i) +".png")
+    plt.savefig(f"{path}/{env_version}/{instance}/{net_version}/ppo/pre_train/probs_before_training_"+ str(i) +".png")
     plt.show()
-    state = env.sample_space()
-
-# # Let's check the value for the initial state:
+    state = env.envs[0].sample_space()
+print("Finished plotting pre-probs")
+# Let's check the value for the initial state:
 _, v = net.forward(start_state.unsqueeze(0))
 a = v.detach().numpy().squeeze()
 print(f"Value of initial state before training: {a}")
 
 plot_episode = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 20000, 30000]
-stats = a2c(env, net, episodes, env_version, net_version, plot_episode, beta=0.1)
+stats = a2c(env, net, episodes, env_version, net_version, plot_episode,  alpha = alpha, gamma = gamma, beta = beta, instance = instance, test = test)
 
 # Guardamos los parametros de la red
 if save:
-    path = f"./weights/{env_version}/{net_version}/a2c.pth"
-    torch.save(net.state_dict(), path)
+    path_ = f"./weights/{env_version}/{net_version}/a2c.pth"
+    torch.save(net.state_dict(), path_)
 
-plot_moving_av(stats["Returns"], episodes, env_version, net_version, "a2c", window = 10)
+plot_moving_av(stats["Returns"], episodes, env_version, net_version, "a2c", window = window, instance = instance, test = test)
 
 figure3 = plt.figure()
 plt.clf()
-plt.plot(np.arange(episodes), stats["Actor Loss"])
+plt.plot([i for i in range(episodes)], stats["Loss"])
 plt.xlabel("Episode") 
 plt.ylabel("Loss") 
 plt.title(f"Loss for {episodes} episodes")
-plt.savefig(f"figures/{env_version}/{net_version}/a2c/actor_loss.png")
+plt.savefig(f"{path}/{env_version}/{instance}/{net_version}/a2c/loss.png")
 plt.show() 
 
-figure4 = plt.figure()
-plt.clf()
-plt.plot(np.arange(episodes), stats["Critic Loss"])
-plt.xlabel("Episode") 
-plt.ylabel("Loss") 
-plt.title(f"Loss for {episodes} episodes")
-plt.savefig(f"figures/{env_version}/{net_version}/a2c/critic_loss.png")
-plt.show() 
 
 # Let's check the value for the initial state after training:
 _, v = net.forward(start_state.unsqueeze(0))
 a = v.detach().numpy().squeeze()
 print(f"Value of initial state after training: {a}")
-

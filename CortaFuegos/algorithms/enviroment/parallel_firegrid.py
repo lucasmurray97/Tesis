@@ -3,7 +3,7 @@ from enviroment.firegrid_v2 import FireGrid_V2
 import torch
 from torch import nn as nn
 import numpy as np
-n_cores = 12
+n_cores = 8
 
 class Parallel_Firegrid():
     def __init__(self, size, agent_id = -1, agent_dim = 2, burn_value = 10):

@@ -29,23 +29,50 @@ def write_firewall_file(final_state):
         # write the data
         writer.writerow(firewalls)
     return
-def generate_reward(n_sims):
+def generate_reward(n_sims, size):
     """Function that generates the reward associated with the fire simulation"""
+    data_directory = ""
+    results_directory = ""
+    if size == 20:
+        data_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/"
+        results_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/"
+    elif size == 8:
+        data_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub8x8/"
+        results_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub8x8/"
+    elif size == 4:
+        data_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub4x4/"
+        results_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub4x4/"
+    elif size == 2:
+        data_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub2x2/"
+        results_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub2x2/"
+    else:
+        raise(f"Size: {size} currently not supported")
     # A command line input is simulated
-    sys.argv = ['main.py', '--input-instance-folder', '/home/lucas/Tesis/Simulador/Cell2Fire/Cell2Fire/data/Sub20x20/', '--output-folder', '/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20', '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '1', '--Fire-Period-Length', '1.0', '--output-messages', '--ROS-CV', '0.0', '--IgnitionRad', '5', '--grids', '--combine', '--HarvestedCells', '/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/firewall_grids/HarvestedCells.csv']
+    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', '5', '--grids', '--HarvestedCells', '/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/firewall_grids/HarvestedCells.csv']
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
     main()
     enablePrint()
     # The grid from the final period is retrieved
     reward = 0
+    base_directory = ""
+    if size == 20:
+        base_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/Grids/Grids"
+    elif size == 8:
+        base_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub8x8/Grids/Grids"
+    elif size == 4:
+        base_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub4x4/Grids/Grids"
+    elif size == 2:
+        base_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub2x2/Grids/Grids"
+    else:
+        raise(f"Size: {size} currently not supported")
     for j in range(1, n_sims+1):
-        directory = os.listdir('/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/Grids/Grids'+str(j))
+        directory = os.listdir(base_directory+str(j))
         numbers = []
         for i in directory:
             numbers.append(int(i.split("d")[1].split(".")[0]))
         maxi = "0"+str(max(numbers))
-        my_data = genfromtxt('/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/Grids/Grids'+str(j)+'/ForestGrid' + maxi +'.csv', delimiter=',')
+        my_data = genfromtxt(base_directory+str(j)+'/ForestGrid' + maxi +'.csv', delimiter=',')
         # Burned cells are counted and turned into negative rewards
         for cell in my_data.flatten():
             if cell == 1:

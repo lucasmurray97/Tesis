@@ -23,7 +23,16 @@ class FireGrid_V6:
         self.burn_value = burn_value
         self.n_sims = n_sims
         # Se incorpora la información correspondiente al tipo de combustible
-        forest_data = np.loadtxt("/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/Forest.asc", skiprows=6)
+        if self.size == 20:
+            forest_data = np.loadtxt("/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/Forest.asc", skiprows=6)
+        elif self.size == 8:
+            forest_data = np.loadtxt("/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub8x8/Forest.asc", skiprows=6)
+        elif self.size == 4:
+            forest_data = np.loadtxt("/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub4x4/Forest.asc", skiprows=6)  
+        elif self.size == 2:
+            forest_data = np.loadtxt("/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub2x2/Forest.asc", skiprows=6)      
+        else:
+            raise(f"Size: {self.size} currently not supported")
         forest_data = forest_data/101
         self._space[2] = torch.Tensor(forest_data)
 
@@ -110,7 +119,7 @@ class FireGrid_V6:
             # Escribimos el archivo que se pasa al simulador 
             write_firewall_file(self._space[0])
             # Se lo pasamos al simulador y obtenemos la recompensa
-            final_reward = generate_reward(self.n_sims)*self.burn_value
+            final_reward = generate_reward(self.n_sims, self.size)*self.burn_value
             # Retornamos la matriz de posición y de combustibles
             return self._space[1:], torch.Tensor([final_reward]).reshape((1, 1)),  True
         # Marcamos el agente
@@ -129,7 +138,7 @@ class FireGrid_V6:
     def show_state(self):
         """Función que printea el estado del ambiente"""
         print(f"Posicion del agente: {self._agent_location}")
-        print(f"Estado de la grilla del bosque:")
+        print(f"Estado de la grilla de cortafuegos:")
         print(self._space[0])
         print(f"Estado de la grilla del agente:")
         print(self._space[1])

@@ -24,7 +24,16 @@ class FireGrid_V7:
         self.n_sims = n_sims
         self.n_sims_final = n_sims_final
         # Se incorpora la información correspondiente al tipo de combustible
-        forest_data = np.loadtxt("/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/Forest.asc", skiprows=6)
+        if self.size == 20:
+            forest_data = np.loadtxt("/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/Forest.asc", skiprows=6)
+        elif self.size == 8:
+            forest_data = np.loadtxt("/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub8x8/Forest.asc", skiprows=6)
+        elif self.size == 4:
+            forest_data = np.loadtxt("/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub4x4/Forest.asc", skiprows=6)    
+        elif self.size == 2:
+            forest_data = np.loadtxt("/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub2x2/Forest.asc", skiprows=6)      
+        else:
+            raise(f"Size: {self.size} currently not supported")
         forest_data = forest_data/101
         self._space[2] = torch.Tensor(forest_data)
 
@@ -114,14 +123,14 @@ class FireGrid_V7:
             # Escribimos el archivo que se pasa al simulador 
             write_firewall_file(self._space[0])
             # Se lo pasamos al simulador y obtenemos la recompensa
-            reward = generate_reward(self.n_sims_final)*self.burn_value + r
+            reward = generate_reward(self.n_sims_final, self.size)*self.burn_value + r
             # Retornamos la matriz de posición y de combustibles
             s = self._space[1:]
             return s, torch.Tensor([reward]).reshape((1, 1)), done
         # Escribimos el archivo que se pasa al simulador 
         write_firewall_file(self._space[0])
         # Se lo pasamos al simulador y obtenemos la recompensa
-        reward = generate_reward(self.n_sims)*self.burn_value + r
+        reward = generate_reward(self.n_sims, self.size)*self.burn_value + r
         # Marcamos la posición del agente
         self.mark_agent()
         # Retornamos la matriz de posición y de combustibles
