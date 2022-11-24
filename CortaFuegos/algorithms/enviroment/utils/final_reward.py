@@ -7,6 +7,7 @@ sys.path.append("/home/lucas/Tesis/Simulador/Cell2Fire/Cell2Fire/cell2fire")
 from cell2fire.Cell2FireC_class import Cell2FireC
 from cell2fire.main import main
 import os
+import shutil
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')
 def enablePrint():
@@ -33,39 +34,21 @@ def generate_reward(n_sims, size):
     """Function that generates the reward associated with the fire simulation"""
     data_directory = ""
     results_directory = ""
-    if size == 20:
-        data_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/"
-        results_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/"
-    elif size == 8:
-        data_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub8x8/"
-        results_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub8x8/"
-    elif size == 4:
-        data_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub4x4/"
-        results_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub4x4/"
-    elif size == 2:
-        data_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub2x2/"
-        results_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub2x2/"
-    else:
-        raise(f"Size: {size} currently not supported")
+    data_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/"
+    results_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/"
+    try:
+        shutil.rmtree(f'{results_directory}Grids/')
+    except:
+        pass
     # A command line input is simulated
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', '5', '--grids', '--HarvestedCells', '/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/firewall_grids/HarvestedCells.csv']
+    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', '9', '--grids', '--HarvestedCells', '/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/firewall_grids/HarvestedCells.csv']
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
     main()
     enablePrint()
     # The grid from the final period is retrieved
     reward = 0
-    base_directory = ""
-    if size == 20:
-        base_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/Grids/Grids"
-    elif size == 8:
-        base_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub8x8/Grids/Grids"
-    elif size == 4:
-        base_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub4x4/Grids/Grids"
-    elif size == 2:
-        base_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub2x2/Grids/Grids"
-    else:
-        raise(f"Size: {size} currently not supported")
+    base_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/Grids/Grids"
     for j in range(1, n_sims+1):
         directory = os.listdir(base_directory+str(j))
         numbers = []
@@ -77,4 +60,4 @@ def generate_reward(n_sims, size):
         for cell in my_data.flatten():
             if cell == 1:
                 reward-= 1
-    return reward/n_sims
+    return (reward/n_sims)*(size/20)

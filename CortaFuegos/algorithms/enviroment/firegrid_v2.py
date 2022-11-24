@@ -3,7 +3,7 @@ import itertools
 import numpy as np
 import random
 import sys
-from enviroment.utils.final_reward import write_firewall_file, generate_reward 
+from enviroment.moving_grid.utils.final_reward import write_firewall_file, generate_reward 
 # Clase que genera el ambiente y permite interactuar con el
 class FireGrid_V2:
     def __init__(self, size, agent_id = -1, agent_dim = 2, burn_value = 10):

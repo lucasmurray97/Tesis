@@ -68,7 +68,7 @@ class Parallel_Firegrid():
         for i in range(n_cores):
             print(f"Agente {i}:")
             self.envs[i].show_state()
-
+        
     def sample_space(self):
         sample = []
         for i in range(n_cores):

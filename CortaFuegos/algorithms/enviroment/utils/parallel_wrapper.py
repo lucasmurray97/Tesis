@@ -54,3 +54,10 @@ class Parallel_Wrapper():
         for i in range(self.n_envs):
             actions.append(self.envs[i].random_action())
         return torch.stack(actions)
+
+    def generate_mask(self):
+        masks = []
+        for i in range(self.n_envs):
+            masks.append(self.envs[i].generate_mask())
+        stacked_masks = torch.stack(masks).bool()
+        return stacked_masks

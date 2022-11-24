@@ -5,13 +5,12 @@ from tqdm import tqdm
 from torch import nn as nn
 from torch.optim import AdamW
 import numpy as np
-from enviroment.parallel_firegrid import Parallel_Firegrid
 import torch.nn.functional as F
 from utils.plot_progress import plot_prog
 from torch.utils.data import DataLoader, RandomSampler
 
 from cnn_policy_value_v2 import CNN
-from enviroment.firegrid_v4 import FireGrid_V4
+from enviroment.moving_grid.firegrid_v4 import FireGrid_V4
 from torch.optim import AdamW
 import datetime
 import copy

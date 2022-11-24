@@ -2,7 +2,7 @@ import random
 from tqdm import tqdm
 from enviroment.firegrid_v6 import FireGrid_V6
 from enviroment.utils.parallel_wrapper import Parallel_Wrapper
-from utils.q_learning_tools import Q_Table
+from algorithms.utils.q_learning_tools import Q_Table
 
 def q_learning(env, episodes, env_version, plot_episode, alpha = 1e-5, gamma = 0.99, n_envs = 8, epsilon = 0.15):
     q_table = Q_Table(size = 4, alpha = alpha, gamma = gamma)
