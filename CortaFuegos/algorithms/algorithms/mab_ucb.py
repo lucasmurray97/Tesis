@@ -36,11 +36,13 @@ class MAB_UCB:
     def opt_solution(self):
         action = np.argmax(self.ucb)
         solution = self.action_space[action]
-        return solution
+        re_solution = self.up_scale(solution, 20)
+        return re_solution
 class MAB_UCB_MG(MAB_UCB):
     def __init__(self, size, c = 2, n_sims = 50, burn_value = 10):
         super().__init__(size, c, n_sims, burn_value)
         combinations = list(itertools.product([0, -1], repeat=self.size**2))
+        self.n_states = len(combinations)
         self.action_space = np.asarray(combinations).reshape((len(combinations),self.size, self.size))
         self.Q = np.zeros(len(combinations))
         self.N = np.zeros(len(combinations)) + 1e-5
@@ -55,13 +57,13 @@ class MAB_UCB_FG(MAB_UCB):
         forbidden = int((self.size**2)*0.05)//2
         combinations = list(itertools.combinations((j for j in range(forbidden, self.size**2)), self.n_marks))
         for i in range(len(combinations)):
-                self.n_states += 1
                 state = np.zeros((self.size, self.size))
                 for c in combinations[i]:
                     l = c // self.size 
                     m = c % self.size
                     state[l,m] = -1
                 self.action_space[i] = state
+                self.n_states += 1
         self.Q = np.zeros(len(combinations))
         self.N = np.zeros(len(combinations)) + 1e-5
         self.ucb = self.Q + self.c * np.sqrt(np.log(self.t)/self.N) 

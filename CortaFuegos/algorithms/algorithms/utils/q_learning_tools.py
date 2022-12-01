@@ -18,8 +18,7 @@ class Q_Table:
         self.action_state = {}
         self.n_states_step = []
         self.create_table()
-        print(self.n_states)
-    
+
     def create_table(self):
         forbidden = int((self.size**2)*0.05)//2
         for i in range(self.n_steps + 1):
@@ -37,6 +36,7 @@ class Q_Table:
                     self.q_table[(i, j, action)] = [0, state]
                     self.action_state[(i,j)].append(action)
                     self.n_states += 1
+        print(self.n_states)
     def find_state_indiv(self, state, step):
         n = 0
         for i in range(int(self.n_states_step[step])):
@@ -106,7 +106,7 @@ class Q_Table_2:
         self.n_states_step = np.zeros(self.n_steps)
         self.q_table = {}
         self.create_table()
-
+        
     def create_table(self):
         ### Initial state
         state = torch.zeros((2, self.size, self.size))
@@ -117,6 +117,7 @@ class Q_Table_2:
         state[1] = 2/101
         for i in range(16):
             self.q_table[(0, 0, i)] = [random.uniform(0, 1), state]
+            self.n_states += 1
         self.n_states_step[0] += 1
         ### First step
         combinations = list(itertools.product([1, 2/101], repeat=4))
@@ -142,6 +143,7 @@ class Q_Table_2:
                 state[1][0,1] = state_combinations[i][2]
                 state[1][1,1] = state_combinations[i][3]
             for j in range(16):
+                self.n_states += 1
                 if self.size > 2:
                     self.q_table[(1, i, j)] = [random.uniform(0, 1), state]
                 else:
@@ -168,6 +170,7 @@ class Q_Table_2:
             state[1][3,1] = state_combinations[i][7]
             for j in range(16):
                 self.q_table[(2, i, j)] = [random.uniform(0, 1), state]
+                self.n_states += 1
             self.n_states_step[2] += 1
         ### Third step
         combinations = list(itertools.product([1, 2/101], repeat=12))
@@ -192,6 +195,7 @@ class Q_Table_2:
             state[1][1,3] = state_combinations[i][11]
             for j in range(16):
                 self.q_table[(3, i, j)] = [random.uniform(0, 1), state]
+                self.n_states += 1
             self.n_states_step[3] += 1
         ### Fourth step
 

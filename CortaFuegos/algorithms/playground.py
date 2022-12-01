@@ -6,21 +6,36 @@ from enviroment.full_grid_v1 import Full_Grid_V1
 from algorithms.utils.q_learning_tools import Q_Table
 from algorithms.mab_ucb import MAB_UCB_FG
 import torch
-from nets.small_net import CNN
+from nets.small_net import CNN as CNN_SMALL
+from nets.big_net import CNN as CNN_BIG
 from nets.mask import CategoricalMasked
-env = Full_Grid_V1(size = 20)
-net = CNN(env.size, 1, 400, True)
-state = env.reset()
+import multiprocessing
+from enviroment.utils.final_reward import generate_reward
+
+
+# net = CNN_SMALL(20, 1, 400, True)
+# env = Full_Grid_V1(size=20)
+# state = env.reset()
+# net.forward(state)
+# print(sum(dict((p.data_ptr(), p.numel()) for p in net.parameters()).values()))
+# def square(x):
+#     return x * x
+# pool = multiprocessing.Pool()
+# pool = multiprocessing.Pool(processes=2)
+# inputs = [0,1]
+# # outputs = pool.map(lambda x: generate_reward(n_sims = 10, size = 20, env_id = x), inputs)
+# outputs = pool.map(square, inputs)
+# print(outputs)
+
+env = Parallel_Wrapper(Full_Grid_V1, n_envs = 8, parameters = {"size": 20, "burn_value": 10, "n_sims_final" : 50})
 done = False
-policy, value = net.forward(state)
-print(policy)
-mask = torch.zeros(400, dtype=torch.bool)
-mask[0] = True
-mask[1] = True
-head_masked = CategoricalMasked(logits=policy, mask = mask)
-print(head_masked.probs)
+state = env.reset()
+while not done:
+    _, r, done = env.step(env.random_action())
+print(r)
 
 
+   
 
 
 

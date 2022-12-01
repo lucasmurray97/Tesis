@@ -12,7 +12,7 @@ def blockPrint():
     sys.stdout = open(os.devnull, 'w')
 def enablePrint():
     sys.stdout = sys.__stdout__
-def write_firewall_file(final_state):
+def write_firewall_file(final_state, env_id = 0):
     """Function that writes the final state in the format delimited for firewalls in a file called HarvestedCells.csv"""
     i = 1
     firewalls = [1]
@@ -21,7 +21,7 @@ def write_firewall_file(final_state):
             firewalls.append(i)
         i+=1
     header = ['Year Number','Cell Numbers']
-    with open('/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/firewall_grids/HarvestedCells.csv', 'w', encoding='UTF8') as f:
+    with open(f'/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/firewall_grids/HarvestedCells_{env_id}.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
 
         # write the header
@@ -30,25 +30,26 @@ def write_firewall_file(final_state):
         # write the data
         writer.writerow(firewalls)
     return
-def generate_reward(n_sims, size):
+def generate_reward(n_sims, size, env_id = 0):
     """Function that generates the reward associated with the fire simulation"""
     data_directory = ""
     results_directory = ""
-    data_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/"
-    results_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/"
+    data_directory = f"/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20_{env_id}/"
+    results_directory = f"/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20_{env_id}/"
+    harvest_directory = f"/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/firewall_grids/HarvestedCells_{env_id}.csv"
     try:
         shutil.rmtree(f'{results_directory}Grids/')
     except:
         pass
     # A command line input is simulated
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', '9', '--grids', '--HarvestedCells', '/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/firewall_grids/HarvestedCells.csv']
+    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', '9', '--grids', '--HarvestedCells', harvest_directory]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
     main()
     enablePrint()
     # The grid from the final period is retrieved
     reward = 0
-    base_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/Grids/Grids"
+    base_directory = f"/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20_{env_id}/Grids/Grids"
     for j in range(1, n_sims+1):
         directory = os.listdir(base_directory+str(j))
         numbers = []

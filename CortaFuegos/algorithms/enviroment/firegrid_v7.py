@@ -3,8 +3,8 @@ import torch
 from enviroment.abstract_moving_grid import Moving_Grid
 # Clase que genera el ambiente y permite interactuar con el
 class FireGrid_V7(Moving_Grid):
-    def __init__(self, size, agent_id = -1, agent_dim = 2, burn_value = 10, n_sims = 1, n_sims_final = 10):
-        super().__init__(size, burn_value, agent_id, agent_dim, n_sims_final)
+    def __init__(self, size, agent_id = -1, agent_dim = 2, burn_value = 10, n_sims = 1, n_sims_final = 10, env_id = 0):
+        super().__init__(size, burn_value, agent_id, agent_dim, n_sims_final, env_id)
         self.n_sims = n_sims
     def step(self, action):
         """Función que genera la transicion del ambiente desde un estado a otro generada por la acción action. Retorna: espacio, reward, done"""

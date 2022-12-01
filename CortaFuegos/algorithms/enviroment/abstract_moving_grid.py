@@ -8,8 +8,8 @@ from rasterio.enums import Resampling
 import torchvision
 import torchvision.transforms.functional as F
 class Moving_Grid(Env):
-    def __init__(self, size, burn_value = 10, agent_id = -1, agent_dim = 2, n_sims_final = 50):
-        super().__init__(size, burn_value)
+    def __init__(self, size, burn_value = 10, agent_id = -1, agent_dim = 2, n_sims_final = 50, env_id = 0):
+        super().__init__(size, burn_value, env_id)
         assert size%2 == 0
         self.name = "moving_grid"
         self.agent_dim = agent_dim # Dimensión del scope del agente

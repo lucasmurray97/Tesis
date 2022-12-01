@@ -31,7 +31,7 @@ parser.add_argument('--env_version', type=str, required=True)
 parser.add_argument('--net_version', type=str, required=False)
 parser.add_argument('--episodes', type=int, required=True)
 parser.add_argument('--window', type=int, required=False, nargs="?", default=100)
-parser.add_argument('--alpha', type=float, required=True, nargs="?")
+parser.add_argument('--alpha', type=float, required=False, nargs="?")
 parser.add_argument('--gamma', type=float, required=False, nargs="?", default= 1)
 parser.add_argument('--landa', type=float, required=False, nargs="?", default= 1)
 parser.add_argument('--beta', type=float, required=False, nargs="?", default= 0.1)
@@ -110,7 +110,7 @@ elif args.algorithm == "mab_greedy":
 
 # Guardamos los parametros de la red
 if args.save_weights:
-    path_ = f"./weights/{args.env}/{args.env_version}/{args.net_version}/{args.algorithm}.pth"
+    path_ = f"./weights/{args.env}/{args.instance}/{args.env_version}/{args.net_version}/{args.algorithm}.pth"
     torch.save(net.state_dict(), path_)
 
 

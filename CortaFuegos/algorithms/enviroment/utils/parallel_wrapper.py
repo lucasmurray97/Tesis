@@ -9,9 +9,11 @@ class Parallel_Wrapper():
         self.size = parameters["size"]
         self.n_envs = n_envs
         self.env = env
+        parameters["env_id"] = 0
         self.envs = [env(**parameters)] 
         self.lock = threading.Lock()
         for i in range(self.n_envs - 1):
+            parameters["env_id"] = i + 1
             self.envs.append(env(**parameters))
         self.env_shape = self.envs[0]._space.shape
     def individual_reset(self, i, states):

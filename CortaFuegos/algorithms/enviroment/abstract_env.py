@@ -2,10 +2,11 @@ from abc import ABC, abstractmethod
 from enviroment.utils.final_reward import write_firewall_file, generate_reward 
 import random
 class Env(ABC):
-    def __init__(self, size, burn_value = 10):
+    def __init__(self, size, burn_value = 10, env_id = 0):
         self.size = size
         self.burn_value = burn_value
         self._random = random
+        self.env_id = env_id
 
     @abstractmethod
     def get_space(self):
@@ -52,7 +53,7 @@ class Env(ABC):
         pass
     
     def write_firewall(self, firegrid): 
-        write_firewall_file(firegrid)
+        write_firewall_file(firegrid, self.env_id)
     
     def generate_reward(self, sims):
-        return generate_reward(sims, self.size)*self.burn_value
+        return generate_reward(sims, self.size, self.env_id)*self.burn_value
