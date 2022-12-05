@@ -20,8 +20,9 @@ from nets.small_net import CNN as CNN1
 from nets.big_net import CNN as CNN2
 from algorithms.utils.plot_progress import plot_moving_av
 from enviroment.utils.parallel_wrapper import Parallel_Wrapper 
+import os
 import argparse
-n_envs = 8
+n_envs = os.cpu_count()
 # We retrieve the arguments from standard input
 parser = argparse.ArgumentParser()
 parser.add_argument('--algorithm', type=str, required=True)
@@ -90,19 +91,19 @@ if args.net_version != None:
 plot_episode = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 20000, 30000, 40000, 50000]
 # We retrieve the algorithm parameter:
 if args.algorithm == "ppo":
-    stats = ppo(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test)
+    stats = ppo(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
 elif args.algorithm == "ppo_v2":
-    stats = ppo_v2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test)
+    stats = ppo_v2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
 elif args.algorithm == "ppo_v3":
-    stats = ppo_v3(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test)
+    stats = ppo_v3(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
 elif args.algorithm == "reinforce":
-    stats = reinforce(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test)
+    stats = reinforce(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
 elif args.algorithm == "reinforce_baseline":
-    stats = reinforce_baseline(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test)
+    stats = reinforce_baseline(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
 elif args.algorithm == "a2c":
-    stats = a2c(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test)
+    stats = a2c(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
 elif args.algorithm == "q_learning":
-    returns, q_table = q_learning(args.size, env, args.episodes, args.env_version, [], alpha = args.alpha, epsilon = args.epsilon, instance = args.instance)
+    returns, q_table = q_learning(args.size, env, args.episodes, args.env_version, [], alpha = args.alpha, epsilon = args.epsilon, instance = args.instance, n_envs = n_envs, window = args.window)
 elif args.algorithm == "mab_ucb":
     mab_ucb(env, args.size, args.episodes, args.window, args.instance)
 elif args.algorithm == "mab_greedy":

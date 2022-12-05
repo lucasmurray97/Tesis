@@ -7,9 +7,9 @@ from algorithms.utils.plot_progress import plot_moving_av
 import matplotlib.pyplot as plt
 def q_learning(size, env, episodes, env_version, plot_episode = [], alpha = 1e-5, gamma = 0.99, n_envs = 8, epsilon = 0.15, instance = "sub2x2", window = 10):
     if env.envs[0].name == "moving_grid":
-        q_table = Q_Table_2(size = size, alpha = alpha, gamma = gamma, epsilon = epsilon)
+        q_table = Q_Table_2(size = size, alpha = alpha, gamma = gamma, epsilon = epsilon, n_envs = n_envs)
     else:
-        q_table = Q_Table(size = size, alpha = alpha, gamma = gamma, epsilon = epsilon)
+        q_table = Q_Table(size = size, alpha = alpha, gamma = gamma, epsilon = epsilon, n_envs = n_envs)
     returns = []
     for episode in tqdm(range(1, episodes + 1)):
         done = False

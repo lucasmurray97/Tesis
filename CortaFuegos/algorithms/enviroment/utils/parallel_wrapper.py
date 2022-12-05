@@ -3,9 +3,8 @@ import torch
 from torch import nn as nn
 import numpy as np
 import copy
-n_cores = 8
 class Parallel_Wrapper():
-    def __init__(self, env, n_envs = n_cores, parameters = {}):
+    def __init__(self, env, n_envs = 8, parameters = {}):
         self.size = parameters["size"]
         self.n_envs = n_envs
         self.env = env
