@@ -7,6 +7,7 @@ import itertools
 import numpy as np
 class Q_Table:
     def __init__(self, size, alpha = 1e-4, gamma = 0.99, n_envs = 8, epsilon = 0.1):
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.size = size
         self.alpha = alpha
         self.gamma = gamma
@@ -26,7 +27,7 @@ class Q_Table:
             self.n_states_step.append(len(combinations))
             for j in range(len(combinations)):
                 self.action_state[(i,j)] = []
-                state = torch.zeros((self.size, self.size))
+                state = torch.zeros((self.size, self.size)).to(self.device)
                 for c in combinations[j]:
                     l = c // self.size 
                     m = c % self.size
@@ -68,7 +69,7 @@ class Q_Table:
         actions = []
         for n in n_states:
             actions.append(self.pick_greedy_action_indiv(n, step))
-        return torch.Tensor(actions)
+        return torch.Tensor(actions).to(self.device)
 
     def update_table_indiv(self, n_state, step, action, next_state, reward):
         n_next_state = self.find_state_indiv(next_state, step)
@@ -92,10 +93,11 @@ class Q_Table:
             if self.q_table[(step, n_state,a)][0] >= max_a_value:
                 max_a_value = self.q_table[(step, n_state,a)][0]
                 max_action = a
-        return torch.Tensor([max_action])
+        return torch.Tensor([max_action]).to(self.device)
 
 class Q_Table_2:
     def __init__(self, size, alpha = 1e-4, gamma = 0.99, n_envs = 8, epsilon = 0.1):
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.size = size
         self.alpha = alpha
         self.gamma = gamma
@@ -109,7 +111,7 @@ class Q_Table_2:
         
     def create_table(self):
         ### Initial state
-        state = torch.zeros((2, self.size, self.size))
+        state = torch.zeros((2, self.size, self.size)).to(self.device)
         state[0][0,0] = 1
         state[0][1,0] = 1
         state[0][0,1] = 1
@@ -123,7 +125,7 @@ class Q_Table_2:
         combinations = list(itertools.product([1, 2/101], repeat=4))
         state_combinations = np.asarray(combinations).reshape((len(combinations), 4))
         for i in range(len(combinations)):
-            state = torch.zeros((2, self.size, self.size))
+            state = torch.zeros((2, self.size, self.size)).to(self.device)
             if self.size > 2:
                 state[0][2,0] = 1
                 state[0][3,0] = 1
@@ -155,7 +157,7 @@ class Q_Table_2:
         combinations = list(itertools.product([1, 2/101], repeat=8))
         state_combinations = np.asarray(combinations).reshape((len(combinations), 8))
         for i in range(len(combinations)):
-            state = torch.zeros((2, self.size, self.size))
+            state = torch.zeros((2, self.size, self.size)).to(self.device)
             state[0][0,2] = 1
             state[0][1,2] = 1
             state[0][0,3] = 1
@@ -176,7 +178,7 @@ class Q_Table_2:
         combinations = list(itertools.product([1, 2/101], repeat=12))
         state_combinations = np.asarray(combinations).reshape((len(combinations), 12))
         for i in range(len(combinations)):
-            state = torch.zeros((2, self.size, self.size))
+            state = torch.zeros((2, self.size, self.size)).to(self.device)
             state[0][2,2] = 1
             state[0][3,2] = 1
             state[0][2,3] = 1
@@ -202,7 +204,7 @@ class Q_Table_2:
         combinations = list(itertools.product([1, 2/101], repeat=16))
         state_combinations = np.asarray(combinations).reshape((len(combinations), 16))
         for i in range(len(combinations)):
-            state = torch.zeros((2, self.size, self.size))
+            state = torch.zeros((2, self.size, self.size)).to(self.device)
             state[1][0,0] = state_combinations[i][0]
             state[1][1,0] = state_combinations[i][1]
             state[1][0,1] = state_combinations[i][2]
@@ -254,7 +256,7 @@ class Q_Table_2:
         actions = []
         for n in n_states:
             actions.append(self.pick_greedy_action_indiv(n, step))
-        return torch.Tensor(actions)
+        return torch.Tensor(actions).to(self.device)
 
     def update_table_indiv(self, n_state, step, action, next_state, reward):
         n_next_state = self.find_state_indiv(next_state, step)
@@ -278,4 +280,4 @@ class Q_Table_2:
             if self.q_table[(step, n_state,a)][0] >= max_a_value:
                 max_a_value = self.q_table[(step, n_state,a)][0]
                 max_action = a
-        return torch.Tensor([max_action])
+        return torch.Tensor([max_action]).to(self.device)
