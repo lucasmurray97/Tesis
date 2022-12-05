@@ -2,8 +2,9 @@ import sys
 import numpy as np
 from numpy import genfromtxt
 import csv  
+import pprint
 # We add the path to the simulator in order to execute it
-sys.path.append("../../../Simulador/Cell2Fire/Cell2Fire/cell2fire")
+sys.path.append("../../../../Simulador/Cell2Fire/Cell2Fire/")
 from cell2fire.Cell2FireC_class import Cell2FireC
 from cell2fire.main import main
 import os
