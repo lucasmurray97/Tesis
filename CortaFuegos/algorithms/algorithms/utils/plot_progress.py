@@ -14,7 +14,7 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
     for i in probs_dir_list:
         os.remove(probs_dir+i)
     for i in range(env.get_episode_len()):
-        mat = env._space[0].reshape(size,size).numpy()
+        mat = env._space[0].reshape(size,size).to('cpu').numpy()
         mask = env.generate_mask().bool()
         if algorithm == "reinforce":
             a, _ = net.forward(state, mask)
@@ -22,7 +22,7 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
             a,_, _ = net.forward(state, mask)
         f2 = plt.figure()
         plt.clf()
-        plt.bar(np.arange(env.get_action_space().shape[0]), a.detach().numpy().squeeze())
+        plt.bar(np.arange(env.get_action_space().shape[0]), a.detach().to('cpu').numpy().squeeze())
         plt.xlabel("Actions") 
         plt.ylabel("Action Probability") 
         plt.title(f"Action probabilities in state {i} after training in trajectory of agent")

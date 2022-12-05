@@ -11,6 +11,7 @@ class Parallel_Wrapper():
         self.env = env
         parameters["env_id"] = 0
         self.envs = [env(**parameters)] 
+        self.device = self.envs[0].device
         self.lock = threading.Lock()
         for i in range(self.n_envs - 1):
             parameters["env_id"] = i + 1
@@ -29,7 +30,7 @@ class Parallel_Wrapper():
                 threads[i].start()
             for i in range(self.n_envs):
                 threads[i].join()
-            return torch.stack(states)
+            return torch.stack(states).to(self.device)
 
     def individual_step(self, i, next_states, rewards, done_b, action):
         next_state, reward, done = self.envs[i].step(action)
@@ -49,17 +50,17 @@ class Parallel_Wrapper():
             threads[i].start()
         for i in range(self.n_envs):
             threads[i].join()
-        return torch.stack(next_states), torch.stack(rewards), done_b[0]
+        return torch.stack(next_states), torch.stack(rewards).to(self.device), done_b[0]
     
     def random_action(self):
         actions = []
         for i in range(self.n_envs):
             actions.append(self.envs[i].random_action())
-        return torch.stack(actions)
+        return torch.stack(actions).to(self.device)
 
     def generate_mask(self):
         masks = []
         for i in range(self.n_envs):
             masks.append(self.envs[i].generate_mask())
         stacked_masks = torch.stack(masks).bool()
-        return stacked_masks
+        return stacked_masks.to(self.device)

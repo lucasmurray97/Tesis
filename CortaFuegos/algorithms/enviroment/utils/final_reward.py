@@ -3,7 +3,7 @@ import numpy as np
 from numpy import genfromtxt
 import csv  
 # We add the path to the simulator in order to execute it
-sys.path.append("/home/lucas/Tesis/Simulador/Cell2Fire/Cell2Fire/cell2fire")
+sys.path.append("../../../Simulador/Cell2Fire/Cell2Fire/cell2fire")
 from cell2fire.Cell2FireC_class import Cell2FireC
 from cell2fire.main import main
 import os
@@ -21,7 +21,8 @@ def write_firewall_file(final_state, env_id = 0):
             firewalls.append(i)
         i+=1
     header = ['Year Number','Cell Numbers']
-    with open(f'/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/firewall_grids/HarvestedCells_{env_id}.csv', 'w', encoding='UTF8') as f:
+    absolute_path = os.path.dirname(__file__)
+    with open(f'{absolute_path}/firewall_grids/HarvestedCells_{env_id}.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
 
         # write the header
@@ -31,12 +32,13 @@ def write_firewall_file(final_state, env_id = 0):
         writer.writerow(firewalls)
     return
 def generate_reward(n_sims, size, env_id = 0):
+    absolute_path = os.path.dirname(__file__)
     """Function that generates the reward associated with the fire simulation"""
     data_directory = ""
     results_directory = ""
-    data_directory = f"/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20_{env_id}/"
-    results_directory = f"/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20_{env_id}/"
-    harvest_directory = f"/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/firewall_grids/HarvestedCells_{env_id}.csv"
+    data_directory = f"{absolute_path}/data/Sub20x20_{env_id}/"
+    results_directory = f"{absolute_path}/results/Sub20x20_{env_id}/"
+    harvest_directory = f"{absolute_path}/firewall_grids/HarvestedCells_{env_id}.csv"
     try:
         shutil.rmtree(f'{results_directory}Grids/')
     except:
@@ -49,7 +51,7 @@ def generate_reward(n_sims, size, env_id = 0):
     enablePrint()
     # The grid from the final period is retrieved
     reward = 0
-    base_directory = f"/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20_{env_id}/Grids/Grids"
+    base_directory = f"{absolute_path}/results/Sub20x20_{env_id}/Grids/Grids"
     for j in range(1, n_sims+1):
         directory = os.listdir(base_directory+str(j))
         numbers = []

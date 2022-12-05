@@ -13,7 +13,8 @@ class Abstract_Full_Grid(Env):
         assert size%2 == 0
         self.n_sims_final = n_sims_final
         self.name = "full_grid"
-        self._space = torch.zeros(2, self.size, self.size)
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self._space = torch.zeros(2, self.size, self.size).to(self.device)
         self.action_map = {}
         self.forbidden_cells = []
         pos = 0
@@ -58,17 +59,17 @@ class Abstract_Full_Grid(Env):
     
     def random_action(self):
         """Función que retorna una acción aleatoria del espacio de acciones"""
-        return torch.Tensor([self._random.randint(0, self.size**2 - 1)])
+        return torch.Tensor([self._random.randint(0, self.size**2 - 1)]).to(self.device)
 
     def get_action_space(self):
-        return torch.Tensor([i for i in range(self.size**2)])
+        return torch.Tensor([i for i in range(self.size**2)]).to(self.device)
 
     def set_seed(self, seed):
         """Función que establece una semilla para los numeros aleatorios"""
         super().set_seed(seed)
 
     def reset(self):
-        self._space[0] = torch.zeros(self.size, self.size)
+        self._space[0] = torch.zeros(self.size, self.size).to(self.device)
         self._space[1] = self.forest
         return self._space[1].unsqueeze(0)
 
@@ -103,8 +104,8 @@ class Abstract_Full_Grid(Env):
                 ),
                 resampling=Resampling.mode
             )
-        return torch.Tensor(data).squeeze()
+        return torch.Tensor(data).squeeze().to(self.device)
     def up_scale(self, tensor, size):
         t = tensor.unsqueeze(0)
         t_resized = F.resize(t, size, interpolation = torchvision.transforms.InterpolationMode.NEAREST).squeeze(0)
-        return t_resized
+        return t_resized.to(self.device)

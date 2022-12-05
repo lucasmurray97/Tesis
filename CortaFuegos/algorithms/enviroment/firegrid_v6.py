@@ -47,10 +47,10 @@ class FireGrid_V6(Moving_Grid):
             # Se lo pasamos al simulador y obtenemos la recompensa
             final_reward = self.generate_reward(self.n_sims_final) + r
             # Retornamos la matriz de posición y de combustibles
-            return self._space[1:], torch.Tensor([final_reward]).reshape((1, 1)),  True
+            return self._space[1:], torch.Tensor([final_reward]).reshape((1, 1)).to(self.device),  True
         # Marcamos el agente
         self.mark_agent()
         # Retornamos la matriz de posición y de combustibles
         s = self._space[1:]
-        return s, torch.Tensor([r]).reshape((1, 1)),  False
+        return s, torch.Tensor([r]).reshape((1, 1)).to(self.device),  False
     

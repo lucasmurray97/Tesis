@@ -26,7 +26,8 @@ def a2c(env, net, episodes, env_version, net_version, plot_episode, n_envs = 8, 
             action = policy.multinomial(1)
             next_state, reward, done = env.step(action.detach())
             next_state_c = next_state.clone()
-            _, value_next_state, _ = net.forward(next_state_c)
+            next_mask = env.generate_mask()
+            _, value_next_state, _ = net.forward(next_state_c, mask = next_mask)
             I *= gamma
             net.zero_grad()
             target = reward + gamma * value_next_state

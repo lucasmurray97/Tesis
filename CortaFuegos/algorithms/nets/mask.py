@@ -7,14 +7,15 @@ from einops import  reduce
 
 class CategoricalMasked(Categorical):
     def __init__(self, logits: torch.Tensor, mask: Optional[torch.Tensor] = None):
-        self.mask = mask
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.mask = mask.to(self.device)
         self.batch, self.nb_action = logits.size()
         if mask is None:
             super(CategoricalMasked, self).__init__(logits=logits)
         else:
             self.mask_value = torch.tensor(
                 torch.finfo(logits.dtype).min, dtype=logits.dtype
-            )
+            ).to(self.device)
             logits = torch.where(self.mask, logits, self.mask_value)
             super(CategoricalMasked, self).__init__(logits=logits)
 
@@ -22,11 +23,11 @@ class CategoricalMasked(Categorical):
         if self.mask is None:
             return super().entropy()
         # Elementwise multiplication
-        p_log_p = einsum("ij,ij->ij", self.logits, self.probs)
+        p_log_p = einsum("ij,ij->ij", self.logits, self.probs).to(self.device)
         # Compute the entropy with possible action only
         p_log_p = torch.where(
             self.mask,
             p_log_p,
             torch.tensor(0, dtype=p_log_p.dtype, device=p_log_p.device),
-        )
+        ).to(self.device)
         return -reduce(p_log_p, "b a -> b", "sum", b=self.batch, a=self.nb_action)

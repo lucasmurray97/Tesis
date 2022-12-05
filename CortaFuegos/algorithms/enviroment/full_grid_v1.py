@@ -39,6 +39,6 @@ class Full_Grid_V1(Abstract_Full_Grid):
             reward = self.generate_reward(self.n_sims_final)
             done = True
             self._step = 0
-            return s, torch.Tensor([reward]).reshape((1, 1)), done
+            return s, torch.Tensor([reward]).reshape((1, 1)).to(self.device), done
         self._step += 1
-        return s, torch.zeros(1), done
+        return s, torch.zeros(1).to(self.device), done

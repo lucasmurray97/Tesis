@@ -10,6 +10,7 @@ from torch.utils.data import Dataset, DataLoader
 from algorithms.utils.plot_progress import plot_moving_av, plot_loss
 
 def ppo_v2(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-4, gamma = 0.99, beta = 0.02, clip = 0.2, landa = 0.95, n_envs = 8, epochs = 10, instance = "sub20x20", test = False, window = 10):
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     ep_len = env.envs[0].get_episode_len()
     if ep_len == 1:
         ep_len = 2
@@ -25,16 +26,16 @@ def ppo_v2(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
         I = 1.
         D = 1.
         step = 0
-        ep_states = torch.zeros((ep_len//2, n_envs , env_shape[0] - 1, env_shape[1], env_shape[2]))
-        ep_actions = torch.zeros((ep_len//2, n_envs, 1), dtype = torch.int64)
-        ep_rewards = torch.zeros((ep_len//2, n_envs, 1))
-        ep_policy = torch.zeros((ep_len//2, n_envs, env.envs[0].get_action_space().shape[0]))
-        ep_masks = torch.zeros((ep_len//2, n_envs, env.envs[0].get_action_space().shape[0]), dtype = torch.bool)
-        ep_entropy = torch.zeros((ep_len//2, n_envs, 1))
-        ep_values = torch.zeros((ep_len//2, n_envs, 1))
-        ep_next_values = torch.zeros((ep_len//2, n_envs, 1))
-        ep_I = torch.zeros((ep_len//2, n_envs, 1))
-        ep_D = torch.zeros((ep_len//2, n_envs, 1))
+        ep_states = torch.zeros((ep_len//2, n_envs , env_shape[0] - 1, env_shape[1], env_shape[2])).to(device)
+        ep_actions = torch.zeros((ep_len//2, n_envs, 1), dtype = torch.int64).to(device)
+        ep_rewards = torch.zeros((ep_len//2, n_envs, 1)).to(device)
+        ep_policy = torch.zeros((ep_len//2, n_envs, env.envs[0].get_action_space().shape[0])).to(device)
+        ep_masks = torch.zeros((ep_len//2, n_envs, env.envs[0].get_action_space().shape[0]), dtype = torch.bool).to(device)
+        ep_entropy = torch.zeros((ep_len//2, n_envs, 1)).to(device)
+        ep_values = torch.zeros((ep_len//2, n_envs, 1)).to(device)
+        ep_next_values = torch.zeros((ep_len//2, n_envs, 1)).to(device)
+        ep_I = torch.zeros((ep_len//2, n_envs, 1)).to(device)
+        ep_D = torch.zeros((ep_len//2, n_envs, 1)).to(device)
         while not done:
             state_c = state.clone()
             mask = env.generate_mask()
@@ -54,8 +55,8 @@ def ppo_v2(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
             ep_entropy[step % (ep_len//2)] = entropy.unsqueeze(1).clone().detach()
             ep_values[step % (ep_len//2)] = value.clone().detach()
             ep_next_values[step % (ep_len//2)] = value_next_state.clone().detach()
-            ep_I[step % (ep_len//2)] = torch.full((n_envs, 1), I)
-            ep_D[step % (ep_len//2)] = torch.full((n_envs, 1), D)
+            ep_I[step % (ep_len//2)] = torch.full((n_envs, 1), I).to(device)
+            ep_D[step % (ep_len//2)] = torch.full((n_envs, 1), D).to(device)
             if step % (ep_len//2) == 0 and step != 0:
                 state_t, action_t, reward_t, policy_t, entropy_t, mask_t, value_t, value_next_state_t, discounts, landas = torch.transpose(ep_states, 0, 1), torch.transpose(ep_actions, 0, 1), torch.transpose(ep_rewards, 0, 1), torch.transpose(ep_policy, 0, 1), torch.transpose(ep_entropy, 0, 1), torch.transpose(ep_masks, 0, 1), torch.transpose(ep_values, 0, 1), torch.transpose(ep_next_values, 0, 1), torch.transpose(ep_I, 0, 1), torch.transpose(ep_D, 0, 1)
                 data = DataLoader([[state_t[i], action_t[i], reward_t[i], policy_t[i], entropy_t[i], mask_t[i] , value_t[i], value_next_state_t[i], discounts[i], landas[i]] for i in range(n_envs)], 1, shuffle = False)
@@ -83,7 +84,7 @@ def ppo_v2(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
                         total_loss.backward()
                         optimizer.step()
                         n+=1
-                stats["Loss"].append(loss_acum.detach().mean())
+                stats["Loss"].append(loss_acum.detach().mean().item())
             state = next_state
             ep_return += reward
             step = step + 1 

@@ -61,7 +61,7 @@ class FireGrid_V8(Moving_Grid):
             reward = self.generate_reward(self.n_sims_final) + r
             # Retornamos la matriz de posición y de combustibles
             s = self._space[1:]
-            return s, torch.Tensor([reward]).reshape((1, 1)), done
+            return s, torch.Tensor([reward]).reshape((1, 1)).to(self.device), done
         # Escribimos el archivo que se pasa al simulador, esta véz con last_complete
         if self.size < 20:
                 firegrid = self.up_scale(self.last_complete, 20)
@@ -74,7 +74,7 @@ class FireGrid_V8(Moving_Grid):
         self.mark_agent()
         # Retornamos la matriz de posición y de combustibles
         s = self._space[1:]
-        return s, torch.Tensor([reward]).reshape((1, 1)), done
+        return s, torch.Tensor([reward]).reshape((1, 1)).to(self.device), done
     
 
 

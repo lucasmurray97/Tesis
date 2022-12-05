@@ -10,6 +10,7 @@ from torch.utils.data import Dataset, DataLoader
 from algorithms.utils.plot_progress import plot_moving_av, plot_loss
 # Reinforce Algorithm:
 def reinforce(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-4, gamma = 0.99, beta = 0.1, n_envs = 8, instance = "sub20x20", test = False, window = 10):
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     optim = AdamW(net.parameters(), lr = alpha)
     env_shape = env.env_shape
     ep_len = env.envs[0].get_episode_len()
@@ -20,12 +21,12 @@ def reinforce(env, net, episodes, env_version, net_version, plot_episode, alpha 
         ep_return  = 0
         I = 1.
         step = 0
-        ep_actions = torch.zeros((ep_len, n_envs, 1), dtype = torch.int64)
-        ep_rewards = torch.zeros((ep_len, n_envs, 1))
-        ep_policy = torch.zeros((ep_len, n_envs, env.envs[0].get_action_space().shape[0]))
-        ep_masks = torch.zeros((ep_len, n_envs, env.envs[0].get_action_space().shape[0]), dtype = torch.bool)
-        ep_entropy = torch.zeros((ep_len, n_envs, 1))
-        ep_I = torch.zeros((ep_len, n_envs, 1))
+        ep_actions = torch.zeros((ep_len, n_envs, 1), dtype = torch.int64).to(device)
+        ep_rewards = torch.zeros((ep_len, n_envs, 1)).to(device)
+        ep_policy = torch.zeros((ep_len, n_envs, env.envs[0].get_action_space().shape[0])).to(device)
+        ep_masks = torch.zeros((ep_len, n_envs, env.envs[0].get_action_space().shape[0]), dtype = torch.bool).to(device)
+        ep_entropy = torch.zeros((ep_len, n_envs, 1)).to(device)
+        ep_I = torch.zeros((ep_len, n_envs, 1)).to(device)
         while not done:
             state_c = state.clone()
             mask = env.generate_mask()
@@ -39,7 +40,7 @@ def reinforce(env, net, episodes, env_version, net_version, plot_episode, alpha 
             ep_policy[step] = policy.clone()
             ep_masks[step] = mask
             ep_entropy[step] = entropy.unsqueeze(1).clone().detach()
-            ep_I[step] = torch.full((n_envs, 1), I)
+            ep_I[step] = torch.full((n_envs, 1), I).to(device)
             step = step + 1
             I *= gamma
             state = next_state
@@ -61,7 +62,7 @@ def reinforce(env, net, episodes, env_version, net_version, plot_episode, alpha 
             optim.step()
         if episode in plot_episode:
             plot_prog(env.envs[0], episode, net, env_version, net_version, "reinforce", env.size, instance = instance, test = test)
-        stats["Loss"].append(loss_acum.detach().mean())
+        stats["Loss"].append(loss_acum.detach().mean().item())
         stats["Returns"].append(ep_return.mean().item())
         if n_envs != 1:
             stats["Returns"].extend(ep_return.squeeze().tolist())

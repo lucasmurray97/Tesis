@@ -27,13 +27,8 @@ from enviroment.utils.final_reward import generate_reward
 # outputs = pool.map(square, inputs)
 # print(outputs)
 
-env = Parallel_Wrapper(Full_Grid_V1, n_envs = 8, parameters = {"size": 20, "burn_value": 10, "n_sims_final" : 50})
-done = False
-state = env.reset()
-while not done:
-    _, r, done = env.step(env.random_action())
-print(r)
-
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+print(device)
 
    
 

@@ -14,7 +14,8 @@ class Moving_Grid(Env):
         self.name = "moving_grid"
         self.agent_dim = agent_dim # Dimensión del scope del agente
         self.agent_id = agent_id # Número que representa las celdas en donde está el agente
-        self._space = torch.zeros(3, self.size, self.size) # Privado, corresponde al espacio del ambiente -> Tensor de 3 x size x size
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self._space = torch.zeros(3, self.size, self.size).to(self.device) # Privado, corresponde al espacio del ambiente -> Tensor de 3 x size x size
         self._agent_location = np.zeros(2, dtype=int) # Privado, ubicación de la primera entrada del scope del agente 
         self._action_map = {} # Diccionario que mapea el identificador de una acción con la combinación asociada, ej: 0 -> (0, 0, 0, 0)
         combinations = list(itertools.product([0, -1], repeat=agent_dim**2))
@@ -54,7 +55,7 @@ class Moving_Grid(Env):
         return len(self._action_map)
     
     def get_action_space(self):
-        return torch.Tensor([i for i in range(16)])
+        return torch.Tensor([i for i in range(16)]).to(self.device)
     
     def mark_agent(self):
         """Función que dada la ubicación del agente, marca esta en la grilla"""
@@ -72,10 +73,10 @@ class Moving_Grid(Env):
 
     def random_action(self):
         """Función que retorna una acción aleatoria del espacio de acciones"""
-        return torch.Tensor([self._random.randint(0, 15)])
+        return torch.Tensor([self._random.randint(0, 15)]).to(self.device)
 
     def get_action_space(self):
-        return torch.Tensor([i for i in range(16)])
+        return torch.Tensor([i for i in range(16)]).to(self.device)
 
     
     def set_seed(self, seed):
@@ -84,8 +85,8 @@ class Moving_Grid(Env):
 
     def reset(self):
         """Función que resetea el ambiente -> Agente en posición (0,0) y toda la grilla sin marcar"""
-        self._space[0] = torch.zeros(self.size, self.size)
-        self._space[1] = torch.zeros(self.size, self.size)
+        self._space[0] = torch.zeros(self.size, self.size).to(self.device)
+        self._space[1] = torch.zeros(self.size, self.size).to(self.device)
         self._space[2] = self.forest
         self._agent_location[0] = 0
         self._agent_location[1] = 0
@@ -126,18 +127,18 @@ class Moving_Grid(Env):
                 ),
                 resampling=Resampling.mode
             )
-        return torch.Tensor(data).squeeze()
+        return torch.Tensor(data).squeeze().to(self.device)
     def up_scale(self, tensor, size):
         t = tensor.unsqueeze(0)
         t_resized = F.resize(t, size, interpolation = torchvision.transforms.InterpolationMode.NEAREST).squeeze(0)
-        return t_resized
+        return t_resized.to(self.device)
 
     def check_if_forbidden(self):
         pos_1 = (self._agent_location[0] < self.forbidden_cells) and (self._agent_location[1] < self.forbidden_cells)
         pos_2 = (self._agent_location[0] < self.forbidden_cells) and (self._agent_location[1] + 1 < self.forbidden_cells)
         pos_3 = (self._agent_location[0] + 1 < self.forbidden_cells) and (self._agent_location[1] < self.forbidden_cells)
         pos_4 = (self._agent_location[0] + 1 < self.forbidden_cells) and (self._agent_location[1] + 1 < self.forbidden_cells)
-        mask = torch.ones(16, dtype=torch.bool)
+        mask = torch.ones(16, dtype=torch.bool).to(self.device)
         i = 0
         for j in self._action_map.values():
             if ((j[0] - pos_1 == -2) or (j[1] - pos_2 == -2) or (j[2] - pos_3 == -2) or (j[3] - pos_4 == -2)):
