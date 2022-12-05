@@ -7,6 +7,7 @@ import rasterio
 from rasterio.enums import Resampling
 import torchvision
 import torchvision.transforms.functional as F
+import os
 class Abstract_Full_Grid(Env):
     def __init__(self, size, burn_value = 10, n_sims_final = 50, env_id = 0):
         super().__init__(size, burn_value, env_id)
@@ -26,7 +27,8 @@ class Abstract_Full_Grid(Env):
                         self.forbidden_cells.append(pos)
                 pos += 1
         # Se incorpora la información correspondiente al tipo de combustible
-        path = f"/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20_{self.env_id}/Forest.asc"
+        absolute_path = os.path.dirname(__file__)
+        path = f"{absolute_path}/utils/data/Sub20x20_{self.env_id}/Forest.asc"
         prop = self.size / 20
         a = self.down_scale(path, prop)
         forest = self.down_scale(path, prop)/101

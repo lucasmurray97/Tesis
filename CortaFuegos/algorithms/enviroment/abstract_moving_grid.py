@@ -7,6 +7,7 @@ import rasterio
 from rasterio.enums import Resampling
 import torchvision
 import torchvision.transforms.functional as F
+import os
 class Moving_Grid(Env):
     def __init__(self, size, burn_value = 10, agent_id = -1, agent_dim = 2, n_sims_final = 50, env_id = 0):
         super().__init__(size, burn_value, env_id)
@@ -23,7 +24,8 @@ class Moving_Grid(Env):
             self._action_map[i] = combinations[i]
         self.n_sims_final = n_sims_final
         # Se incorpora la información correspondiente al tipo de combustible
-        path = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/Forest.asc"
+        absolute_path = os.path.dirname(__file__)
+        path = f"{absolute_path}/utils/data/Sub20x20/Forest.asc"
         prop = self.size / 20
         a = self.down_scale(path, prop)
         self._space[2] = self.down_scale(path, prop)/101
