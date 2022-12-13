@@ -27,24 +27,28 @@ class Q_Table:
             self.n_states_step.append(len(combinations))
             for j in range(len(combinations)):
                 self.action_state[(i,j)] = []
-                state = torch.zeros((self.size, self.size)).to(self.device)
+                state = torch.full((self.size, self.size), 0.0198).to(self.device)
                 for c in combinations[j]:
                     l = c // self.size 
                     m = c % self.size
-                    state[l,m] = 1
+                    state[l,m] = 1.
                 next_state_comb = list(set(i for i in range(forbidden, self.size**2)) - set(combinations[j]))
                 for action in next_state_comb:
                     self.q_table[(i, j, action)] = [0, state]
                     self.action_state[(i,j)].append(action)
                     self.n_states += 1
-        print(self.n_states)
     def find_state_indiv(self, state, step):
-        n = 0
+        found = False
         for i in range(int(self.n_states_step[step])):
-            n+=1
-            if torch.equal(self.q_table[(step, i, self.action_state[(step,i)][0])][1], state):
+            if torch.allclose(self.q_table[(step, i, self.action_state[(step,i)][0])][1], state.squeeze(0), atol = 1e-4):
+                found = True
                 break
-        return n-1
+        if not found:
+            print(step)
+            print(state)
+            print("Error, state not found")
+            raise("Error, state not found")
+        return i
     
     def find_state(self, state, step):
         n_states = []
@@ -55,6 +59,10 @@ class Q_Table:
     def pick_greedy_action_indiv(self, n_state, step):
         if self.epsilon < random.uniform(0, 1):
                 action = random.choice(self.action_state[(step, n_state)])
+                if not isinstance(action, int):
+                    print(action)
+                    print("action not integer!")
+                    raise("action not integer!")
                 return action
         else:
             max_a_value = -inf
@@ -63,6 +71,13 @@ class Q_Table:
                 if self.q_table[(step, n_state, a)][0] >= max_a_value:
                     max_a_value = self.q_table[(step, n_state, a)][0]
                     max_action = a
+            if not isinstance(max_action, int):
+                print(max_action)
+                print("action not integer!")
+                raise("action not integer!")
+            if max_action == None:
+                print("max action not found!")
+                raise("max action not found!")
             return max_action
         
     def pick_greedy_action(self, n_states, step):
@@ -72,13 +87,25 @@ class Q_Table:
         return torch.Tensor(actions).to(self.device)
 
     def update_table_indiv(self, n_state, step, action, next_state, reward):
-        n_next_state = self.find_state_indiv(next_state, step)
+        action = int(action)
+        n_next_state = self.find_state_indiv(next_state, step + 1)
         max_a_value = -inf
         max_action = None
         for a in self.action_state[(step + 1, n_next_state)]:
             if self.q_table[(step + 1, n_next_state, a)][0] >= max_a_value:
                 max_a_value = self.q_table[(step + 1, n_next_state, a)][0]
                 max_action = a
+        if not isinstance(max_action, int):
+            print(max_action)
+            print("action not integer!")
+            raise("action not integer!")
+        if not isinstance(action, int):
+            print(action)
+            print("action not integer!")
+            raise("action not integer!")
+        if max_action == None:
+            print("max action not found!")
+            raise("max action not found!")
         self.q_table[(step, n_state, action)][0] = self.q_table[(step, n_state, action)][0] + self.alpha*(reward + self.gamma*self.q_table[(step + 1, n_next_state, max_action)][0]-self.q_table[(step, n_state, action)][0])
 
     def update_table(self, n_states, step, actions, next_states, rewards):
@@ -93,6 +120,9 @@ class Q_Table:
             if self.q_table[(step, n_state,a)][0] >= max_a_value:
                 max_a_value = self.q_table[(step, n_state,a)][0]
                 max_action = a
+        if max_action == None:
+            print("max action not found!")
+            raise("max action not found!")
         return torch.Tensor([max_action]).to(self.device)
 
 class Q_Table_2:
@@ -229,7 +259,7 @@ class Q_Table_2:
         n = 0
         for i in range(int(self.n_states_step[step])):
             n+=1
-            if torch.equal(self.q_table[(step, i, 0)][1], state):
+            if torch.allclose(self.q_table[(step, i, 0)][1], state, atoi = 1e-4):
                 break
         return n-1
     

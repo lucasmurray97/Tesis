@@ -63,7 +63,6 @@ def ppo(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
         critic_loss_acum = 0
         n = 0
         for state_t, action_t, reward_t, policy_t, entropy_t, mask_t, value_t, value_next_state_t, discounts, landas in data:
-            state_t, action_t, reward_t, policy_t, entropy_t, mask_t, value_t, value_next_state_t, discounts, landas = map(lambda i: torch.flatten(i, end_dim = 1), [state_t, action_t, reward_t, policy_t, entropy_t, mask_t, value_t, value_next_state_t, discounts, landas])
             if n > batches:
                 break
             for e in range(epochs):

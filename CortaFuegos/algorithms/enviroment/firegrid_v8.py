@@ -8,7 +8,6 @@ class FireGrid_V8(Moving_Grid):
         self.n_sims = n_sims
         self.last_complete = torch.zeros(20,20)
 
-
     def step(self, action):
         """Función que genera la transicion del ambiente desde un estado a otro generada por la acción action. Retorna: espacio, reward, done"""
         action_tuple = self._action_map[action.item()] # Se pasa la acción a la combinación de celdas correspondiente

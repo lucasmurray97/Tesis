@@ -5,7 +5,6 @@ from enviroment.abstract_moving_grid import Moving_Grid
 class FireGrid_V6(Moving_Grid):
     def __init__(self, size, agent_id = -1, agent_dim = 2, burn_value = 10, n_sims_final = 10, env_id = 0):
         super().__init__(size, burn_value, agent_id, agent_dim, n_sims_final, env_id)
-
     def step(self, action):
         """Función que genera la transicion del ambiente desde un estado a otro generada por la acción action. Retorna: espacio, reward, done"""
         action_tuple = self._action_map[action.item()] # Se pasa la acción a la combinación de celdas correspondiente

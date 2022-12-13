@@ -30,8 +30,10 @@ class CNN(torch.nn.Module):
         self.linear1 = nn.Linear(256, 512)
     elif self.grid_size == 2:
       self.linear1 = nn.Linear(256, 512)
-    else:
+    elif grid__size == 20:
        self.linear1 = nn.Linear(1024, 512)
+    elif self.grid_size == 400:
+      self.linear1 = nn.Linear(135424, 512)
     self.linear2 = nn.Linear(512, 256)
     self.linear3 = nn.Linear(256, 128)
     self.linear4 = nn.Linear(128, 64)
@@ -43,8 +45,10 @@ class CNN(torch.nn.Module):
         self.linear_1 = nn.Linear(256, 512)
     elif self.grid_size == 2:
       self.linear_1 = nn.Linear(256, 512)
-    else:
+    elif grid__size == 20:
        self.linear_1 = nn.Linear(1024, 512)
+    elif self.grid_size == 400:
+      self.linear_1 = nn.Linear(135424, 512)
     self.linear_2 = nn.Linear(512, 256)
     self.linear_3 = nn.Linear(256, 128)
     self.linear_4 = nn.Linear(128, 64)

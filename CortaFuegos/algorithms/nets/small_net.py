@@ -24,23 +24,39 @@ class CNN(torch.nn.Module):
     # FCN para policy
     if self.grid_size == 4:
       self.linear1 = nn.Linear(256, 256)
+    elif self.grid_size == 6:
+        self.linear1 = nn.Linear(256, 256) 
     elif self.grid_size == 8:
         self.linear1 = nn.Linear(256, 256)
     elif self.grid_size == 2:
       self.linear1 = nn.Linear(64, 256)
-    else:
+    elif grid__size == 20:
        self.linear1 = nn.Linear(1024, 256)
+    elif self.grid_size == 400:
+      self.linear1 = nn.Linear(295936, 256)
+    elif self.grid_size == 36:
+      self.linear1 = nn.Linear(3136, 256)
+    else:
+      raise("Non existent grid size")
     self.linear2 = nn.Linear(256, 64)
     self.linear3 = nn.Linear(64, self.output_size)
     # FCN para value
     if self.grid_size == 4:
       self.linear_1 = nn.Linear(256, 256)
+    elif self.grid_size == 6:
+        self.linear_1 = nn.Linear(256, 256) 
     elif self.grid_size == 8:
         self.linear_1 = nn.Linear(256, 256)
     elif self.grid_size == 2:
       self.linear_1 = nn.Linear(64, 256)
-    else:
+    elif grid__size == 20:
        self.linear_1 = nn.Linear(1024, 256)
+    elif self.grid_size == 400:
+      self.linear_1 = nn.Linear(295936, 256)
+    elif self.grid_size == 36:
+      self.linear_1 = nn.Linear(3136, 256)
+    else:
+      raise("Non existent grid size")
     self.linear_2 = nn.Linear(256, 64)
     self.linear_3 = nn.Linear(64, 1)
 
@@ -74,7 +90,6 @@ class CNN(torch.nn.Module):
     f3 = self.max_p3(h3)
     # print(f3.shape)
     m = torch.flatten(input = f3, start_dim=1)
-    # print(m.shape)
     # Forward Policy
     u3 = self.linear1(m)
     h3 = F.relu(u3)

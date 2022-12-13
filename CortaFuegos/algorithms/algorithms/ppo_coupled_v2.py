@@ -57,7 +57,7 @@ def ppo_v2(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
             ep_next_values[step % (ep_len//2)] = value_next_state.clone().detach()
             ep_I[step % (ep_len//2)] = torch.full((n_envs, 1), I).to(device)
             ep_D[step % (ep_len//2)] = torch.full((n_envs, 1), D).to(device)
-            if step % (ep_len//2) == 0 and step != 0:
+            if step % (ep_len//2) == 0 and (step != 0 or ep_len//2 == 1):
                 state_t, action_t, reward_t, policy_t, entropy_t, mask_t, value_t, value_next_state_t, discounts, landas = torch.transpose(ep_states, 0, 1), torch.transpose(ep_actions, 0, 1), torch.transpose(ep_rewards, 0, 1), torch.transpose(ep_policy, 0, 1), torch.transpose(ep_entropy, 0, 1), torch.transpose(ep_masks, 0, 1), torch.transpose(ep_values, 0, 1), torch.transpose(ep_next_values, 0, 1), torch.transpose(ep_I, 0, 1), torch.transpose(ep_D, 0, 1)
                 data = DataLoader([[state_t[i], action_t[i], reward_t[i], policy_t[i], entropy_t[i], mask_t[i] , value_t[i], value_next_state_t[i], discounts[i], landas[i]] for i in range(n_envs)], 1, shuffle = False)
                 loss_acum = 0
@@ -95,5 +95,6 @@ def ppo_v2(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
         if episode in plot_episode:
             plot_prog(env.envs[0], episode, net, env_version, net_version ,"ppo_v2", env.size, instance = instance, test = test)
     plot_moving_av(env.envs[0], stats["Returns"], episodes*n_envs, env_version, net_version, "ppo_v2", window = window, instance = instance, test = test)   
-    plot_loss(env.envs[0], stats["Loss"], episodes*2, env_version, instance, net_version, "ppo_v2", test)
+    episodess = episodes if ep_len//2 == 1 else episodes*2
+    plot_loss(env.envs[0], stats["Loss"], episodess, env_version, instance, net_version, "ppo_v2", test)
     return stats

@@ -15,7 +15,7 @@ class Parallel_Wrapper():
         for i in range(self.n_envs - 1):
             parameters["env_id"] = i + 1
             self.envs.append(env(**parameters))
-        self.env_shape = self.envs[0]._space.shape
+        self.env_shape = self.envs[0].shape
     def individual_reset(self, i, states):
             state = self.envs[i].reset()
             with self.lock:

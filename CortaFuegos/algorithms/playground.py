@@ -3,6 +3,7 @@ from enviroment.firegrid_v6 import FireGrid_V6
 from enviroment.firegrid_v7 import FireGrid_V7
 from enviroment.utils.parallel_wrapper import Parallel_Wrapper
 from enviroment.full_grid_v1 import Full_Grid_V1
+from enviroment.full_grid_v2 import Full_Grid_V2
 from algorithms.utils.q_learning_tools import Q_Table
 from algorithms.mab_ucb import MAB_UCB_FG
 import torch
@@ -27,10 +28,11 @@ from enviroment.utils.final_reward import generate_reward
 # outputs = pool.map(square, inputs)
 # print(outputs)
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-print(device)
-
-   
-
+env = Full_Grid_V2(size=20)
+state = env.reset()
+done = False
+while not done:
+    state, r, done = env.step(env.random_action())
+    print(r)
 
 

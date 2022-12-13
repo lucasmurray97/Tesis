@@ -7,6 +7,7 @@ from enviroment.firegrid_v6 import FireGrid_V6
 from enviroment.firegrid_v7 import FireGrid_V7
 from enviroment.firegrid_v8 import FireGrid_V8
 from enviroment.full_grid_v1 import Full_Grid_V1
+from enviroment.full_grid_v2 import Full_Grid_V2
 from algorithms.ppo_coupled import ppo
 from algorithms.ppo_coupled_v2 import ppo_v2
 from algorithms.ppo_coupled_v3 import ppo as ppo_v3
@@ -55,10 +56,15 @@ if args.env == "moving_grid":
     else:
         raise("Non existent version of enviroment")
 elif args.env == "full_grid":
-    input_size =  1
     output_size = args.size**2
     if args.env_version == "v1":
+        input_size =  1
+        grid_size = args.size
         env = Parallel_Wrapper(Full_Grid_V1, n_envs = n_envs, parameters = {"size": args.size})
+    elif args.env_version == "v2":
+        input_size =  2
+        grid_size = args.size**2
+        env = Parallel_Wrapper(Full_Grid_V2, n_envs = n_envs, parameters = {"size": args.size})
     else:
         raise("Non existent version of enviroment")
 else:
@@ -80,10 +86,10 @@ else:
 if args.net_version != None:
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if args.net_version == "small":
-        net = CNN1(env.size, input_size, output_size, value)
+        net = CNN1(grid_size, input_size, output_size, value)
         net.to(device)
     elif args.net_version == "big":
-        net = CNN2(env.size, input_size, output_size, value)
+        net = CNN2(grid_size, input_size, output_size, value)
         net.to(device)
     else:
         raise("Non existent version of network")

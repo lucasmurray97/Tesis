@@ -14,7 +14,6 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
     for i in probs_dir_list:
         os.remove(probs_dir+i)
     for i in range(env.get_episode_len()):
-        mat = env._space[0].reshape(size,size).to('cpu').numpy()
         mask = env.generate_mask().bool()
         if algorithm == "reinforce":
             a, _ = net.forward(state, mask)
@@ -31,6 +30,7 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
         selected = a.multinomial(1).detach()
         state, _, done = env.step(selected)
         if done:
+            mat = env._space[0].reshape(size,size).to('cpu').numpy()
             figure5 = plt.figure()
             plt.imshow(mat)
             plt.colorbar()

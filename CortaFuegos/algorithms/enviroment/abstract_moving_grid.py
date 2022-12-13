@@ -17,6 +17,7 @@ class Moving_Grid(Env):
         self.agent_id = agent_id # Número que representa las celdas en donde está el agente
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self._space = torch.zeros(3, self.size, self.size).to(self.device) # Privado, corresponde al espacio del ambiente -> Tensor de 3 x size x size
+        self.shape = (3, self.size**2, self.size**2)
         self._agent_location = np.zeros(2, dtype=int) # Privado, ubicación de la primera entrada del scope del agente 
         self._action_map = {} # Diccionario que mapea el identificador de una acción con la combinación asociada, ej: 0 -> (0, 0, 0, 0)
         combinations = list(itertools.product([0, -1], repeat=agent_dim**2))
