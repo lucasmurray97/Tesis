@@ -10,10 +10,7 @@ class Full_Grid_V1(Abstract_Full_Grid):
             self.actions_history[i] = 0
         self._step = 0
         self.marked = 0
-        self.shape = (2, self.size, self.size)
-
-    def generate_mask(self):
-        return self.actions_history
+        self.shape = (1, self.size, self.size)
 
     def reset(self):
         state = super().reset()

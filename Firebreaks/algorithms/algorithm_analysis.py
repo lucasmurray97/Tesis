@@ -43,6 +43,11 @@ parser.add_argument('--epsilon', type=float, required=False, nargs="?", default=
 parser.add_argument('--instance', type=str, required=False, nargs="?", default="sub20x20")
 parser.add_argument('--test', type=bool, required=False, nargs="?", default=False)
 parser.add_argument('--save_weights', type=bool, required=False, nargs="?", default=False)
+parser.add_argument('--temporal', type=bool, required=False, nargs="?", default=False)
+parser.add_argument('--target_update', type=int, required=False, nargs="?", default=1)
+parser.add_argument('--max_mem', type=int, required=False, nargs="?", default=1000)
+parser.add_argument('--demonstrate', type=bool, required=False, nargs="?", default=False)
+parser.add_argument('--n_dem', type=int, required=False, nargs="?", default=1000)
 args = parser.parse_args()
 
 # We create the enviroment
@@ -89,15 +94,15 @@ if args.net_version != None:
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     if args.net_version == "small":
         if args.env_version != "v2":
-            net = CNN_SMALL_V1(grid_size, input_size, output_size, value)
+            net = CNN_SMALL_V1(grid_size, input_size, output_size, value, env.forbidden_cells)
         else:
-            net = CNN_SMALL_V2(grid_size, input_size, output_size, value)
+            net = CNN_SMALL_V2(grid_size, input_size, output_size, value, env.forbidden_cells)
         net.to(device)
     elif args.net_version == "big":
         if args.env_version != "v2":
-            net = CNN_BIG_V1(grid_size, input_size, output_size, value)
+            net = CNN_BIG_V1(grid_size, input_size, output_size, value, env.forbidden_cells)
         else:
-            net = CNN_BIG_V2(grid_size, input_size, output_size, value)
+            net = CNN_BIG_V2(grid_size, input_size, output_size, value, env.forbidden_cells)
         net.to(device)
     else:
         raise("Non existent version of network")
@@ -105,17 +110,17 @@ if args.net_version != None:
 plot_episode = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 20000, 30000, 40000, 50000]
 # We retrieve the algorithm parameter:
 if args.algorithm == "ppo":
-    stats = ppo(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
+    stats = ppo(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "ppo_v2":
-    stats = ppo_v2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
+    stats = ppo_v2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "ppo_v3":
-    stats = ppo_v3(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
+    stats = ppo_v3(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "reinforce":
-    stats = reinforce(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
+    stats = reinforce(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "reinforce_baseline":
-    stats = reinforce_baseline(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
+    stats = reinforce_baseline(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "a2c":
-    stats = a2c(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window)
+    stats = a2c(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "q_learning":
     returns, q_table = q_learning(args.size, env, args.episodes, args.env_version, [], alpha = args.alpha, epsilon = args.epsilon, instance = args.instance, n_envs = n_envs, window = args.window)
 elif args.algorithm == "mab_ucb":

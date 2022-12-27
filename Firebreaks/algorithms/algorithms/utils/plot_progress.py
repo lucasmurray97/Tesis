@@ -14,11 +14,10 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
     for i in probs_dir_list:
         os.remove(probs_dir+i)
     for i in range(env.get_episode_len()):
-        mask = env.generate_mask().bool()
         if algorithm == "reinforce":
-            a, _ = net.forward(state, mask)
+            a, _ = net.forward(state.cuda())
         else:
-            a,_, _ = net.forward(state, mask)
+            a,_, _ = net.forward(state.cuda())
         f2 = plt.figure()
         plt.clf()
         plt.bar(np.arange(env.get_action_space().shape[0]), a.detach().to('cpu').numpy().squeeze())
@@ -48,11 +47,10 @@ def plot_trayectory_probs(env,episodes, net, env_version, net_version, algorithm
     else:
         path = f"figures/{env.get_name()}"
     for i in range(env.get_episode_len()):
-        mask = env.generate_mask().bool()
         if algorithm == "reinforce":
-            a, _ = net.forward(state, mask)
+            a, _ = net.forward(state.cuda())
         else:
-            a,_, _ = net.forward(state, mask)
+            a,_, _ = net.forward(state.cuda())
         path_ = f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/probabilities/{params_dir}/{episodes}_ep"
         if not os.path.exists(path_):
             os.makedirs(path_)

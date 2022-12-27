@@ -3,15 +3,16 @@ import torch.nn.functional as F
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from torch.optim import AdamW
-from nets.mask import CategoricalMasked
+from nets.mask import CategoricalMasked, generate_mask
 # Red estilo pytorch
 class CNN_SMALL_V2(torch.nn.Module):
-  def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True):
+  def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = []):
     super(CNN_SMALL_V2, self).__init__()
     self.grid_size = grid__size
     self.input_size = input_size
     self.output_size = output_size
     self.value = value
+    self.forbidden = forbidden
     # Definimos capas (automáticamente se registran como parametros)
     # Capas compartidas
     self.conv1 = nn.Conv2d(in_channels=self.input_size, out_channels=32, kernel_size=(2,2), stride=2, padding = 0, bias = True)
@@ -51,7 +52,7 @@ class CNN_SMALL_V2(torch.nn.Module):
     nn.init.kaiming_uniform_(self.linear_2.weight, mode='fan_in', nonlinearity='relu')
 
   # Computa la pasada hacia adelante
-  def forward(self, x, mask = None):
+  def forward(self, x):
     if len(x.shape) == 3:
       x = x.unsqueeze(0)
     # print(x.shape)
@@ -70,6 +71,7 @@ class CNN_SMALL_V2(torch.nn.Module):
     u3 = self.linear1(m)
     h3 = F.relu(u3)
     u4 = self.linear2(h3)
+    mask = generate_mask(x, self.forbidden, version = 2)
     head_masked = CategoricalMasked(logits=u4, mask = mask)
     if not self.value:
         return head_masked.probs, head_masked.entropy()

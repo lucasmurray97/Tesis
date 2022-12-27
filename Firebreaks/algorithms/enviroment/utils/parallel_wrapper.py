@@ -10,12 +10,13 @@ class Parallel_Wrapper():
         self.env = env
         parameters["env_id"] = 0
         self.envs = [env(**parameters)] 
-        self.device = self.envs[0].device
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.lock = threading.Lock()
         for i in range(self.n_envs - 1):
             parameters["env_id"] = i + 1
             self.envs.append(env(**parameters))
         self.env_shape = self.envs[0].shape
+        self.forbidden_cells = self.envs[0].forbidden_cells
     def individual_reset(self, i, states):
             state = self.envs[i].reset()
             with self.lock:
@@ -49,17 +50,10 @@ class Parallel_Wrapper():
             threads[i].start()
         for i in range(self.n_envs):
             threads[i].join()
-        return torch.stack(next_states), torch.stack(rewards).to(self.device), done_b[0]
+        return torch.stack(next_states).to(self.device), torch.stack(rewards).to(self.device), done_b[0]
     
     def random_action(self):
         actions = []
         for i in range(self.n_envs):
             actions.append(self.envs[i].random_action())
         return torch.stack(actions).to(self.device)
-
-    def generate_mask(self):
-        masks = []
-        for i in range(self.n_envs):
-            masks.append(self.envs[i].generate_mask())
-        stacked_masks = torch.stack(masks).bool()
-        return stacked_masks.to(self.device)

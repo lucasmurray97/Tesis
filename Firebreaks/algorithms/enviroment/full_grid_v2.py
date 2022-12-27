@@ -7,7 +7,7 @@ class Full_Grid_V2(Abstract_Full_Grid):
     def __init__(self, size, burn_value = 10, n_sims_final = 50, env_id = 0):
         super().__init__(size, burn_value, n_sims_final, env_id)
         self.actions_history = torch.ones(self.size**2, dtype=torch.bool)
-        self.shape = (3, self.size**2, self.size**2)
+        self.shape = (2, self.size**2, self.size**2)
         self.initial_matrix = self.generate_matrix()
         self.adjacency_matrix = self.initial_matrix
         for i in self.forbidden_cells:
@@ -34,8 +34,6 @@ class Full_Grid_V2(Abstract_Full_Grid):
         adj_tensor = torch.from_numpy(adj.astype(int))
         return adj_tensor
 
-    def generate_mask(self):
-        return self.actions_history
 
     # def pad_state(self, state):
     #     padding = (self.size**2)//2 - self.size//2
