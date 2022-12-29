@@ -4,7 +4,9 @@ from torch.distributions.categorical import Categorical
 from torch import einsum
 from einops import  reduce
 import cv2
-
+import torchvision
+import torchvision.transforms.functional as F
+import numpy as np
 class CategoricalMasked(Categorical):
     def __init__(self, logits: torch.Tensor, mask: Optional[torch.Tensor] = None):
         self.mask = mask
@@ -45,8 +47,8 @@ def generate_mask(state, forbidden_cells, version):
 
 def generate_mask_indiv(state, forbidden_cells, version):
     if version == 2:
-        state = torch.from_numpy(cv2.resize(src = state[0][0].cpu().numpy(), dsize=(20,20), interpolation = 0))
-        state = state.unsqueeze(0)
+        size = int(np.sqrt(state.shape[1]))
+        state = F.resize(state, size, interpolation = torchvision.transforms.InterpolationMode.NEAREST).squeeze(0)
     size = state.shape[1]
     mask = torch.ones(size**2)
     flat_state = torch.flatten(state, 1, 2)[0].int().squeeze()
@@ -56,3 +58,25 @@ def generate_mask_indiv(state, forbidden_cells, version):
     for j in forbidden_cells:
         mask[j] = 0
     return mask.bool()
+
+class Q_Mask:
+    def __init__(self, forbidden_cells, version):
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.forbidden_cells = forbidden_cells
+        self.version = version
+    def filter_indiv(self, state):
+        if self.version == 2:
+            size = int(np.sqrt(state.shape[1]))
+            state = F.resize(state, size, interpolation = torchvision.transforms.InterpolationMode.NEAREST).squeeze(0)
+        flat_state = torch.flatten(state, 1, 2)[0].int().squeeze()
+        mask = flat_state*torch.iinfo(flat_state.dtype).min
+        for j in self.forbidden_cells:
+            mask[j] = torch.iinfo(flat_state.dtype).min
+        return mask
+
+    def filter(self, state):
+        masks = []
+        for i in range(state.shape[0]):
+            masks.append(self.filter_indiv(state[i]))
+        return torch.stack(masks).to(self.device)
+    

@@ -15,7 +15,7 @@ def ppo(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
     optimizer = AdamW(net.parameters(), lr = alpha)
     env_shape = env.env_shape
     ep_len = env.envs[0].get_episode_len()
-    memory = ReplayMemory(env_shape, max_mem=max_mem, batch_size=batch_size, demonstrate=demonstrate, n_dem=n_dem, combined=combined, temporal=temporal, env="FG", version=1, size=env_shape[1],n_envs=n_envs, gamma = gamma, landa = landa)
+    memory = ReplayMemory(env_shape, max_mem=max_mem, batch_size=batch_size, demonstrate=demonstrate, n_dem=n_dem, combined=combined, temporal=temporal, env="FG", version=env_version, size=env_shape[1],n_envs=n_envs, gamma = gamma, landa = landa)
     stats = {"Loss": [], "Returns": []}
     target_net = copy.deepcopy(net)
     for episode in tqdm(range(1, episodes + 1)):
@@ -61,9 +61,9 @@ def ppo(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
                 loss_acum += total_loss
                 total_loss.backward()
                 optimizer.step()
+            stats["Loss"].append(loss_acum.detach().mean().item())
         if episode % target_update:
             target_net.load_state_dict(net.state_dict)
-        stats["Loss"].append(loss_acum.detach().mean().item())
         if n_envs != 1:
             stats["Returns"].extend(ep_return.squeeze().tolist())
         else:

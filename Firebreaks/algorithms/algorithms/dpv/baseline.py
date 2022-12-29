@@ -9,8 +9,11 @@ from numpy import genfromtxt
 import torch
 import cv2
 import json
+import pickle
+from tqdm import tqdm
 sys.path.append("../../")
 from enviroment.full_grid_v1 import Full_Grid_V1
+from enviroment.full_grid_v2 import Full_Grid_V2
 absolute_path = os.path.dirname(__file__)
 def baseline(size, n_sims):
     quant = int((size**2)*0.05)
@@ -18,11 +21,10 @@ def baseline(size, n_sims):
         quant += 1
     erase_firebreaks()
     seed = random.randint(0, 10000)
-    firebreaks = [1]
-    upscaled_firebreaks = [1]
+    firebreaks = [0]
+    upscaled_firebreaks = [0]
     for _ in range(quant):
         firebreaks = calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims)
-        # print(firebreaks)
     return firebreaks[1:]
 
 
@@ -87,6 +89,7 @@ def simulate_episode(size, n_sims, n_sims_eval):
 
 def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims):
     dpvs = calculate_dpv(seed, n_sims)
+    dpvs = dict(enumerate(list(dpvs.values()), 0))
     if size == 20:
         firebreak = max(dpvs, key=dpvs.get)
         if dpvs[firebreak] == 0:
@@ -94,14 +97,14 @@ def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims):
                 dpvs.pop(k, None)
             firebreak = random.choice(list(dpvs.keys()))
         firebreaks.append(firebreak)
-        write_firebreaks(firebreaks)
+        write_firebreaks(map(lambda x:x+1, firebreaks))
         return firebreaks
     else:
         values = list(dpvs.values())
         np_dpv = np.array(values, dtype='uint8')
         np_dpv = np_dpv.reshape((20,20))
         shrinked = cv2.resize(src = np_dpv, dsize=(size,size), interpolation = 1)
-        new_dpvs = dict(enumerate(shrinked.flatten(), 1))
+        new_dpvs = dict(enumerate(shrinked.flatten(), 0))
         firebreak = max(new_dpvs, key=new_dpvs.get)
         for k in firebreaks:
             new_dpvs.pop(k, None)
@@ -113,16 +116,16 @@ def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims):
         intermediate[firebreak] = 1
         intermediate = intermediate.reshape((size, size))
         upscaled = cv2.resize(src = intermediate, dsize=(20,20), interpolation = 0)
-        upscaled_flattened = dict(enumerate(upscaled.flatten(), 1))
+        upscaled_flattened = dict(enumerate(upscaled.flatten(), 0))
         for i in upscaled_flattened.keys():
             if upscaled_flattened[i] == 1:
                 upscaled_firebreaks.append(i)
-        write_firebreaks(upscaled_firebreaks)
+        write_firebreaks(map(lambda x:x+1, upscaled_firebreaks))
         return firebreaks
 
 def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version):
     data = {}
-    for i in range(episodes):
+    for i in  tqdm(range(episodes)):
         episode = simulate_episode(size, n_sims, n_sims_eval)
         state = env.reset()
         data[i] = {}
@@ -141,11 +144,11 @@ def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version):
                 step_data.append(state.tolist())
                 data[i][step] = step_data
                 step += 1
-    with open(f"demonstrations/Sub{size}x{size}_full_grid_{version}.json", "w+") as write_file:
-        json.dump(data, write_file, indent=4)
+    with open(f"demonstrations/Sub{size}x{size}_full_grid_{version}.pkl", "wb+") as write_file:
+        pickle.dump(data, write_file)
 
-env = Full_Grid_V1(20)
-generate_demonstrations(10, 20, 1, 10, env, 1)
+# env = Full_Grid_V2(6)
+# generate_demonstrations(10, 6, 1, 10, env, 1)
 
 
 

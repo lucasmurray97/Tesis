@@ -34,6 +34,7 @@ class Abstract_Full_Grid(Env):
         forest = self.down_scale(path, prop)/101
         self._space[1] = forest
         self.forest = forest
+        self.actions_history = torch.ones(self.size**2, dtype=torch.bool)
 
     def get_name(self):
         return self.name
@@ -61,7 +62,11 @@ class Abstract_Full_Grid(Env):
     
     def random_action(self):
         """Función que retorna una acción aleatoria del espacio de acciones"""
-        return torch.Tensor([self._random.randint(0, self.size**2 - 1)]).to(self.device)
+        avaliable = []
+        for i in range(self.size**2):
+            if self.actions_history[i] == 1:
+                avaliable.append(i)
+        return torch.Tensor([self._random.choice(avaliable)]).to(self.device)
 
     def get_action_space(self):
         return torch.Tensor([i for i in range(self.size**2)])

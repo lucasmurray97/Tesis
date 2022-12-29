@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from torch import nn as nn
 import numpy as np
 import os
-
+import torch
 def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, instance, test = False, params = {}):
     state = env.reset()
     if test:
@@ -16,17 +16,21 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
     for i in range(env.get_episode_len()):
         if algorithm == "reinforce":
             a, _ = net.forward(state.cuda())
+        if algorithm == "ddqn":
+            adv, _ = net.forward(state.cuda())
+            selected = torch.argmax(adv, dim=1)
         else:
             a,_, _ = net.forward(state.cuda())
-        f2 = plt.figure()
-        plt.clf()
-        plt.bar(np.arange(env.get_action_space().shape[0]), a.detach().to('cpu').numpy().squeeze())
-        plt.xlabel("Actions") 
-        plt.ylabel("Action Probability") 
-        plt.title(f"Action probabilities in state {i} after training in trajectory of agent")
-        plt.savefig(f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/{episodes}_ep/probabilities/post_train/probs_after_training_"+ str(i) +".png")
-        plt.show()
-        selected = a.multinomial(1).detach()
+        if algorithm != "ddqn":
+            f2 = plt.figure()
+            plt.clf()
+            plt.bar(np.arange(env.get_action_space().shape[0]), a.detach().to('cpu').numpy().squeeze())
+            plt.xlabel("Actions") 
+            plt.ylabel("Action Probability") 
+            plt.title(f"Action probabilities in state {i} after training in trajectory of agent")
+            plt.savefig(f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/{episodes}_ep/probabilities/post_train/probs_after_training_"+ str(i) +".png")
+            plt.show()
+            selected = a.multinomial(1).detach()
         state, _, done = env.step(selected)
         if done:
             mat = env._space[0].reshape(size,size).to('cpu').numpy()
@@ -49,20 +53,25 @@ def plot_trayectory_probs(env,episodes, net, env_version, net_version, algorithm
     for i in range(env.get_episode_len()):
         if algorithm == "reinforce":
             a, _ = net.forward(state.cuda())
+        if algorithm == "ddqn":
+            adv, _ = net.forward(state.cuda())
+            selected = torch.argmax(adv, dim=1)
+            # print(selected)
         else:
             a,_, _ = net.forward(state.cuda())
         path_ = f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/probabilities/{params_dir}/{episodes}_ep"
         if not os.path.exists(path_):
             os.makedirs(path_)
-        f2 = plt.figure()
-        plt.clf()
-        plt.bar(np.arange(env.get_action_space().shape[0]), a.detach().to('cpu').numpy().squeeze())
-        plt.xlabel("Actions") 
-        plt.ylabel("Action Probability") 
-        plt.title(f"Action probabilities in state {i} after training in trajectory of agent")
-        plt.savefig(f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/probabilities/{params_dir}/{episodes}_ep/probs_after_training_"+ str(i) +".png")
-        plt.show()
-        selected = a.multinomial(1).detach()
+        if algorithm != "ddqn":
+            f2 = plt.figure()
+            plt.clf()
+            plt.bar(np.arange(env.get_action_space().shape[0]), a.detach().to('cpu').numpy().squeeze())
+            plt.xlabel("Actions") 
+            plt.ylabel("Action Probability") 
+            plt.title(f"Action probabilities in state {i} after training in trajectory of agent")
+            plt.savefig(f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/probabilities/{params_dir}/{episodes}_ep/probs_after_training_"+ str(i) +".png")
+            plt.show()
+            selected = a.multinomial(1).detach()
         state, _, done = env.step(selected)
         if done:
             mat = env._space[0].reshape(size,size).to('cpu').numpy()
@@ -134,7 +143,7 @@ def plot_loss(env, loss, episodes, env_version, instance, net_version, algorithm
         path = f"figures/{env.get_name()}"
     figure3 = plt.figure()
     plt.clf()
-    plt.plot([i for i in range(episodes)], loss)
+    plt.plot([i for i in range(len(loss))], loss)
     plt.xlabel("Episode") 
     plt.ylabel("Loss") 
     plt.title(f"Loss for {episodes} episodes")

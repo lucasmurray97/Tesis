@@ -1,10 +1,10 @@
 import numpy as np
 import torch
 import json
-
+import pickle
 class ReplayMemory:
     def __init__(self, input_dims, max_mem, batch_size, demonstrate = False, n_dem = None, combined=False, temporal = False, env = "FG", version = 1, size = 20, n_envs = 16, gamma = 1., landa = 1.):
-        self.size = size
+        self.size = size if version == '1' else int(np.sqrt(size))
         self.version = version
         self.demonstrate = demonstrate
         self.n_dem = n_dem
@@ -21,8 +21,9 @@ class ReplayMemory:
         return self.buffer.mem_cntr > self.buffer.batch_size
 
     def load_demonstrations(self):
-        file = open(f"algorithms/dpv/demonstrations/Sub{self.size}x{self.size}_full_grid_{self.version}.json")
-        demonstrations = json.load(file)
+        print("Loading demonstrations!")
+        file = open(f"algorithms/dpv/demonstrations/Sub{self.size}x{self.size}_full_grid_{self.version}.pkl", 'rb')
+        demonstrations = pickle.load(file)
         n = 0
         for i in demonstrations.keys():
             D = 1.
@@ -34,6 +35,7 @@ class ReplayMemory:
                 I *= self.landa
                 if self.n_dem == n:
                     break
+        print("Finished Loading!")
 
 class ReplayMemoryUnTemporal:
     def __init__(self, input_dims, max_mem, batch_size, n_envs, combined=False):
@@ -51,7 +53,7 @@ class ReplayMemoryUnTemporal:
         self.reward_memory = np.zeros(self.mem_size, dtype=np.float32)
         self.gammas_memory = np.zeros(self.mem_size, dtype=np.float32)
         self.landas_memory = np.zeros(self.mem_size, dtype=np.float32)
-
+        self.dones_memory = np.zeros(self.mem_size, dtype=np.bool)
 
     def store_transition(self, state, action, reward, state_, step, done, gamma, landa):
         for i in range(state.shape[0]):
@@ -65,6 +67,7 @@ class ReplayMemoryUnTemporal:
         self.new_state_memory[index] = state_
         self.gammas_memory[index] = gamma
         self.landas_memory[index] = landa
+        self.dones_memory[index] = done
 
         self.mem_cntr += 1
 
@@ -79,6 +82,7 @@ class ReplayMemoryUnTemporal:
         rewards = self.reward_memory[batch]
         gammas = self.gammas_memory[batch]
         landas = self.landas_memory[batch]
+        dones = self.dones_memory[batch]
 
         if self.combined:
             index = self.mem_cntr % self.mem_size - 1
@@ -97,7 +101,7 @@ class ReplayMemoryUnTemporal:
             gammas = np.append(self.gammas_memory[batch], last_gamma)
             landas = np.append(self.landas_memory[batch], last_landa)
 
-        return torch.Tensor(states).to(self.device),  torch.Tensor(actions).to(self.device),  torch.Tensor(rewards).to(self.device),  torch.Tensor(new_states).to(self.device), torch.Tensor(gammas).to(self.device), torch.Tensor(landas).to(self.device)
+        return torch.Tensor(states).to(self.device),  torch.Tensor(actions).to(self.device),  torch.Tensor(rewards).to(self.device),  torch.Tensor(new_states).to(self.device), torch.Tensor(gammas).to(self.device), torch.Tensor(landas).to(self.device), torch.Tensor(dones).bool().to(self.device)
 
     
 
@@ -125,13 +129,15 @@ class ReplayMemoryTemporal:
         self.reward_memory = np.zeros((self.mem_size, self.ep_len), dtype=np.float32)
         self.gammas_memory = np.zeros((self.mem_size, self.ep_len), dtype=np.float32)
         self.landas_memory = np.zeros((self.mem_size, self.ep_len), dtype=np.float32)
+        self.dones_memory = np.zeros((self.mem_size, self.ep_len), dtype=np.bool)
 
 
 
     def store_transition(self, state, action, reward, state_, step, done, gamma, landa):
         for i in range(state.shape[0]):
             self.store_transition_indiv(state[i].cpu(), action[i].cpu(), reward[i].cpu(), state_[i].cpu(), step, done, gamma, landa)
-
+        if done:
+            self.mem_cntr += 1
     def store_transition_indiv(self, state, action, reward, state_, step, done, gamma, landa):
         index = self.mem_cntr % self.mem_size
         self.state_memory[index][step] = state
@@ -140,9 +146,7 @@ class ReplayMemoryTemporal:
         self.new_state_memory[index][step] = state_
         self.gammas_memory[index][step] = gamma
         self.landas_memory[index][step] = landa
-        if done:
-            self.mem_cntr += 1
-
+        self.dones_memory[index][step] = done
     def sample_memory(self):
         offset = 1 if self.combined else 0
         max_mem = min(self.mem_cntr, self.mem_size) - offset
@@ -154,7 +158,7 @@ class ReplayMemoryTemporal:
         rewards = self.reward_memory[batch]
         gammas = self.gammas_memory[batch]
         landas = self.landas_memory[batch]
-
+        dones = self.dones_memory[batch]
         if self.combined:
             index = self.mem_cntr % self.mem_size - 1
             last_action = self.action_memory[index]
@@ -172,4 +176,4 @@ class ReplayMemoryTemporal:
             gammas = np.append(self.gammas_memory[batch], last_gamma)
             landas = np.append(self.landas_memory[batch], last_landa)
 
-        return torch.Tensor(states).flatten(0, 1).to(self.device),  torch.Tensor(actions).flatten(0, 1).to(self.device),  torch.Tensor(rewards).flatten(0, 1).to(self.device),  torch.Tensor(new_states).flatten(0, 1).to(self.device), torch.Tensor(gammas).flatten(0, 1).to(self.device), torch.Tensor(landas).flatten(0, 1).to(self.device)
+        return torch.Tensor(states).flatten(0, 1).to(self.device),  torch.Tensor(actions).flatten(0, 1).to(self.device),  torch.Tensor(rewards).flatten(0, 1).to(self.device),  torch.Tensor(new_states).flatten(0, 1).to(self.device), torch.Tensor(gammas).flatten(0, 1).to(self.device), torch.Tensor(landas).flatten(0, 1).to(self.device), torch.Tensor(dones).flatten(0, 1).bool().to(self.device)

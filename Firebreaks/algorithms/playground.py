@@ -9,6 +9,8 @@ from algorithms.mab_ucb import MAB_UCB_FG
 import torch
 from nets.small_net_v1 import CNN_SMALL_V1
 from nets.small_net_v2 import CNN_SMALL_V2
+from nets.small_net_v2_q import CNN_SMALL_V2_Q
+from nets.small_net_v1_q import CNN_SMALL_V1_Q
 from nets.big_net_v1 import CNN_BIG_V1
 from nets.big_net_v2 import CNN_BIG_V2
 from nets.mask import CategoricalMasked
@@ -16,28 +18,28 @@ import multiprocessing
 from enviroment.utils.final_reward import generate_reward
 from algorithms.utils.replay_buffer import ReplayMemory
 from nets.mask import CategoricalMasked, generate_mask
+from algorithms.ddqnet import ddqnet
 # net = CNN_SMALL_V2(6, 2, 36, True)
-# net.to('cuda')
 env =Parallel_Wrapper(Full_Grid_V1, parameters = {"size": 20})
-# state = env.reset()
-# net = CNN_SMALL_V2(input_size=2, output_size=400, forbidden=env.forbidden_cells)
-# print(net.forward(state)[0].shape)
-print(env.env_shape)
-
-memory = ReplayMemory(env.env_shape, max_mem=1000, batch_size=64, temporal=False, demonstrate=True, n_dem=10)
-print(memory.buffer.sample_memory()[1])
-for i in range(1):
-    state = env.reset()
-    done = False
-    step = 0
-    while not done:
-        a = env.random_action()
-        s, r, done = env.step(a)
-        print(s.shape)
-        memory.buffer.store_transition(s.to('cpu'), a.to('cpu'), r.to('cpu'), s.to('cpu'), step, done, 1, 1)
-        step += 1
-s, a, r, s_, gamma, landa = memory.buffer.sample_memory()
-print(s.shape, a.shape, r.shape, s_.shape, gamma.shape, landa.shape)
+state = env.reset()
+net = CNN_SMALL_V1_Q(input_size=1, output_size=400, forbidden=env.forbidden_cells)
+net.to('cuda')
+stats = ddqnet(env, net, 1, 1, "small", []) 
+print(stats)
+# memory = ReplayMemory(env.env_shape, max_mem=1000, batch_size=64, temporal=False, demonstrate=True, n_dem=10)
+# print(memory.buffer.sample_memory()[1])
+# for i in range(1):
+#     state = env.reset()
+#     done = False
+#     step = 0
+#     while not done:
+#         a = env.random_action()
+#         s, r, done = env.step(a)
+#         print(s.shape)
+#         memory.buffer.store_transition(s.to('cpu'), a.to('cpu'), r.to('cpu'), s.to('cpu'), step, done, 1, 1)
+#         step += 1
+# s, a, r, s_, gamma, landa = memory.buffer.sample_memory()
+# print(s.shape, a.shape, r.shape, s_.shape, gamma.shape, landa.shape)
 # print(a)
 # print(r)
 # print(sum(dict((p.data_ptr(), p.numel()) for p in net.parameters()).values()))
