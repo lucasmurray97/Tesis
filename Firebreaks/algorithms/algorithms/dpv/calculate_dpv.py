@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import os
 import sys
 import numpy as np
-import ReadDataPrometheus
-from DPV import downtream_protection_value
+from algorithms.dpv import ReadDataPrometheus
+from algorithms.dpv.DPV import downtream_protection_value
 import shutil
 sys.path.append("../../../../../Simulador/Cell2Fire/Cell2Fire/")
 from cell2fire.Cell2FireC_class import Cell2FireC
@@ -34,7 +34,7 @@ def calculate_dpv(seed, n_sims):
     main()
     enablePrint()
     # Se leen los datos del bosque
-    Folder = 'data_dpv/Sub20x20/'
+    Folder = f'{absolute_path}/data_dpv/Sub20x20/'
     #FBPlookup = Folder + 'fbp_lookup_table.csv' # Diccionario
     FBPlookup = Folder + 'fbp_lookup_table.csv' # Diccionario
     ForestFile = Folder + 'Forest.asc'   # Combustible

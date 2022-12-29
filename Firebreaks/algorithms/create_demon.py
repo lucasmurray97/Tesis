@@ -1,6 +1,4 @@
-from baseline import generate_demonstrations
-import sys
-sys.path.append("../../")
+from algorithms.dpv.baseline import generate_demonstrations
 from enviroment.full_grid_v1 import Full_Grid_V1
 from enviroment.full_grid_v2 import Full_Grid_V2
 

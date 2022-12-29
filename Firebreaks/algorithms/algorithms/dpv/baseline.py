@@ -1,4 +1,4 @@
-from calculate_dpv import calculate_dpv, blockPrint, enablePrint, main
+from algorithms.dpv.calculate_dpv import calculate_dpv, blockPrint, enablePrint, main
 import random
 import os
 import csv
@@ -12,8 +12,6 @@ import json
 import pickle
 from tqdm import tqdm
 sys.path.append("../../")
-from enviroment.full_grid_v1 import Full_Grid_V1
-from enviroment.full_grid_v2 import Full_Grid_V2
 absolute_path = os.path.dirname(__file__)
 def baseline(size, n_sims):
     quant = int((size**2)*0.05)
