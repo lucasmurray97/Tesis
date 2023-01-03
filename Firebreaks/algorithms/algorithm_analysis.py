@@ -18,6 +18,8 @@ from algorithms.mab_ucb import mab_ucb
 from algorithms.mab_eps_greedy import mab_greedy
 from algorithms.q_learning_2 import q_learning
 from algorithms.ddqnet import ddqnet
+from algorithms.dqn import dqn
+from algorithms.dqn2 import dqn2
 from nets.small_net_v1 import CNN_SMALL_V1
 from nets.small_net_v1_q import CNN_SMALL_V1_Q
 from nets.small_net_v2 import CNN_SMALL_V2
@@ -96,15 +98,16 @@ else:
 # We create the net if needed:
 if args.net_version != None:
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    only_q = args.algorithm == "dqn" or  args.algorithm =="2dqn"
     if args.net_version == "small":
         if args.env_version != "v2":
-            if args.algorithm == "ddqn":
-                net = CNN_SMALL_V1_Q(grid_size, input_size, output_size, value, env.forbidden_cells)
+            if args.algorithm == "ddqn" or args.algorithm == "dqn" or  args.algorithm =="2dqn":
+                net = CNN_SMALL_V1_Q(grid_size, input_size, output_size, value, env.forbidden_cells, only_q=only_q)
             else:
                 net = CNN_SMALL_V1(grid_size, input_size, output_size, value, env.forbidden_cells)
         else:
-            if args.algorithm == "ddqn":
-                net = CNN_SMALL_V2_Q(grid_size, input_size, output_size, value, env.forbidden_cells)
+            if args.algorithm == "ddqn" or args.algorithm == "dqn" or args.algorithm == "2dqn":
+                net = CNN_SMALL_V2_Q(grid_size, input_size, output_size, value, env.forbidden_cells, only_q=only_q)
             else:
                 net = CNN_SMALL_V2(grid_size, input_size, output_size, value, env.forbidden_cells)
         net.to(device)
@@ -139,7 +142,10 @@ elif args.algorithm == "mab_greedy":
     mab_greedy(env, args.size, args.episodes, window = args.window, instance = args.instance, epsilon = args.epsilon)
 elif args.algorithm == "ddqn":
     stats = ddqnet(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
-
+elif args.algorithm == "dqn":
+    stats = dqn(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
+elif args.algorithm == "2dqn":
+    stats = dqn2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
 # Guardamos los parametros de la red
 if args.save_weights:
     path_ = f"./weights/{args.env}/{args.instance}/{args.env_version}/{args.net_version}/{args.algorithm}.pth"

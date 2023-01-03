@@ -20,43 +20,24 @@ from algorithms.utils.replay_buffer import ReplayMemory
 from nets.mask import CategoricalMasked, generate_mask
 from algorithms.ddqnet import ddqnet
 # net = CNN_SMALL_V2(6, 2, 36, True)
-env =Parallel_Wrapper(Full_Grid_V1, parameters = {"size": 20})
+env = Full_Grid_V2(size=20)
 state = env.reset()
-net = CNN_SMALL_V1_Q(input_size=1, output_size=400, forbidden=env.forbidden_cells)
+net = CNN_SMALL_V2_Q(input_size=2, output_size=400, forbidden=env.forbidden_cells, only_q=True)
 net.to('cuda')
-stats = ddqnet(env, net, 1, 1, "small", []) 
-print(stats)
+# stats = ddqnet(env, net, 1, 1, "small", []) 
+# print(stats)
 # memory = ReplayMemory(env.env_shape, max_mem=1000, batch_size=64, temporal=False, demonstrate=True, n_dem=10)
 # print(memory.buffer.sample_memory()[1])
-# for i in range(1):
-#     state = env.reset()
-#     done = False
-#     step = 0
-#     while not done:
-#         a = env.random_action()
-#         s, r, done = env.step(a)
-#         print(s.shape)
-#         memory.buffer.store_transition(s.to('cpu'), a.to('cpu'), r.to('cpu'), s.to('cpu'), step, done, 1, 1)
-#         step += 1
-# s, a, r, s_, gamma, landa = memory.buffer.sample_memory()
-# print(s.shape, a.shape, r.shape, s_.shape, gamma.shape, landa.shape)
-# print(a)
-# print(r)
-# print(sum(dict((p.data_ptr(), p.numel()) for p in net.parameters()).values()))
-# def square(x):
-#     return x * x
-# pool = multiprocessing.Pool()
-# pool = multiprocessing.Pool(processes=2)
-# inputs = [0,1]
-# # outputs = pool.map(lambda x: generate_reward(n_sims = 10, size = 20, env_id = x), inputs)
-# outputs = pool.map(square, inputs)
-# print(outputs)
+for i in range(20):
+    state = env.reset()
+    done = False
+    step = 0
+    while not done:
+        a = env.random_action()
+        s, r, done = env.step(a)
+        v = net.forward(s.cuda())
+        print(v.shape)
+        step += 1
 
-# env = Full_Grid_V2(size=20)
-# state = env.reset()
-# done = False
-# while not done:
-#     state, r, done = env.step(env.random_action())
-#     print(r)
 
 

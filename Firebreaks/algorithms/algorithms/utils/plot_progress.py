@@ -16,12 +16,16 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
     for i in range(env.get_episode_len()):
         if algorithm == "reinforce":
             a, _ = net.forward(state.cuda())
-        if algorithm == "ddqn":
-            adv, _ = net.forward(state.cuda())
-            selected = torch.argmax(adv, dim=1)
+        elif algorithm == "ddqn":
+            adv, value = net.forward(state.cuda())
+            q_pred = torch.add(value, (adv - adv.mean(dim=1, keepdim=True)))
+            selected = torch.argmax(q_pred, dim=1)
+        elif algorithm == "dqn" or algorithm == "2dqn":
+            q = net.forward(state.cuda())
+            selected = torch.argmax(q, dim=1)
         else:
             a,_, _ = net.forward(state.cuda())
-        if algorithm != "ddqn":
+        if algorithm != "ddqn" and algorithm != "dqn" and algorithm != "2dqn":
             f2 = plt.figure()
             plt.clf()
             plt.bar(np.arange(env.get_action_space().shape[0]), a.detach().to('cpu').numpy().squeeze())
@@ -53,16 +57,19 @@ def plot_trayectory_probs(env,episodes, net, env_version, net_version, algorithm
     for i in range(env.get_episode_len()):
         if algorithm == "reinforce":
             a, _ = net.forward(state.cuda())
-        if algorithm == "ddqn":
-            adv, _ = net.forward(state.cuda())
-            selected = torch.argmax(adv, dim=1)
-            # print(selected)
+        elif algorithm == "ddqn":
+            adv, value = net.forward(state.cuda())
+            q_pred = torch.add(value, (adv - adv.mean(dim=1, keepdim=True)))
+            selected = torch.argmax(q_pred, dim=1)
+        elif algorithm == "dqn" or algorithm == "2dqn":
+            q = net.forward(state.cuda())
+            selected = torch.argmax(q, dim=1)
         else:
             a,_, _ = net.forward(state.cuda())
         path_ = f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/probabilities/{params_dir}/{episodes}_ep"
         if not os.path.exists(path_):
             os.makedirs(path_)
-        if algorithm != "ddqn":
+        if algorithm != "ddqn" and algorithm != "dqn" and algorithm != "2dqn":
             f2 = plt.figure()
             plt.clf()
             plt.bar(np.arange(env.get_action_space().shape[0]), a.detach().to('cpu').numpy().squeeze())

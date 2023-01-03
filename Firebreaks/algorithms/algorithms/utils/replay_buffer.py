@@ -35,7 +35,8 @@ class ReplayMemory:
                 I *= self.landa
                 if self.n_dem == n:
                     break
-        print("Finished Loading!")
+                n+=1
+        print(f"Succesfully loaded {n} demonstrations!")
 
 class ReplayMemoryUnTemporal:
     def __init__(self, input_dims, max_mem, batch_size, n_envs, combined=False):

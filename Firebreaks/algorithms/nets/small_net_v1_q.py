@@ -6,7 +6,7 @@ from torch.optim import AdamW
 from nets.mask import CategoricalMasked, generate_mask, Q_Mask
 # Red estilo pytorch
 class CNN_SMALL_V1_Q(torch.nn.Module):
-  def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = []):
+  def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = [], only_q = False):
     super(CNN_SMALL_V1_Q, self).__init__()
     self.grid_size = grid__size
     self.input_size = input_size
@@ -19,7 +19,7 @@ class CNN_SMALL_V1_Q(torch.nn.Module):
     self.conv1 = nn.Conv2d(in_channels=self.input_size, out_channels=32, kernel_size=(2,2), stride=1, padding = 0, bias = True)
     self.conv2 = nn.Conv2d(in_channels=32, out_channels=32, kernel_size=(2,2), stride=2, padding = 0, bias = True)
     self.max_p1 = nn.MaxPool2d(2, stride=2)
-
+    self.only_q = only_q
   
 
     # FCN para Advantage
@@ -36,23 +36,25 @@ class CNN_SMALL_V1_Q(torch.nn.Module):
     self.linear2 = nn.Linear(128, self.output_size)
     
     # FCN para value
-    if self.grid_size == 6:
-        self.linear_1 = nn.Linear(32, 128) 
-    elif self.grid_size == 10:
-        self.linear_1 = nn.Linear(128, 128)
-    elif grid__size == 20:
-       self.linear_1 = nn.Linear(512, 128)
-    else:
-      raise("Non existent grid size")
-    self.linear_2 = nn.Linear(128, 1)
+    if not self.only_q:
+      if self.grid_size == 6:
+          self.linear_1 = nn.Linear(32, 128) 
+      elif self.grid_size == 10:
+          self.linear_1 = nn.Linear(128, 128)
+      elif grid__size == 20:
+        self.linear_1 = nn.Linear(512, 128)
+      else:
+        raise("Non existent grid size")
+      self.linear_2 = nn.Linear(128, 1)
 
     # Inicializamos los parametros de la red:
     nn.init.kaiming_uniform_(self.conv1.weight, mode='fan_in', nonlinearity='relu')
     nn.init.kaiming_uniform_(self.conv2.weight, mode='fan_in', nonlinearity='relu')
     nn.init.kaiming_uniform_(self.linear1.weight, mode='fan_in', nonlinearity='relu')
-    nn.init.kaiming_uniform_(self.linear2.weight, mode='fan_in', nonlinearity='relu')
-    nn.init.kaiming_uniform_(self.linear_1.weight, mode='fan_in', nonlinearity='relu')
-    nn.init.kaiming_uniform_(self.linear_2.weight, mode='fan_in', nonlinearity='relu')
+    nn.init.kaiming_uniform_(self.linear2.weight, mode='fan_in', nonlinearity='linear')
+    if not self.only_q:
+      nn.init.kaiming_uniform_(self.linear_1.weight, mode='fan_in', nonlinearity='relu')
+      nn.init.kaiming_uniform_(self.linear_2.weight, mode='fan_in', nonlinearity='linear')
 
   # Computa la pasada hacia adelante
   def forward(self, x):
@@ -76,6 +78,8 @@ class CNN_SMALL_V1_Q(torch.nn.Module):
     u4 = self.linear2(h3)
     filtered = self.mask.filter(x)
     adv_pred = u4 + filtered
+    if self.only_q:
+      return adv_pred
     # Forward value
     u_3 = self.linear_1(m)
     h_3 = F.relu(u_3)

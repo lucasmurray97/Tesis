@@ -6,7 +6,7 @@ from torch.optim import AdamW
 from nets.mask import CategoricalMasked, generate_mask, Q_Mask
 # Red estilo pytorch
 class CNN_SMALL_V2_Q(torch.nn.Module):
-  def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = []):
+  def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = [], only_q = False):
     super(CNN_SMALL_V2_Q, self).__init__()
     self.grid_size = grid__size
     self.input_size = input_size
@@ -19,6 +19,7 @@ class CNN_SMALL_V2_Q(torch.nn.Module):
     self.conv1 = nn.Conv2d(in_channels=self.input_size, out_channels=32, kernel_size=(2,2), stride=2, padding = 0, bias = True)
     self.conv2 = nn.Conv2d(in_channels=32, out_channels=32, kernel_size=(4,4), stride=4, padding = 0, bias = True)
     self.max_p1 = nn.MaxPool2d(4, stride=4)
+    self.only_q = only_q
   
 
     # FCN para policy
@@ -74,6 +75,8 @@ class CNN_SMALL_V2_Q(torch.nn.Module):
     u4 = self.linear2(h3)
     filtered = self.mask.filter(x)
     adv_pred = u4 + filtered
+    if self.only_q:
+      return adv_pred
     # Forward value
     u_3 = self.linear_1(m)
     h_3 = F.relu(u_3)

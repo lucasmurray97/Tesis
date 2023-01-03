@@ -29,7 +29,7 @@ def ddqnet(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
         while not done:
             state_c = state.clone()
             if random.uniform(0, 1) > epsilon:
-                adv, v = target_net.forward(state_c)
+                adv, v = net.forward(state_c)
                 action = torch.argmax(adv, dim=1)
             else:
                 action = env.random_action()
@@ -46,14 +46,14 @@ def ddqnet(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
                 net.zero_grad()
                 advantage_t, value_t = net.forward(state_t)
                 next_advantage_t, next_value_t = net.forward(next_state_t)
-                next_advantage_t_, next_value_t_ = target_net.forward(next_state_t)
-                q_pred = torch.add(value_t, (advantage_t - advantage_t.mean(dim=1, keepdim=True))).gather(1, action_t.unsqueeze(1).type(torch.int64))
-                q_next = torch.add(next_value_t_, (next_advantage_t_ - next_advantage_t_.mean(dim=1, keepdim=True)))
-                q_next_eval = torch.add(next_value_t, (next_advantage_t - next_advantage_t.mean(dim=1, keepdim=True)))
-                max_action = torch.argmax(q_next_eval, dim=1)
-                q_next[done_t] = 0.
-                q_target = reward_t + gamma*q_next.gather(1, max_action.unsqueeze(1).type(torch.int64))
-                total_loss = F.mse_loss(q_pred, q_target)
+                target_advantage_t, target_value_t = target_net.forward(next_state_t)
+                q_pred = (value_t + (advantage_t - advantage_t.mean(dim=1, keepdim=True)) ).gather(1, action_t.unsqueeze(1).type(torch.int64)).squeeze(1)
+                next_q_pred = (next_value_t + (next_advantage_t - next_advantage_t.mean(dim=1, keepdim=True)))
+                max_action = torch.argmax(next_q_pred, dim=1)
+                target_q_pred = (target_value_t + (target_advantage_t - target_advantage_t.mean(dim=1, keepdim=True))).gather(1, max_action.unsqueeze(1).type(torch.int64)).squeeze(1)
+                max_action = torch.argmax(next_q_pred, dim=1)
+                target = reward_t + gamma*target_q_pred*(~done_t)
+                total_loss = F.mse_loss(torch.sum(q_pred), torch.sum(target))
                 total_loss.backward()
                 optimizer.step()
             stats["Loss"].append(total_loss.detach().mean().item())
