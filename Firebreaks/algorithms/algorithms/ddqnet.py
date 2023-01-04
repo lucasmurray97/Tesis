@@ -30,7 +30,8 @@ def ddqnet(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
             state_c = state.clone()
             if random.uniform(0, 1) > epsilon:
                 adv, v = net.forward(state_c)
-                action = torch.argmax(adv, dim=1)
+                q = (v + (adv - adv.mean(dim=1, keepdim=True)))
+                action = net.sample(q, state_c)
             else:
                 action = env.random_action()
             next_state, reward, done = env.step(action.detach())
@@ -49,9 +50,8 @@ def ddqnet(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
                 target_advantage_t, target_value_t = target_net.forward(next_state_t)
                 q_pred = (value_t + (advantage_t - advantage_t.mean(dim=1, keepdim=True)) ).gather(1, action_t.unsqueeze(1).type(torch.int64)).squeeze(1)
                 next_q_pred = (next_value_t + (next_advantage_t - next_advantage_t.mean(dim=1, keepdim=True)))
-                max_action = torch.argmax(next_q_pred, dim=1)
-                target_q_pred = (target_value_t + (target_advantage_t - target_advantage_t.mean(dim=1, keepdim=True))).gather(1, max_action.unsqueeze(1).type(torch.int64)).squeeze(1)
-                max_action = torch.argmax(next_q_pred, dim=1)
+                max_action = net.sample(next_q_pred, next_state_t)
+                target_q_pred = (target_value_t + (target_advantage_t - target_advantage_t.mean(dim=1, keepdim=True))).gather(1, max_action.type(torch.int64)).squeeze(1)
                 target = reward_t + gamma*target_q_pred*(~done_t)
                 total_loss = F.mse_loss(torch.sum(q_pred), torch.sum(target))
                 total_loss.backward()

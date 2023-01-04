@@ -1,25 +1,12 @@
 #!/bin/sh
-# Full Grid
-# Sub 6x6
-#PPO
-# V1
+python3 algorithm_analysis.py --algorithm dqn --size 6 --env full_grid --env_version v1 --net_version small --episodes 600 --window 500  --alpha 5e-3 --gamma 0.999 --beta 0.1 --instance sub6x6 --test --demonstrate --n_dem 100 --max_mem 10000 --epsilon 0.5 --target_update 20 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
+python3 algorithm_analysis.py --algorithm 2dqn --size 6 --env full_grid --env_version v1 --net_version small --episodes 600 --window 500  --alpha 5e-3 --gamma 0.999 --beta 0.1 --instance sub6x6 --test --demonstrate --n_dem 100 --max_mem 10000 --epsilon 0.5 --target_update 20 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
+python3 algorithm_analysis.py --algorithm ddqn --size 6 --env full_grid --env_version v1 --net_version small --episodes 600 --window 500  --alpha 5e-3 --gamma 0.999 --beta 0.1 --instance sub6x6 --test --demonstrate --n_dem 100 --max_mem 10000 --epsilon 0.5 --target_update 20 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
 
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v1 --net_version small --episodes 300 --window 500  --alpha 2e-3 --gamma 1. --landa 1. --beta 0.1 --instance sub6x6 --test True
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v1 --net_version small --episodes 300 --window 500  --alpha 2e-4 --gamma 1. --landa 1. --beta 0.1 --instance sub6x6 --test True
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v1 --net_version small --episodes 300 --window 500  --alpha 2e-5 --gamma 1. --landa 1. --beta 0.1 --instance sub6x6 --test True
+python3 algorithm_analysis.py --algorithm dqn --size 10 --env full_grid --env_version v1 --net_version small --episodes 600 --window 500  --alpha 5e-3 --gamma 0.999 --beta 0.1 --instance sub10x10 --test --demonstrate --n_dem 100 --max_mem 10000 --epsilon 0.5 --target_update 20 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
+python3 algorithm_analysis.py --algorithm 2dqn --size 10 --env full_grid --env_version v1 --net_version small --episodes 600 --window 500  --alpha 5e-3 --gamma 0.999 --beta 0.1 --instance sub10x10 --test --demonstrate --n_dem 100 --max_mem 10000 --epsilon 0.5 --target_update 20 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
+python3 algorithm_analysis.py --algorithm ddqn --size 20 --env full_grid --env_version v1 --net_version small --episodes 600 --window 500  --alpha 5e-3 --gamma 0.999 --beta 0.1 --instance sub10x10 --test --demonstrate --n_dem 100 --max_mem 10000 --epsilon 0.5 --target_update 20 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
 
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v1 --net_version small --episodes 300 --window 500  --alpha 2e-3 --gamma 1. --landa 1. --beta 0.2 --instance sub6x6 --test True
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v1 --net_version small --episodes 300 --window 500  --alpha 2e-4 --gamma 1. --landa 1. --beta 0.2 --instance sub6x6 --test True
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v1 --net_version small --episodes 300 --window 500  --alpha 2e-5 --gamma 1. --landa 1. --beta 0.2 --instance sub6x6 --test True
-
-
-# V2
-
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v2 --net_version small --episodes 300 --window 500  --alpha 2e-3 --gamma 1. --landa 1. --beta 0.1 --instance sub6x6 --test True
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v2 --net_version small --episodes 300 --window 500  --alpha 2e-4 --gamma 1. --landa 1. --beta 0.1 --instance sub6x6 --test True
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v2 --net_version small --episodes 300 --window 500  --alpha 2e-5 --gamma 1. --landa 1. --beta 0.1 --instance sub6x6 --test True
-
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v2 --net_version small --episodes 300 --window 500  --alpha 2e-3 --gamma 1. --landa 1. --beta 0.2 --instance sub6x6 --test True
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v2 --net_version small --episodes 300 --window 500  --alpha 2e-4 --gamma 1. --landa 1. --beta 0.2 --instance sub6x6 --test True
-python3 algorithm_analysis.py --algorithm ppo --size 6 --env full_grid --env_version v2 --net_version small --episodes 300 --window 500  --alpha 2e-5 --gamma 1. --landa 1. --beta 0.2 --instance sub6x6 --test True
-
+python3 algorithm_analysis.py --algorithm dqn --size 20 --env full_grid --env_version v1 --net_version small --episodes 600 --window 500  --alpha 5e-3 --gamma 0.999 --beta 0.1 --instance sub20x20 --test --demonstrate --n_dem 100 --max_mem 10000 --epsilon 0.5 --target_update 20 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
+python3 algorithm_analysis.py --algorithm 2dqn --size 20 --env full_grid --env_version v1 --net_version small --episodes 600 --window 500  --alpha 5e-3 --gamma 0.999 --beta 0.1 --instance sub20x20 --test --demonstrate --n_dem 100 --max_mem 10000 --epsilon 0.5 --target_update 20 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
+python3 algorithm_analysis.py --algorithm ddqn --size 20 --env full_grid --env_version v1 --net_version small --episodes 600 --window 500  --alpha 5e-3 --gamma 0.999 --beta 0.1 --instance sub20x20 --test --demonstrate --n_dem 100 --max_mem 10000 --epsilon 0.5 --target_update 20 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005

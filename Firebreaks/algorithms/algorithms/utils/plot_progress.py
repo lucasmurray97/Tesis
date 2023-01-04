@@ -19,10 +19,10 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
         elif algorithm == "ddqn":
             adv, value = net.forward(state.cuda())
             q_pred = torch.add(value, (adv - adv.mean(dim=1, keepdim=True)))
-            selected = torch.argmax(q_pred, dim=1)
+            selected = net.sample(q_pred, state.unsqueeze(0))
         elif algorithm == "dqn" or algorithm == "2dqn":
-            q = net.forward(state.cuda())
-            selected = torch.argmax(q, dim=1)
+            q_pred = net.forward(state.cuda())
+            selected = net.sample(q_pred, state.unsqueeze(0))
         else:
             a,_, _ = net.forward(state.cuda())
         if algorithm != "ddqn" and algorithm != "dqn" and algorithm != "2dqn":
@@ -60,10 +60,10 @@ def plot_trayectory_probs(env,episodes, net, env_version, net_version, algorithm
         elif algorithm == "ddqn":
             adv, value = net.forward(state.cuda())
             q_pred = torch.add(value, (adv - adv.mean(dim=1, keepdim=True)))
-            selected = torch.argmax(q_pred, dim=1)
+            selected = net.sample(q_pred, state.unsqueeze(0))
         elif algorithm == "dqn" or algorithm == "2dqn":
-            q = net.forward(state.cuda())
-            selected = torch.argmax(q, dim=1)
+            q_pred = net.forward(state.cuda())
+            selected = net.sample(q_pred, state.unsqueeze(0))
         else:
             a,_, _ = net.forward(state.cuda())
         path_ = f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/probabilities/{params_dir}/{episodes}_ep"

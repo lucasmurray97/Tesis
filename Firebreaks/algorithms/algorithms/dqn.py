@@ -28,9 +28,9 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
         I = 1.
         while not done:
             state_c = state.clone()
-            if random.uniform(0, 1) > epsilon:
+            if random.uniform(0, 1) > 0:
                 q = net.forward(state_c)
-                action = torch.argmax(q, dim=1)
+                action = net.sample(q, state_c)
             else:
                 action = env.random_action()
             next_state, reward, done = env.step(action.detach())
@@ -45,7 +45,7 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
             for e in range(epochs):
                 net.zero_grad()
                 q_pred = net.forward(state_t).gather(1, action_t.unsqueeze(1).type(torch.int64))
-                q_target = torch.amax(target_net.forward(next_state_t), dim=1)
+                q_target = net.max(target_net.forward(next_state_t), next_state_t)
                 target = reward_t + gamma*q_target*(~done_t)
                 total_loss = F.mse_loss(torch.sum(q_pred), torch.sum(target))
                 total_loss.backward()

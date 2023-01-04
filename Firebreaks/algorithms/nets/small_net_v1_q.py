@@ -8,6 +8,7 @@ from nets.mask import CategoricalMasked, generate_mask, Q_Mask
 class CNN_SMALL_V1_Q(torch.nn.Module):
   def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = [], only_q = False):
     super(CNN_SMALL_V1_Q, self).__init__()
+    self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     self.grid_size = grid__size
     self.input_size = input_size
     self.output_size = output_size
@@ -76,8 +77,7 @@ class CNN_SMALL_V1_Q(torch.nn.Module):
     u3 = self.linear1(m)
     h3 = F.relu(u3)
     u4 = self.linear2(h3)
-    filtered = self.mask.filter(x)
-    adv_pred = u4 + filtered
+    adv_pred = u4
     if self.only_q:
       return adv_pred
     # Forward value
@@ -85,3 +85,33 @@ class CNN_SMALL_V1_Q(torch.nn.Module):
     h_3 = F.relu(u_3)
     value_pred = self.linear_2(h_3)
     return adv_pred, value_pred
+
+  def sample_indiv(self, q, state):
+    filter = self.mask.filter(state)
+    mask = dict(enumerate(filter.tolist()[0], 0))
+    filtered_index = {}
+    index = 0
+    for i in range(len(mask)):
+      if mask[i]:
+        filtered_index[index] = i
+        index+=1
+    filtered_q = q[filter.squeeze(0)]
+    action = torch.argmax(filtered_q, dim=0)
+    return torch.Tensor([filtered_index[action.item()]])
+
+  def sample(self, q, state):
+    actions = []
+    for i in range(state.shape[0]):
+      actions.append(self.sample_indiv(q[i], state[i]))
+    return torch.stack(actions).to(self.device)
+
+  def max_indiv(self, q, state):
+    filter = self.mask.filter(state)
+    filtered_q = q[filter.squeeze(0)]
+    max = torch.amax(filtered_q, dim=0)
+    return max
+  def max(self, q, state):
+    maxs = []
+    for i in range(state.shape[0]):
+      maxs.append(self.max_indiv(q[i], state[i]))
+    return torch.stack(maxs).to(self.device)

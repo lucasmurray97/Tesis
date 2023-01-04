@@ -64,14 +64,15 @@ class Q_Mask:
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.forbidden_cells = forbidden_cells
         self.version = version
+
     def filter_indiv(self, state):
         if self.version == 2:
             size = int(np.sqrt(state.shape[1]))
             state = F.resize(state, size, interpolation = torchvision.transforms.InterpolationMode.NEAREST).squeeze(0)
-        flat_state = torch.flatten(state, 1, 2)[0].int().squeeze()
-        mask = flat_state*torch.iinfo(flat_state.dtype).min
+        flat_state = torch.flatten(state, 0, 1).int().squeeze().bool()
+        mask = ~flat_state
         for j in self.forbidden_cells:
-            mask[j] = torch.iinfo(flat_state.dtype).min
+            mask[j] = False
         return mask
 
     def filter(self, state):
