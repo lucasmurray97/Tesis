@@ -61,8 +61,8 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
             stats["Returns"].extend(ep_return.squeeze().tolist())
         else:
             stats["Returns"].append(ep_return)
-        if episode in plot_episode:
-            plot_prog(env.envs[0], episode, net, env_version, net_version ,"dqn", env.size, instance, test)
+        # if episode in plot_episode:
+        #     plot_prog(env.envs[0], episode, net, env_version, net_version ,"dqn", env.size, instance, test)
     params = {"alpha": alpha, "gamma": gamma, "landa": landa, "beta": beta}
     plot_moving_av(env.envs[0], stats["Returns"], episodes*n_envs, env_version, net_version, "dqn", window = window, instance = instance, test = test, params = params)
     plot_loss(env.envs[0], stats["Loss"], episodes, env_version, instance, net_version, "dqn", test)

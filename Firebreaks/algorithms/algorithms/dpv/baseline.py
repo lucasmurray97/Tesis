@@ -142,8 +142,11 @@ def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version):
                 step_data.append(state.tolist())
                 data[i][step] = step_data
                 step += 1
-    with open(f"demonstrations/Sub{size}x{size}_full_grid_{version}.pkl", "wb+") as write_file:
+    with open(f"algorithms/dpv/demonstrations/Sub{size}x{size}_full_grid_{version}.pkl", "wb+") as write_file:
         pickle.dump(data, write_file)
+    file = open(f"algorithms/dpv/demonstrations/Sub{size}x{size}_full_grid_{version}.pkl", 'rb')    
+    n_dems = pickle.load(file)
+    print(len(n_dems.keys()))
 
 # env = Full_Grid_V2(6)
 # generate_demonstrations(10, 6, 1, 10, env, 1)
