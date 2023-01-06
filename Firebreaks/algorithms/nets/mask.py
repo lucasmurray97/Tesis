@@ -67,9 +67,8 @@ class Q_Mask:
 
     def filter_indiv(self, state):
         if self.version == 2:
-            size = int(np.sqrt(state.shape[1]))
-            state = F.resize(state, size, interpolation = torchvision.transforms.InterpolationMode.NEAREST).squeeze(0)
-        flat_state = torch.flatten(state, 0, 1).int().squeeze().bool()
+            state = state[:1]
+        flat_state = torch.flatten(state, 0, 2).int().squeeze().bool()
         mask = ~flat_state
         for j in self.forbidden_cells:
             mask[j] = False

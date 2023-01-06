@@ -19,25 +19,12 @@ from enviroment.utils.final_reward import generate_reward
 from algorithms.utils.replay_buffer import ReplayMemory
 from nets.mask import CategoricalMasked, generate_mask
 from algorithms.ddqnet import ddqnet
-# net = CNN_SMALL_V2(6, 2, 36, True)
-env = Full_Grid_V2(size=20)
+net = CNN_SMALL_V1_Q(20, 1, 400, only_q=True).cuda()
+env = Parallel_Wrapper(Full_Grid_V1, n_envs=16, parameters={'size': 20})
 state = env.reset()
-net = CNN_SMALL_V2_Q(input_size=2, output_size=400, forbidden=env.forbidden_cells, only_q=True)
-net.to('cuda')
-# stats = ddqnet(env, net, 1, 1, "small", []) 
-# print(stats)
-# memory = ReplayMemory(env.env_shape, max_mem=1000, batch_size=64, temporal=False, demonstrate=True, n_dem=10)
-# print(memory.buffer.sample_memory()[1])
-for i in range(20):
-    state = env.reset()
-    done = False
-    step = 0
-    while not done:
-        a = env.random_action()
-        s, r, done = env.step(a)
-        v = net.forward(s.cuda())
-        print(v.shape)
-        step += 1
+q = net.forward(state)
+maxi = net.max(q, state)
+print(maxi)
 
 
 

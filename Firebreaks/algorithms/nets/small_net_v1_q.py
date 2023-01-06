@@ -87,15 +87,15 @@ class CNN_SMALL_V1_Q(torch.nn.Module):
     return adv_pred, value_pred
 
   def sample_indiv(self, q, state):
-    filter = self.mask.filter(state)
-    mask = dict(enumerate(filter.tolist()[0], 0))
+    filter = self.mask.filter_indiv(state)
+    mask = dict(enumerate(filter.tolist(), 0))
     filtered_index = {}
     index = 0
     for i in range(len(mask)):
       if mask[i]:
         filtered_index[index] = i
         index+=1
-    filtered_q = q[filter.squeeze(0)]
+    filtered_q = q[filter]
     action = torch.argmax(filtered_q, dim=0)
     return torch.Tensor([filtered_index[action.item()]])
 
@@ -106,8 +106,8 @@ class CNN_SMALL_V1_Q(torch.nn.Module):
     return torch.stack(actions).to(self.device)
 
   def max_indiv(self, q, state):
-    filter = self.mask.filter(state)
-    filtered_q = q[filter.squeeze(0)]
+    filter = self.mask.filter_indiv(state)
+    filtered_q = q[filter]
     max = torch.amax(filtered_q, dim=0)
     return max
   def max(self, q, state):
