@@ -4,7 +4,7 @@ import json
 import pickle
 class ReplayMemory:
     def __init__(self, input_dims, max_mem, batch_size, demonstrate = False, n_dem = None, combined=False, temporal = False, env = "FG", version = 1, size = 20, n_envs = 16, gamma = 1., landa = 1.):
-        self.size = size if version == '1' else int(np.sqrt(size))
+        self.size = size
         self.version = version
         self.demonstrate = demonstrate
         self.n_dem = n_dem
@@ -30,7 +30,6 @@ class ReplayMemory:
             I = 1.
             for j in demonstrations[i].keys():
                 self.buffer.store_transition_indiv(np.array(demonstrations[i][j][0]), demonstrations[i][j][1], demonstrations[i][j][2],np.array(demonstrations[i][j][4]), int(j), demonstrations[i][j][3], D, I)
-                self.n_dem+=1
                 D *= self.gamma
                 I *= self.landa
                 if self.n_dem == n:
