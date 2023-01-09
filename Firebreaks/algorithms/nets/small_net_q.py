@@ -5,16 +5,16 @@ from torch.utils.data import Dataset, DataLoader
 from torch.optim import AdamW
 from nets.mask import CategoricalMasked, generate_mask, Q_Mask
 # Red estilo pytorch
-class CNN_SMALL_V2_Q(torch.nn.Module):
-  def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = [], only_q = False):
-    super(CNN_SMALL_V2_Q, self).__init__()
+class CNN_SMALL_Q(torch.nn.Module):
+  def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = [], only_q = False, version = 1):
+    super(CNN_SMALL_Q, self).__init__()
     self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     self.grid_size = grid__size
     self.input_size = input_size
     self.output_size = output_size
     self.value = value
     self.forbidden = forbidden
-    self.mask = Q_Mask(self.forbidden, 2)
+    self.mask = Q_Mask(self.forbidden, version)
     # Definimos capas (automáticamente se registran como parametros)
     # Capas compartidas
     self.conv1 = nn.Conv2d(in_channels=self.input_size, out_channels=32, kernel_size=(2,2), stride=1, padding = 0, bias = True)

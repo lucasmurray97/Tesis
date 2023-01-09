@@ -21,9 +21,9 @@ from algorithms.ddqnet import ddqnet
 from algorithms.dqn import dqn
 from algorithms.dqn2 import dqn2
 from nets.small_net_v1 import CNN_SMALL_V1
-from nets.small_net_v1_q import CNN_SMALL_V1_Q
+from nets.big_net_q import CNN_BIG_Q
 from nets.small_net_v2 import CNN_SMALL_V2
-from nets.small_net_v2_q import CNN_SMALL_V2_Q
+from nets.small_net_q import CNN_SMALL_Q
 from nets.big_net_v1 import CNN_BIG_V1
 from nets.big_net_v2 import CNN_BIG_V2
 from algorithms.utils.plot_progress import plot_moving_av
@@ -55,6 +55,7 @@ parser.add_argument('--target_update', type=int, required=False, nargs="?", defa
 parser.add_argument('--max_mem', type=int, required=False, nargs="?", default=1000)
 parser.add_argument('--demonstrate', action=argparse.BooleanOptionalAction, default=False)
 parser.add_argument('--n_dem', type=int, required=False, nargs="?", default=1000)
+parser.add_argument('--prioritized', action=argparse.BooleanOptionalAction, default=False)
 args = parser.parse_args()
 # We create the enviroment
 if args.env == "moving_grid":
@@ -102,20 +103,26 @@ if args.net_version != None:
     if args.net_version == "small":
         if args.env_version != "v2":
             if args.algorithm == "ddqn" or args.algorithm == "dqn" or  args.algorithm =="2dqn":
-                net = CNN_SMALL_V1_Q(grid_size, input_size, output_size, value, env.forbidden_cells, only_q=only_q)
+                net = CNN_SMALL_Q(grid_size, input_size, output_size, value, env.forbidden_cells, only_q=only_q, version = 1)
             else:
                 net = CNN_SMALL_V1(grid_size, input_size, output_size, value, env.forbidden_cells)
         else:
             if args.algorithm == "ddqn" or args.algorithm == "dqn" or args.algorithm == "2dqn":
-                net = CNN_SMALL_V2_Q(grid_size, input_size, output_size, value, env.forbidden_cells, only_q=only_q)
+                net = CNN_SMALL_Q(grid_size, input_size, output_size, value, env.forbidden_cells, only_q=only_q, version=2)
             else:
                 net = CNN_SMALL_V2(grid_size, input_size, output_size, value, env.forbidden_cells)
         net.to(device)
     elif args.net_version == "big":
         if args.env_version != "v2":
-            net = CNN_BIG_V1(grid_size, input_size, output_size, value, env.forbidden_cells)
+            if args.algorithm == "ddqn" or args.algorithm == "dqn" or  args.algorithm =="2dqn":
+                net = CNN_BIG_Q(grid_size, input_size, output_size, value, env.forbidden_cells, only_q=only_q, version = 1)
+            else:
+                net = CNN_BIG_V1(grid_size, input_size, output_size, value, env.forbidden_cells)
         else:
-            net = CNN_BIG_V2(grid_size, input_size, output_size, value, env.forbidden_cells)
+            if args.algorithm == "ddqn" or args.algorithm == "dqn" or  args.algorithm =="2dqn":
+                net = CNN_BIG_Q(grid_size, input_size, output_size, value, env.forbidden_cells, only_q=only_q, version = 2)
+            else:
+                net = CNN_BIG_V2(grid_size, input_size, output_size, value, env.forbidden_cells)
         net.to(device)
     else:
         raise("Non existent version of network")
@@ -141,11 +148,11 @@ elif args.algorithm == "mab_ucb":
 elif args.algorithm == "mab_greedy":
     mab_greedy(env, args.size, args.episodes, window = args.window, instance = args.instance, epsilon = args.epsilon)
 elif args.algorithm == "ddqn":
-    stats = ddqnet(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
+    stats = ddqnet(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized)
 elif args.algorithm == "dqn":
-    stats = dqn(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
+    stats = dqn(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized)
 elif args.algorithm == "2dqn":
-    stats = dqn2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
+    stats = dqn2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized)
 # Guardamos los parametros de la red
 if args.save_weights:
     path_ = f"./weights/{args.env}/{args.instance}/{args.env_version}/{args.net_version}/{args.algorithm}.pth"
