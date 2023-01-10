@@ -94,7 +94,7 @@ def ddqnet(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
             stats["Returns"].append(ep_return)
         # if episode in plot_episode:
         #     plot_prog(env.envs[0], episode, net, env_version, net_version ,"ddqn", env.size, instance, test)
-    params = {"alpha": alpha, "gamma": gamma, "landa": landa, "beta": beta}
+    params = {"alpha": alpha, "gamma": gamma, "epsilon": epsilon, "target_update": target_update}
     plot_moving_av(env.envs[0], stats["Returns"], episodes*n_envs, env_version, net_version, "ddqn", window = window, instance = instance, test = test, params = params)
     plot_loss(env.envs[0], stats["Loss"], episodes, env_version, instance, net_version, "ddqn", test)
     plot_trayectory_probs(env.envs[0], episode, net, env_version, net_version ,"ddqn", env.size, instance, test, params = params)
