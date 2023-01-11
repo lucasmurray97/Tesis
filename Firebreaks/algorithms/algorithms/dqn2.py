@@ -9,11 +9,14 @@ from algorithms.utils.plot_progress import plot_prog
 from torch.utils.data import Dataset, DataLoader
 from algorithms.utils.plot_progress import plot_moving_av, plot_loss, plot_trayectory_probs
 from algorithms.utils.replay_buffer import ReplayMemory
+from torch.optim.lr_scheduler import LambdaLR
 import json
 import copy
 import random
-def dqn2(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5, gamma = 0.99, beta = 0.02, landa = 0.95, epsilon = 1, n_envs = 8, epochs = 10, batch_size = 64, instance = "sub20x20", test = False, window = 10, demonstrate = True, n_dem = 10, combined = False, temporal = False, prioritized = False, max_mem = 1000, target_update = 1, epsilon_dec = 0.01, epsilon_min = 0.005):
+def dqn2(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5, gamma = 0.99, beta = 0.02, landa = 0.95, epsilon = 1, n_envs = 8, epochs = 10, batch_size = 64, instance = "sub20x20", test = False, window = 10, demonstrate = True, n_dem = 10, combined = False, temporal = False, prioritized = False, max_mem = 1000, target_update = 1, epsilon_dec = 0.01, epsilon_min = 0.005, lr_decay = 0.01):
     optimizer = AdamW(net.parameters(), lr = alpha)
+    lambda1 = lambda epoch: 1/(1 + lr_decay*epoch)
+    scheduler = LambdaLR(optimizer,lr_lambda=lambda1)
     env_shape = env.env_shape
     memory = ReplayMemory(env_shape, max_mem=max_mem, batch_size=batch_size, demonstrate=demonstrate, n_dem=n_dem, combined=combined, temporal=temporal, env="FG", version=env_version[1], size=env_shape[1],n_envs=n_envs, gamma = gamma, landa = landa, prioritized=prioritized)
     if prioritized:
@@ -65,16 +68,20 @@ def dqn2(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-
                 max_action = net.sample(next_q_pred, next_state_t)
                 q_target = target_net.forward(next_state_t).gather(1, max_action.type(torch.int64)).squeeze(1)
                 target = reward_t + gamma*q_target
+                criterion = nn.SmoothL1Loss()
                 if prioritized:
                     errors = target - q_pred
                     memory.buffer.set_priority(indices, errors)
-                    total_loss = F.mse_loss(torch.sum(q_pred*(importance**(1-epsilon))), torch.sum(target*(importance**(1-epsilon))))
+                    total_loss = criterion(torch.sum(q_pred*(importance**(1-epsilon))), torch.sum(target*(importance**(1-epsilon))))
                 else:
-                    total_loss = F.mse_loss(torch.sum(q_pred), torch.sum(target))
-                total_loss = F.mse_loss(torch.sum(q_pred), torch.sum(target))
+                    total_loss = criterion(torch.sum(q_pred), torch.sum(target))
                 total_loss.backward()
+                torch.nn.utils.clip_grad_value_(net.parameters(),100.)
                 optimizer.step()
             stats["Loss"].append(total_loss.detach().mean().item())
+            curr_lr = optimizer.param_groups[0]['lr']
+            if curr_lr > 1e-10:
+                scheduler.step()
         if episode % target_update == 0:
             target_net.load_state_dict(net.state_dict())
         if epsilon > epsilon_min:

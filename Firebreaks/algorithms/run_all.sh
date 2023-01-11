@@ -1,6 +1,6 @@
 #!/bin/sh
 
-python3 main.py --algorithm dqn --size 6 --env full_grid --env_version v1 --net_version small --episodes 100 --window 100  --alpha 5e-2 --gamma 0.9 --instance sub6x6 --test --demonstrate --n_dem 10000 --max_mem 10000  --target_update 10 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
+python3 main.py --algorithm dqn --size 6 --env full_grid --env_version v1 --net_version small --episodes 100 --window 100  --alpha 5e-2 --gamma 0.9 --instance sub20x20 --test --max_mem 10000  --target_update 10 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
 python3 main.py --algorithm dqn --size 6 --env full_grid --env_version v1 --net_version small --episodes 100 --window 100  --alpha 5e-3 --gamma 0.9 --instance sub6x6 --test --demonstrate --n_dem 10000 --max_mem 10000  --target_update 10 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
 python3 main.py --algorithm dqn --size 6 --env full_grid --env_version v1 --net_version small --episodes 100 --window 100  --alpha 5e-4 --gamma 0.9 --instance sub6x6 --test --demonstrate --n_dem 10000 --max_mem 10000  --target_update 10 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005
 python3 main.py --algorithm dqn --size 6 --env full_grid --env_version v1 --net_version small --episodes 100 --window 100  --alpha 5e-5 --gamma 0.9 --instance sub6x6 --test --demonstrate --n_dem 10000 --max_mem 10000  --target_update 10 --epsilon 1. --epsilon_dec 0.01 --epsilon_min 0.005

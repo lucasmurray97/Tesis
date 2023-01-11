@@ -56,6 +56,7 @@ parser.add_argument('--max_mem', type=int, required=False, nargs="?", default=10
 parser.add_argument('--demonstrate', action=argparse.BooleanOptionalAction, default=False)
 parser.add_argument('--n_dem', type=int, required=False, nargs="?", default=1000)
 parser.add_argument('--prioritized', action=argparse.BooleanOptionalAction, default=False)
+parser.add_argument('--lr_decay', type=float, required=False, nargs="?", default= 0.01)
 args = parser.parse_args()
 # We create the enviroment
 if args.env == "moving_grid":
@@ -150,7 +151,7 @@ elif args.algorithm == "mab_greedy":
 elif args.algorithm == "ddqn":
     stats = ddqnet(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized)
 elif args.algorithm == "dqn":
-    stats = dqn(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized)
+    stats = dqn(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized, lr_decay=args.lr_decay)
 elif args.algorithm == "2dqn":
     stats = dqn2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized)
 # Guardamos los parametros de la red
