@@ -50,7 +50,6 @@ parser.add_argument('--epsilon_min', type=float, required=False, nargs="?", defa
 parser.add_argument('--instance', type=str, required=False, nargs="?", default="sub20x20")
 parser.add_argument('--test', action=argparse.BooleanOptionalAction, default=False)
 parser.add_argument('--save_weights', action=argparse.BooleanOptionalAction, default=False)
-parser.add_argument('--temporal', action=argparse.BooleanOptionalAction, default=False)
 parser.add_argument('--target_update', type=int, required=False, nargs="?", default=1)
 parser.add_argument('--max_mem', type=int, required=False, nargs="?", default=1000)
 parser.add_argument('--demonstrate', action=argparse.BooleanOptionalAction, default=False)
@@ -131,17 +130,17 @@ if args.net_version != None:
 plot_episode = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 20000, 30000, 40000, 50000]
 # We retrieve the algorithm parameter:
 if args.algorithm == "ppo":
-    stats = ppo(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
+    stats = ppo(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "ppo_v2":
-    stats = ppo_v2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
+    stats = ppo_v2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "ppo_v3":
-    stats = ppo_v3(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
+    stats = ppo_v3(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "reinforce":
-    stats = reinforce(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
+    stats = reinforce(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "reinforce_baseline":
     stats = reinforce_baseline(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "a2c":
-    stats = a2c(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update)
+    stats = a2c(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, beta = args.beta, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, max_mem=args.max_mem, target_update=args.target_update)
 elif args.algorithm == "q_learning":
     returns, q_table = q_learning(args.size, env, args.episodes, args.env_version, [], alpha = args.alpha, epsilon = args.epsilon, instance = args.instance, n_envs = n_envs, window = args.window)
 elif args.algorithm == "mab_ucb":
@@ -149,11 +148,11 @@ elif args.algorithm == "mab_ucb":
 elif args.algorithm == "mab_greedy":
     mab_greedy(env, args.size, args.episodes, window = args.window, instance = args.instance, epsilon = args.epsilon)
 elif args.algorithm == "ddqn":
-    stats = ddqnet(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized)
+    stats = ddqnet(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized)
 elif args.algorithm == "dqn":
-    stats = dqn(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized, lr_decay=args.lr_decay)
+    stats = dqn(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized, lr_decay=args.lr_decay)
 elif args.algorithm == "2dqn":
-    stats = dqn2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, combined=False, temporal=args.temporal, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized)
+    stats = dqn2(env, net, args.episodes, args.env_version, args.net_version, plot_episode, alpha = args.alpha, gamma = args.gamma, landa = args.landa, beta = args.beta, epsilon=args.epsilon, epsilon_dec=args.epsilon_dec, epsilon_min=args.epsilon_min, instance = args.instance, test = args.test, n_envs = n_envs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized)
 # Guardamos los parametros de la red
 if args.save_weights:
     path_ = f"./weights/{args.env}/{args.instance}/{args.env_version}/{args.net_version}/{args.algorithm}.pth"

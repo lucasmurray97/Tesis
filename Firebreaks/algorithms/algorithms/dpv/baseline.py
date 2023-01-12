@@ -13,7 +13,7 @@ import pickle
 from tqdm import tqdm
 sys.path.append("../../")
 absolute_path = os.path.dirname(__file__)
-def baseline(size, n_sims):
+def baseline(size, n_sims, forbidden):
     quant = int((size**2)*0.05)
     if quant%2 == 0:
         quant += 1
@@ -22,7 +22,14 @@ def baseline(size, n_sims):
     firebreaks = [0]
     upscaled_firebreaks = [0]
     for _ in range(quant):
-        firebreaks = calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims)
+        firebreaks = calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims, forbidden)
+    for i in firebreaks[1:]:
+        if i in forbidden:
+            print(firebreaks[1:], forbidden)
+            raise("Cell in forbidden!!")
+    if len(list(set(firebreaks[1:]))) < len(firebreaks[1:]):
+        print(list(set(firebreaks[1:])), firebreaks[1:])
+        raise("Repeated firebreak!!")
     return firebreaks[1:]
 
 
@@ -76,8 +83,8 @@ def eval(size, n_sims):
                 reward-= 1
     return (reward/n_sims)*(size/20)
 
-def simulate_episode(size, n_sims, n_sims_eval):
-    solution = baseline(size, n_sims)
+def simulate_episode(size, n_sims, n_sims_eval, forbidden):
+    solution = baseline(size, n_sims, forbidden)
     reward = eval(size, n_sims_eval)
     episode_data = []
     for i in range(len(solution)-1):
@@ -85,14 +92,16 @@ def simulate_episode(size, n_sims, n_sims_eval):
     episode_data.append([solution[-1], reward, True])
     return episode_data
 
-def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims):
+def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims, forbidden):
     dpvs = calculate_dpv(seed, n_sims)
     dpvs = dict(enumerate(list(dpvs.values()), 0))
     if size == 20:
+        for j in forbidden:
+            dpvs.pop(j, None)
+        for k in firebreaks:
+                dpvs.pop(k, None)
         firebreak = max(dpvs, key=dpvs.get)
         if dpvs[firebreak] == 0:
-            for k in firebreaks:
-                dpvs.pop(k, None)
             firebreak = random.choice(list(dpvs.keys()))
         firebreaks.append(firebreak)
         write_firebreaks(map(lambda x:x+1, firebreaks))
@@ -103,7 +112,8 @@ def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims):
         np_dpv = np_dpv.reshape((20,20))
         shrinked = cv2.resize(src = np_dpv, dsize=(size,size), interpolation = 1)
         new_dpvs = dict(enumerate(shrinked.flatten(), 0))
-        firebreak = max(new_dpvs, key=new_dpvs.get)
+        for j in forbidden:
+            new_dpvs.pop(j, None)
         for k in firebreaks:
             new_dpvs.pop(k, None)
         firebreak = max(new_dpvs, key=new_dpvs.get)
@@ -123,8 +133,9 @@ def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims):
 
 def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version):
     data = {}
+    forbidden = env.forbidden_cells
     for i in  tqdm(range(episodes)):
-        episode = simulate_episode(size, n_sims, n_sims_eval)
+        episode = simulate_episode(size, n_sims, n_sims_eval, forbidden)
         state = env.reset()
         data[i] = {}
         step = 0
