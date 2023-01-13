@@ -97,7 +97,7 @@ class CNN_SMALL_Q(torch.nn.Module):
         index+=1
     filtered_q = q[filter]
     action = torch.argmax(filtered_q, dim=0)
-    return torch.Tensor([filtered_index[action.item()]])
+    return torch.Tensor([filtered_index[int(action.item())]])
 
   def sample(self, q, state):
     actions = []
@@ -131,8 +131,8 @@ class CNN_SMALL_Q(torch.nn.Module):
       if mask[i]:
         filtered_index[index] = i
         index+=1
-    reversed_filtered_index = {value:key for key, value in filtered_index.items()}
+    reversed_filtered_index = {int(value):int(key) for key, value in filtered_index.items()}
     filtered_q = q_target[filter]
-    filtered_a = torch.Tensor([reversed_filtered_index[action.item()]])
+    filtered_a = torch.Tensor([reversed_filtered_index[int(action.item())]])
     la = torch.Tensor([0 if i != filtered_a else l for i in range(filtered_q.shape[0])]).to(self.device)
     return torch.amax(filtered_q + la, dim=0)

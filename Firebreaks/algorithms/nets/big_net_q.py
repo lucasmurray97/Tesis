@@ -135,3 +135,25 @@ class CNN_BIG_Q(torch.nn.Module):
     for i in range(state.shape[0]):
       maxs.append(self.max_indiv(q[i], state[i]))
     return torch.stack(maxs).to(self.device)
+
+  def je_loss(self, action, q_target, state, dem, l = 0.1):
+    loss = 0
+    for i in range(state.shape[0]):
+      if dem[i]:
+        loss += self.je_loss_indiv(action[i], q_target[i], state[i], l)
+    return loss
+
+  def je_loss_indiv(self, action, q_target, state, l):
+    filter = self.mask.filter_indiv(state)
+    mask = dict(enumerate(filter.tolist(), 0))
+    filtered_index = {}
+    index = 0
+    for i in range(len(mask)):
+      if mask[i]:
+        filtered_index[index] = i
+        index+=1
+    reversed_filtered_index = {int(value):int(key) for key, value in filtered_index.items()}
+    filtered_q = q_target[filter]
+    filtered_a = torch.Tensor([reversed_filtered_index[int(action.item())]])
+    la = torch.Tensor([0 if i != filtered_a else l for i in range(filtered_q.shape[0])]).to(self.device)
+    return torch.amax(filtered_q + la, dim=0)

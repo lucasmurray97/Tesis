@@ -14,7 +14,7 @@ import json
 import copy
 import random
 
-def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5, gamma = 0.99, beta = 0.02, landa = 0.95, epsilon = 1, n_envs = 8, epochs = 10, batch_size = 64, instance = "sub20x20", test = False, window = 10, demonstrate = True, n_dem = 10, prioritized = False, max_mem = 1000, target_update = 1, epsilon_dec = 0.01, epsilon_min = 0.005, lr_decay = 0.01, lambda1=1.0, lambda2=1.0):
+def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5, gamma = 0.99, beta = 0.02, landa = 0.95, epsilon = 1, n_envs = 8, epochs = 10, batch_size = 64, instance = "sub20x20", test = False, window = 10, demonstrate = True, n_dem = 10, prioritized = False, max_mem = 1000, target_update = 1, epsilon_dec = 0.01, epsilon_min = 0.005, lr_decay = 0.01, lambda_1=1.0, lambda_2=1.0):
     optimizer = AdamW(net.parameters(), lr = alpha, amsgrad=True, weight_decay=1e-5)
     lambda1 = lambda epoch: 1/(1 + lr_decay*epoch)
     scheduler = LambdaLR(optimizer,lr_lambda=lambda1)
@@ -23,27 +23,35 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
     target_net = copy.deepcopy(net)
     if demonstrate:
         print("Pre-Training started!")
-        k = 10
+        k = 100
+        updates = 0
         for _ in range(k):
             indices, state_t, action_t, reward_t, next_state_t, _, _, done_t, importance, dem = memory.buffer.sample_memory()
-            for _ in range(epochs):
+            for _ in range(1):
                 net.zero_grad()
                 q_pred_e = net.forward(state_t).gather(1, action_t.unsqueeze(1).type(torch.int64))
                 q_target = target_net.forward(state_t)
                 q_target_next = target_net.forward(next_state_t)
-                J_E = target_net.je_loss(action_t, q_target, state_t, dem) - torch.sum(q_pred_e)
+                J_E = target_net.je_loss(action_t, q_target, state_t, dem) - torch.sum(q_pred_e*dem)
                 target = reward_t + gamma*target_net.max(q_target_next,next_state_t)*(~done_t)
                 criterion = nn.SmoothL1Loss()
                 if prioritized:
                     J_DQN = criterion(torch.sum(q_pred_e*(importance**(1-epsilon))), torch.sum(target*(importance**(1-epsilon))))
                 else:
                     J_DQN = criterion(torch.sum(q_pred_e), torch.sum(target))
-                J = J_DQN + lambda2*J_E
+                n_rewards, n_state, use = memory.buffer.get_n_steps(indices)
+                n_q_target = target_net.forward(n_state)
+                n_target = n_rewards[:,0] + n_rewards[:,1] * gamma + (gamma**2)*target_net.max(n_q_target,n_state).squeeze(0)*(use.squeeze(1))
+                J_N = criterion(torch.sum(q_pred_e), torch.sum(n_target))
+                J = J_DQN + lambda_1*J_N + lambda_2*J_E
                 J.backward()
                 optimizer.step()
+                updates += 1
                 if prioritized:
-                    errors = target - q_pred_e
+                    errors = target - q_pred_e.squeeze(1)
                     memory.buffer.set_priority(indices, errors)
+                if updates % target_update == 0:
+                    target_net.load_state_dict(net.state_dict())
         print("Finished Pre-Training!")
     stats = {"Loss": [], "Returns": []}
     steps = 0
@@ -66,9 +74,7 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
             ep_return += reward
             discounts *=gamma
             I *=landa
-            q_target = net.max(net.forward(next_state), next_state)
-            target = reward.squeeze(1) + discounts*q_target*(~done)
-            memory.buffer.store_transition(state, action, reward, next_state, done, discounts, I, q, target)
+            memory.buffer.store_transition(state, action, reward, next_state, done, discounts, I)
             if steps % target_update == 0:
                 target_net.load_state_dict(net.state_dict())
             step = step + 1
@@ -84,17 +90,19 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
                 J_E = target_net.je_loss(action_t, q_target_state, state_t, dem) - torch.sum(q_pred*dem)
                 criterion = nn.SmoothL1Loss()
                 if prioritized:
-                    errors = target - q_pred
-                    memory.buffer.set_priority(indices, errors)
                     J_DQN = criterion(torch.sum(q_pred*(importance**(1-epsilon))), torch.sum(target*(importance**(1-epsilon))))
                 else:
                     J_DQN = criterion(torch.sum(q_pred), torch.sum(target))
-                J = J_DQN + lambda2*J_E
+                n_rewards, n_state, use = memory.buffer.get_n_steps(indices)
+                n_q_target = target_net.forward(n_state)
+                n_target = n_rewards[:,0] + n_rewards[:,1] * gamma + (gamma**2)*target_net.max(n_q_target,n_state).squeeze(0)*(use.squeeze(1))
+                J_N = criterion(torch.sum(q_pred), torch.sum(n_target))
+                J = J_DQN + lambda_1*J_N + lambda_2*J_E
                 J.backward()
                 torch.nn.utils.clip_grad_value_(net.parameters(),100.)
                 optimizer.step()
                 if prioritized:
-                    errors = target - q_pred_e
+                    errors = target - q_pred.squeeze(1)
                     memory.buffer.set_priority(indices, errors)
             stats["Loss"].append(J.detach().mean().item())
             curr_lr = optimizer.param_groups[0]['lr']
