@@ -103,7 +103,7 @@ class ReplayMemoryBaseline:
         gammas = self.gammas_memory[batch]
         landas = self.landas_memory[batch]
         dones = self.dones_memory[batch]
-        dem = batch <= self.dem_pivot
+        dem = batch < self.dem_pivot
         return batch, torch.Tensor(states).to(self.device),  torch.Tensor(actions).to(self.device),  torch.Tensor(rewards).to(self.device),  torch.Tensor(new_states).to(self.device), torch.Tensor(gammas).to(self.device), torch.Tensor(landas).to(self.device), torch.Tensor(dones).bool().to(self.device), None, torch.Tensor(dem).to(self.device)
 
     def get_n_steps(self, indices):
@@ -121,9 +121,9 @@ class ReplayMemoryBaseline:
     def get_n_steps_indiv(self, indices, dem):
         if dem:
             start = 0
-            end = self.dem_pivot 
+            end = self.dem_pivot - 1
         else:
-            start = self.dem_pivot + 1
+            start = self.dem_pivot
             end = min(self.mem_cntr + self.dem_pivot, self.mem_size)
         rewards = list(self.reward_memory[indices:min(indices + 2, end)])
         dones = list(self.dones_memory[indices:min(indices + 2, end)])
@@ -226,7 +226,7 @@ class PrioritizedReplayMemory:
         landas = self.landas_memory[batch]
         dones = self.dones_memory[batch]
         importance = self.get_importance(probs[batch])
-        dem = batch <= self.dem_pivot
+        dem = batch < self.dem_pivot
         return batch, torch.Tensor(states).to(self.device),  torch.Tensor(actions).to(self.device),  torch.Tensor(rewards).to(self.device),  torch.Tensor(new_states).to(self.device), torch.Tensor(gammas).to(self.device), torch.Tensor(landas).to(self.device), torch.Tensor(dones).bool().to(self.device), torch.Tensor(importance).to(self.device), torch.Tensor(dem).to(self.device)
 
     def get_all(self):
@@ -248,9 +248,9 @@ class PrioritizedReplayMemory:
     def get_n_steps_indiv(self, indices, dem):
         if dem:
             start = 0
-            end = self.dem_pivot 
+            end = self.dem_pivot - 1 
         else:
-            start = self.dem_pivot + 1
+            start = self.dem_pivot
             end = min(self.mem_cntr + self.dem_pivot, self.mem_size)
         rewards = list(self.reward_memory[indices:min(indices + 2, end)])
         dones = list(self.dones_memory[indices:min(indices + 2, end)])

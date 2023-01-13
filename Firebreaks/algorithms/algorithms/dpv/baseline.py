@@ -136,23 +136,21 @@ def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version):
     forbidden = env.forbidden_cells
     for i in  tqdm(range(episodes)):
         episode = simulate_episode(size, n_sims, n_sims_eval, forbidden)
-        state = env.reset()
         data[i] = {}
         step = 0
-        ep_len = len(episode)
-        for j in episode:
-            if step < ep_len - 1:
-                step_data = [state.tolist(), j[0], j[1], j[2]]
-                state, _, _ = env.step(torch.Tensor([j[0]]))
-                step_data.append(state.tolist())
-                data[i][step] = step_data
-                step += 1
-            else:
-                step_data = [state.tolist(), j[0], j[1], j[2]]
-                state = env.reset()
-                step_data.append(state.tolist())
-                data[i][step] = step_data
-                step += 1
+        state = env.reset()
+        done = False
+        j = 0
+        while not done:
+            step_data = [state.clone().tolist().copy(), episode[j][0], episode[j][1], episode[j][2]]
+            next_state, _, done = env.step(torch.Tensor([episode[j][0]]))
+            if done:
+                next_state = env.reset()
+            step_data.append(next_state.clone().tolist().copy())
+            data[i][step] = step_data
+            state = next_state
+            step += 1
+            j += 1
     with open(f"algorithms/dpv/demonstrations/Sub{size}x{size}_full_grid_{version}.pkl", "wb+") as write_file:
         pickle.dump(data, write_file)
     file = open(f"algorithms/dpv/demonstrations/Sub{size}x{size}_full_grid_{version}.pkl", 'rb')    

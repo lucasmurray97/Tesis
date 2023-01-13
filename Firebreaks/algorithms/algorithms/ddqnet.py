@@ -26,7 +26,7 @@ def ddqnet(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
         updates = 0
         for _ in range(k):
             indices, state_t, action_t, reward_t, next_state_t, _, _, done_t, importance, dem = memory.buffer.sample_memory()
-            for _ in range(1):
+            for _ in range(epochs):
                 net.zero_grad()
                 adv, v = net.forward(state_t)
                 q_pred_e = (v + (adv - adv.mean(dim=1, keepdim=True))).gather(1, action_t.unsqueeze(1).type(torch.int64)).squeeze(1)
@@ -79,13 +79,13 @@ def ddqnet(env, net, episodes, env_version, net_version, plot_episode, alpha = 1
             else:
                 action = env.random_action()
             next_state, reward, done = env.step(action.detach())
-            state = next_state
             ep_return += reward
             discounts *=gamma
             I *=landa
             memory.buffer.store_transition(state, action, reward, next_state, done, discounts, I)
             if steps % target_update == 0:
                 target_net.load_state_dict(net.state_dict())
+            state = next_state
             step = step + 1
             steps = steps + 1
         if memory.is_sufficient():

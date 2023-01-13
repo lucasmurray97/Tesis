@@ -23,23 +23,23 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
     target_net = copy.deepcopy(net)
     if demonstrate:
         print("Pre-Training started!")
-        k = 100
+        k = 10
         updates = 0
         for _ in range(k):
-            indices, state_t, action_t, reward_t, next_state_t, _, _, done_t, importance, dem = memory.buffer.sample_memory()
-            for _ in range(1):
+            indices_d, state_d, action_d, reward_d, next_state_d, _, _, done_d, importance_d, dem_d = memory.buffer.sample_memory()
+            for _ in range(epochs):
                 net.zero_grad()
-                q_pred_e = net.forward(state_t).gather(1, action_t.unsqueeze(1).type(torch.int64))
-                q_target = target_net.forward(state_t)
-                q_target_next = target_net.forward(next_state_t)
-                J_E = target_net.je_loss(action_t, q_target, state_t, dem) - torch.sum(q_pred_e*dem)
-                target = reward_t + gamma*target_net.max(q_target_next,next_state_t)*(~done_t)
+                q_pred_e = net.forward(state_d).gather(1, action_d.unsqueeze(1).type(torch.int64))
+                q_target = target_net.forward(state_d)
+                q_target_next = net.max(target_net.forward(next_state_d), next_state_d)
+                J_E = target_net.je_loss(action_d, q_target, state_d, dem_d) - torch.sum(q_pred_e*dem_d)
+                target = reward_d + gamma*q_target_next*(~done_d)
                 criterion = nn.SmoothL1Loss()
                 if prioritized:
-                    J_DQN = criterion(torch.sum(q_pred_e*(importance**(1-epsilon))), torch.sum(target*(importance**(1-epsilon))))
+                    J_DQN = criterion(torch.sum(q_pred_e*(importance_d**(1-epsilon))), torch.sum(target*(importance_d**(1-epsilon))))
                 else:
                     J_DQN = criterion(torch.sum(q_pred_e), torch.sum(target))
-                n_rewards, n_state, use = memory.buffer.get_n_steps(indices)
+                n_rewards, n_state, use = memory.buffer.get_n_steps(indices_d)
                 n_q_target = target_net.forward(n_state)
                 n_target = n_rewards[:,0] + n_rewards[:,1] * gamma + (gamma**2)*target_net.max(n_q_target,n_state).squeeze(0)*(use.squeeze(1))
                 J_N = criterion(torch.sum(q_pred_e), torch.sum(n_target))
@@ -49,7 +49,7 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
                 updates += 1
                 if prioritized:
                     errors = target - q_pred_e.squeeze(1)
-                    memory.buffer.set_priority(indices, errors)
+                    memory.buffer.set_priority(indices_d, errors)
                 if updates % target_update == 0:
                     target_net.load_state_dict(net.state_dict())
         print("Finished Pre-Training!")
@@ -70,18 +70,18 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
             else:
                 action = env.random_action()
             next_state, reward, done = env.step(action.detach())
-            state = next_state
             ep_return += reward
-            discounts *=gamma
+            discounts *= gamma
             I *=landa
             memory.buffer.store_transition(state, action, reward, next_state, done, discounts, I)
             if steps % target_update == 0:
                 target_net.load_state_dict(net.state_dict())
+            state = next_state
             step = step + 1
             steps = steps + 1
         if memory.is_sufficient():
             indices, state_t, action_t, reward_t, next_state_t, _, _, done_t, importance, dem = memory.buffer.sample_memory()
-            for e in range(epochs):
+            for _ in range(epochs):
                 net.zero_grad()
                 q_pred = net.forward(state_t).gather(1, action_t.unsqueeze(1).type(torch.int64))
                 q_target = net.max(target_net.forward(next_state_t), next_state_t)

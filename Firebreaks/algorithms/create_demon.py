@@ -4,20 +4,20 @@ from enviroment.full_grid_v2 import Full_Grid_V2
 
 # Version 1
 env = Full_Grid_V1(6)
-generate_demonstrations(10000, 6, 1, 10, env, 1)
+generate_demonstrations(100, 6, 1, 10, env, 1)
 
 env = Full_Grid_V1(10)
-generate_demonstrations(2000, 10, 1, 10, env, 1)
+generate_demonstrations(20, 10, 1, 10, env, 1)
 
 env = Full_Grid_V1(20)
-generate_demonstrations(500, 20, 1, 10, env, 1)
+generate_demonstrations(5, 20, 1, 10, env, 1)
 
-# Version 2
-env = Full_Grid_V2(6)
-generate_demonstrations(10000, 6, 1, 10, env, 2)
+# # Version 2
+# env = Full_Grid_V2(6)
+# generate_demonstrations(10000, 6, 1, 10, env, 2)
 
-env = Full_Grid_V2(10)
-generate_demonstrations(2000, 10, 1, 10, env, 2)
+# env = Full_Grid_V2(10)
+# generate_demonstrations(2000, 10, 1, 10, env, 2)
 
-env = Full_Grid_V2(20)
-generate_demonstrations(500, 20, 1, 10, env, 2)
+# env = Full_Grid_V2(20)
+# generate_demonstrations(500, 20, 1, 10, env, 2)

@@ -20,6 +20,8 @@ class Full_Grid_V1(Abstract_Full_Grid):
         return state
 
     def step(self, action):
+        if self.actions_history[int(action.item())] == 0:
+            raise("Took Invalid action!!")
         position = self.action_map[int(action.item())]
         self._space[0][position] = -1
         self._space[1][position] = 1
