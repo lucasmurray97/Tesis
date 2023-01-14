@@ -24,7 +24,7 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
     initial_epsilon = epsilon
     if demonstrate:
         print("Pre-Training started!")
-        k = 100
+        k = 200
         updates = 0
         for _ in range(k):
             indices_d, state_d, action_d, reward_d, next_state_d, _, _, done_d, importance_d, dem_d = memory.buffer.sample_memory()
