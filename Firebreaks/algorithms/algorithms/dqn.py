@@ -21,6 +21,7 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
     env_shape = env.env_shape
     memory = ReplayMemory(env_shape, max_mem=max_mem, batch_size=batch_size, demonstrate=demonstrate, n_dem=n_dem, prioritized=prioritized, env="FG", version=env_version[1], size=env_shape[1],n_envs=n_envs, gamma = gamma, landa = landa)
     target_net = copy.deepcopy(net)
+    initial_epsilon = epsilon
     if demonstrate:
         print("Pre-Training started!")
         k = 100
@@ -109,16 +110,14 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
             if curr_lr > 1e-10:
                 scheduler.step()
         if epsilon > epsilon_min:
-            epsilon = epsilon - epsilon_dec
-        else:
-            epsilon = epsilon_min
+            epsilon = max(epsilon - epsilon_dec, epsilon_min)
         if n_envs != 1:
             stats["Returns"].extend(ep_return.squeeze().tolist())
         else:
             stats["Returns"].append(ep_return)
         # if episode in plot_episode:
         #     plot_prog(env.envs[0], episode, net, env_version, net_version ,"dqn", env.size, instance, test)
-    params = {"alpha": alpha, "gamma": gamma, "epsilon": epsilon, "target_update": target_update}
+    params = {"alpha": alpha, "gamma": gamma, "epsilon": initial_epsilon, "target_update": target_update}
     plot_moving_av(env.envs[0], stats["Returns"], episodes*n_envs, env_version, net_version, "dqn", window = window, instance = instance, test = test, params = params)
     plot_loss(env.envs[0], stats["Loss"], episodes, env_version, instance, net_version, "dqn", test)
     plot_trayectory_probs(env.envs[0], episode, net, env_version, net_version ,"dqn", env.size, instance, test, params = params)
