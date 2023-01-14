@@ -124,7 +124,7 @@ class ReplayMemoryBaseline:
             end = self.dem_pivot - 1
         else:
             start = self.dem_pivot
-            end = min(self.mem_cntr + self.dem_pivot, self.mem_size)
+            end = min(self.mem_cntr + self.dem_pivot, self.mem_size) - 1
         rewards = list(self.reward_memory[indices:min(indices + 2, end)])
         dones = list(self.dones_memory[indices:min(indices + 2, end)])
         if len(rewards) < 2:
@@ -251,7 +251,7 @@ class PrioritizedReplayMemory:
             end = self.dem_pivot - 1 
         else:
             start = self.dem_pivot
-            end = min(self.mem_cntr + self.dem_pivot, self.mem_size)
+            end = min(self.mem_cntr + self.dem_pivot, self.mem_size) - 1
         rewards = list(self.reward_memory[indices:min(indices + 2, end)])
         dones = list(self.dones_memory[indices:min(indices + 2, end)])
         if len(rewards) < 2:
