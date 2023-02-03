@@ -17,10 +17,12 @@ class Parallel_Wrapper():
             self.envs.append(env(**parameters))
         self.env_shape = self.envs[0].shape
         self.forbidden_cells = self.envs[0].forbidden_cells
+
     def individual_reset(self, i, states):
             state = self.envs[i].reset()
             with self.lock:
                 states[i] = state
+
     def reset(self):
             states = [0 for i in range(self.n_envs)]
             threads = []

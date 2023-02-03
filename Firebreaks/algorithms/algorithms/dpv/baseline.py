@@ -81,7 +81,7 @@ def eval(size, n_sims):
         for cell in my_data.flatten():
             if cell == 1:
                 reward-= 1
-    return (reward/n_sims)*(size/20)
+    return (reward/n_sims)
 
 def simulate_episode(size, n_sims, n_sims_eval, forbidden):
     solution = baseline(size, n_sims, forbidden)

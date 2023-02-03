@@ -169,7 +169,7 @@ class PrioritizedReplayMemory:
         for i in range(state.shape[0]):
             self.store_transition_indiv(state[i].cpu(), action[i].cpu(), reward[i].cpu(), state_[i].cpu(), done, gamma, landa)
     
-    def store_transition_indiv(self, state, action, reward, state_,done, gamma, landa, offset = 0.1):
+    def store_transition_indiv(self, state, action, reward, state_,done, gamma, landa):
         index = (self.mem_cntr ) % (self.mem_size - self.dem_pivot) 
         self.state_memory[index + self.dem_pivot] = state
         self.action_memory[index + self.dem_pivot] = action

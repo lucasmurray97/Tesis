@@ -117,9 +117,9 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
             stats["Returns"].append(ep_return)
         # if episode in plot_episode:
         #     plot_prog(env.envs[0], episode, net, env_version, net_version ,"dqn", env.size, instance, test)
-    params = {"alpha": alpha, "gamma": gamma, "epsilon": initial_epsilon, "target_update": target_update}
+    params = {"alpha": alpha, "gamma": gamma, "epsilon": initial_epsilon, "target_update": target_update, "prioritized": prioritized, "n_dem": n_dem}
     plot_moving_av(env.envs[0], stats["Returns"], episodes*n_envs, env_version, net_version, "dqn", window = window, instance = instance, test = test, params = params)
-    plot_loss(env.envs[0], stats["Loss"], episodes, env_version, instance, net_version, "dqn", test)
+    plot_loss(env.envs[0], stats["Loss"], episodes, env_version, instance, net_version, "dqn", test, params = params)
     plot_trayectory_probs(env.envs[0], episode, net, env_version, net_version ,"dqn", env.size, instance, test, params = params)
     params_dir = f"episodes={episodes*n_envs}_"
     for key in params.keys():
