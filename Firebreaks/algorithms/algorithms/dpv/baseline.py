@@ -144,9 +144,10 @@ def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version):
         while not done:
             step_data = [state.clone().tolist().copy(), episode[j][0], episode[j][1], episode[j][2]]
             next_state, _, done = env.step(torch.Tensor([episode[j][0]]))
+            step_data.append(next_state.clone().tolist().copy())
+            print(step_data[0], step_data[4])
             if done:
                 next_state = env.reset()
-            step_data.append(next_state.clone().tolist().copy())
             data[i][step] = step_data
             state = next_state
             step += 1
