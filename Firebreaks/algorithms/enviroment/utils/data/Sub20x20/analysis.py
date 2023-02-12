@@ -23,16 +23,16 @@ for file in arr:
                     writer.writerow(row)
                     n += 1
 
-data_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/data/Sub20x20/"
-results_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/"
+data_directory = "/home/lucas/Tesis/Firebreaks/algorithms/enviroment/utils/data/Sub20x20/"
+results_directory = "/home/lucas/Tesis/Firebreaks/algorithms/enviroment/utils/results/Sub20x20/"
 try:
   shutil.rmtree(f'{results_directory}Grids/')
 except:
   pass
-n_sims = 10
-sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', '8', '--allPlots', '--stats', '--grids', '--output-messages', '--combine']
+n_sims = 500
+sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', '8','--stats', '--allPlots', '--grids', '--output-messages', '--combine']
 main()
-base_directory = "/home/lucas/Tesis/CortaFuegos/algorithms/enviroment/utils/results/Sub20x20/Grids/Grids"
+base_directory = "/home/lucas/Tesis/Firebreaks/algorithms/enviroment/utils/results/Sub20x20/Grids/Grids"
 reward = 0
 for j in range(1, n_sims+1):
         directory = os.listdir(base_directory+str(j))
