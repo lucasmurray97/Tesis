@@ -5,54 +5,60 @@ from torch import nn as nn
 from torch.optim import AdamW
 import numpy as np
 import torch.nn.functional as F
-from algorithms.utils.plot_progress import plot_prog
 from torch.utils.data import Dataset, DataLoader
 from algorithms.utils.plot_progress import plot_moving_av, plot_loss, plot_trayectory_probs
 from algorithms.utils.replay_buffer import ReplayMemory
 from torch.optim.lr_scheduler import LambdaLR
+from algorithms.utils.annealing import LinearSchedule
 import json
 import copy
 import random
 
-def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5, gamma = 0.99, beta = 0.02, landa = 0.95, epsilon = 1, n_envs = 8, epochs = 10, batch_size = 64, instance = "sub20x20", test = False, window = 10, demonstrate = True, n_dem = 10, prioritized = False, max_mem = 1000, target_update = 1, epsilon_dec = 0.01, epsilon_min = 0.005, lr_decay = 0.01, lambda_1=1.0, lambda_2=1.0):
+def dqn(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0.99, exploration_fraction = 0.3, landa = 0.95, epsilon = 1, n_envs = 8, pre_epochs = 1000, batch_size = 64, instance = "sub20x20", test = False, window = 10, demonstrate = True, n_dem = 10, prioritized = False, max_mem = 1000, target_update = 100, lr_decay = 0.01, lambda_1=1.0, lambda_2=1.0):
+    total_timesteps = env.envs[0].get_episode_len()*episodes
     optimizer = AdamW(net.parameters(), lr = alpha, amsgrad=True, weight_decay=1e-5)
     lambda1 = lambda epoch: 1/(1 + lr_decay*epoch)
     scheduler = LambdaLR(optimizer,lr_lambda=lambda1)
     env_shape = env.env_shape
     memory = ReplayMemory(env_shape, max_mem=max_mem, batch_size=batch_size, demonstrate=demonstrate, n_dem=n_dem, prioritized=prioritized, env="FG", version=env_version[1], size=env_shape[1],n_envs=n_envs, gamma = gamma, landa = landa)
     target_net = copy.deepcopy(net)
+    exploration = LinearSchedule(schedule_timesteps=int(exploration_fraction * total_timesteps),
+                                 initial_p=epsilon,
+                                 final_p=0.02)
+    if prioritized:
+        beta_schedule = LinearSchedule(total_timesteps,
+                                       initial_p=0.4,
+                                       final_p=1.0)
     initial_epsilon = epsilon
     if demonstrate:
         print("Pre-Training started!")
-        k = 200
         updates = 0
-        for _ in range(k):
+        for _ in tqdm(range(pre_epochs)):
             indices_d, state_d, action_d, reward_d, next_state_d, _, _, done_d, importance_d, dem_d = memory.buffer.sample_memory()
-            for _ in range(epochs):
-                net.zero_grad()
-                q_pred_e = net.forward(state_d).gather(1, action_d.unsqueeze(1).type(torch.int64))
-                q_target = target_net.forward(state_d)
-                q_target_next = net.max(target_net.forward(next_state_d), next_state_d)
-                J_E = target_net.je_loss(action_d, q_target, state_d, dem_d) - torch.sum(q_pred_e*dem_d)
-                target = reward_d + gamma*q_target_next*(~done_d)
-                criterion = nn.SmoothL1Loss()
-                if prioritized:
-                    J_DQN = criterion(torch.sum(q_pred_e*(importance_d**(1-epsilon))), torch.sum(target*(importance_d**(1-epsilon))))
-                else:
-                    J_DQN = criterion(torch.sum(q_pred_e), torch.sum(target))
-                n_rewards, n_state, use = memory.buffer.get_n_steps(indices_d)
-                n_q_target = target_net.forward(n_state)
-                n_target = n_rewards[:,0] + n_rewards[:,1] * gamma + (gamma**2)*target_net.max(n_q_target,n_state).squeeze(0)*(use.squeeze(1))
-                J_N = criterion(torch.sum(q_pred_e), torch.sum(n_target))
-                J = J_DQN + lambda_1*J_N + lambda_2*J_E
-                J.backward()
-                optimizer.step()
-                updates += 1
-                if prioritized:
-                    errors = target - q_pred_e.squeeze(1)
-                    memory.buffer.set_priority(indices_d, errors)
-                if updates % target_update == 0:
-                    target_net.load_state_dict(net.state_dict())
+            net.zero_grad()
+            q_pred_e = net.forward(state_d).gather(1, action_d.unsqueeze(1).type(torch.int64))
+            q_target = target_net.forward(state_d)
+            q_target_next = net.max(target_net.forward(next_state_d), next_state_d)
+            J_E = target_net.je_loss(action_d, q_target, state_d, dem_d) - torch.sum(q_pred_e*dem_d)
+            target = reward_d + gamma*q_target_next*(~done_d)
+            criterion = nn.SmoothL1Loss()
+            if prioritized:
+                J_DQN = criterion(torch.sum(q_pred_e*(importance_d**(1-epsilon))), torch.sum(target*(importance_d**(1-epsilon))))
+            else:
+                J_DQN = criterion(torch.sum(q_pred_e), torch.sum(target))
+            n_rewards, n_state, use = memory.buffer.get_n_steps(indices_d)
+            n_q_target = target_net.forward(n_state)
+            n_target = n_rewards[:,0] + n_rewards[:,1] * gamma + (gamma**2)*target_net.max(n_q_target,n_state).squeeze(0)*(use.squeeze(1))
+            J_N = criterion(torch.sum(q_pred_e), torch.sum(n_target))
+            J = J_DQN + lambda_1*J_N + lambda_2*J_E
+            J.backward()
+            optimizer.step()
+            updates += 1
+            if prioritized:
+                errors = target - q_pred_e.squeeze(1)
+                memory.buffer.set_priority(indices_d, errors)
+            if updates % target_update == 0:
+                target_net.load_state_dict(net.state_dict())
         print("Finished Pre-Training!")
     stats = {"Loss": [], "Returns": []}
     steps = 0
@@ -77,12 +83,14 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
             memory.buffer.store_transition(state, action, reward, next_state, done, discounts, I)
             if steps % target_update == 0:
                 target_net.load_state_dict(net.state_dict())
+            epsilon = exploration.value(steps)
             state = next_state
             step = step + 1
             steps = steps + 1
-        if memory.is_sufficient():
-            indices, state_t, action_t, reward_t, next_state_t, _, _, done_t, importance, dem = memory.buffer.sample_memory()
-            for _ in range(epochs):
+            if memory.is_sufficient():
+                if prioritized:
+                    memory.buffer.set_beta(value=beta_schedule.value(steps))
+                indices, state_t, action_t, reward_t, next_state_t, _, _, done_t, importance, dem = memory.buffer.sample_memory()
                 net.zero_grad()
                 q_pred = net.forward(state_t).gather(1, action_t.unsqueeze(1).type(torch.int64))
                 q_target = net.max(target_net.forward(next_state_t), next_state_t)
@@ -91,7 +99,7 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
                 J_E = target_net.je_loss(action_t, q_target_state, state_t, dem) - torch.sum(q_pred*dem)
                 criterion = nn.SmoothL1Loss()
                 if prioritized:
-                    J_DQN = criterion(torch.sum(q_pred*(importance**(1-epsilon))), torch.sum(target*(importance**(1-epsilon))))
+                    J_DQN = criterion(torch.sum(q_pred*importance), torch.sum(target*importance))
                 else:
                     J_DQN = criterion(torch.sum(q_pred), torch.sum(target))
                 n_rewards, n_state, use = memory.buffer.get_n_steps(indices)
@@ -105,18 +113,14 @@ def dqn(env, net, episodes, env_version, net_version, plot_episode, alpha = 1e-5
                 if prioritized:
                     errors = target - q_pred.squeeze(1)
                     memory.buffer.set_priority(indices, errors)
-            stats["Loss"].append(J.detach().mean().item())
-            curr_lr = optimizer.param_groups[0]['lr']
-            if curr_lr > 1e-10:
-                scheduler.step()
-        if epsilon > epsilon_min:
-            epsilon = max(epsilon - epsilon_dec, epsilon_min)
+                stats["Loss"].append(J.detach().mean().item())
+                curr_lr = optimizer.param_groups[0]['lr']
+                if curr_lr > 1e-10:
+                    scheduler.step()
         if n_envs != 1:
             stats["Returns"].extend(ep_return.squeeze().tolist())
         else:
             stats["Returns"].append(ep_return)
-        # if episode in plot_episode:
-        #     plot_prog(env.envs[0], episode, net, env_version, net_version ,"dqn", env.size, instance, test)
     params = {"alpha": alpha, "gamma": gamma, "epsilon": initial_epsilon, "target_update": target_update, "prioritized": prioritized, "n_dem": n_dem}
     plot_moving_av(env.envs[0], stats["Returns"], episodes*n_envs, env_version, net_version, "dqn", window = window, instance = instance, test = test, params = params)
     plot_loss(env.envs[0], stats["Loss"], episodes, env_version, instance, net_version, "dqn", test, params = params)
