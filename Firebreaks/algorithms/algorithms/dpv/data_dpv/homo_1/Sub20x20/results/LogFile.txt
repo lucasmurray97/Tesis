@@ -1,0 +1,25 @@
+------ Command line values ------
+InFolder: /home/lucas/Tesis/Firebreaks/algorithms/algorithms/dpv/data_dpv/Sub20x20/ 
+OutFolder: /home/lucas/Tesis/Firebreaks/algorithms/algorithms/dpv/data_dpv/Sub20x20/results/ 
+WeatherOpt: random 
+HarvestPlan: /home/lucas/Tesis/Firebreaks/algorithms/algorithms/dpv/data_dpv/Sub20x20/firebreaks/HarvestedCells.csv 
+OutMessages: 1 
+Ignitions: 1 
+OutputGrids: 1 
+FinalGrid: 1 
+TotalYears: 1 
+TotalSims: 1 
+NWeatherFiles: 10 
+FirePeriodLength: 1.0 
+IgnitionRadius: 9 
+ROSThreshold: 0.1 
+HFIThreshold: 0.1 
+ROS-CV: 0.0 
+seed: 1061 
+Forest DataFrame from instance /home/lucas/Tesis/Firebreaks/algorithms/algorithms/dpv/data_dpv/Sub20x20/Data.csv
+Number of cells: 400
+
+To Harvest Cells :
+
+
+Weather DataFrame from instance /home/lucas/Tesis/Firebreaks/algorithms/algorithms/dpv/data_dpv/Sub20x20/Weather.csv

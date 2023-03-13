@@ -4,8 +4,8 @@ from enviroment.abstract_full_grid import Abstract_Full_Grid
 import torch.nn.functional as F
 import numpy as np
 class Full_Grid_V2(Abstract_Full_Grid):
-    def __init__(self, size, burn_value = 10, n_sims_final = 50, env_id = 0):
-        super().__init__(size, burn_value, n_sims_final, env_id)
+    def __init__(self, size, burn_value = 10, n_sims_final = 50, env_id = 0, instance = "homo_1"):
+        super().__init__(size, burn_value, n_sims_final, env_id, instance)
         self.actions_history = torch.ones(self.size**2, dtype=torch.bool)
         self.shape = (2, self.size, self.size)
         self._space = torch.zeros(3, self.size, self.size)

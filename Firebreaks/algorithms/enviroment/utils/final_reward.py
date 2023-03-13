@@ -13,7 +13,7 @@ def blockPrint():
     sys.stdout = open(os.devnull, 'w')
 def enablePrint():
     sys.stdout = sys.__stdout__
-def write_firewall_file(final_state, env_id = 0):
+def write_firewall_file(final_state, env_id = 0, instance = "homo_1"):
     """Function that writes the final state in the format delimited for firewalls in a file called HarvestedCells.csv"""
     i = 1
     firewalls = [1]
@@ -23,7 +23,7 @@ def write_firewall_file(final_state, env_id = 0):
         i+=1
     header = ['Year Number','Cell Numbers']
     absolute_path = os.path.dirname(__file__)
-    with open(f'{absolute_path}/firewall_grids/HarvestedCells_{env_id}.csv', 'w', encoding='UTF8') as f:
+    with open(f'{absolute_path}/instances/{instance}/firewall_grids/HarvestedCells_{env_id}.csv', 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
 
         # write the header
@@ -32,27 +32,28 @@ def write_firewall_file(final_state, env_id = 0):
         # write the data
         writer.writerow(firewalls)
     return
-def generate_reward(n_sims, size, env_id = 0):
+def generate_reward(n_sims, size, env_id = 0, instance = "homo_1"):
     absolute_path = os.path.dirname(__file__)
     """Function that generates the reward associated with the fire simulation"""
     data_directory = ""
     results_directory = ""
-    data_directory = f"{absolute_path}/data/Sub20x20_{env_id}/"
-    results_directory = f"{absolute_path}/results/Sub20x20_{env_id}/"
-    harvest_directory = f"{absolute_path}/firewall_grids/HarvestedCells_{env_id}.csv"
+    data_directory = f"{absolute_path}/instances/{instance}/data/Sub20x20_{env_id}/"
+    results_directory = f"{absolute_path}/instances/{instance}/results/Sub20x20_{env_id}/"
+    harvest_directory = f"{absolute_path}/instances/{instance}/firewall_grids/HarvestedCells_{env_id}.csv"
     try:
         shutil.rmtree(f'{results_directory}Grids/')
     except:
         pass
     # A command line input is simulated
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', '9', '--grids', '--HarvestedCells', harvest_directory]
+    ignition_rad = 4 if instance == "homo_2" else 9
+    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', str(ignition_rad), '--grids', '--HarvestedCells', harvest_directory]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
     main()
     enablePrint()
     # The grid from the final period is retrieved
     reward = 0
-    base_directory = f"{absolute_path}/results/Sub20x20_{env_id}/Grids/Grids"
+    base_directory = f"{absolute_path}/instances/{instance}/results/Sub20x20_{env_id}/Grids/Grids"
     for j in range(1, n_sims+1):
         directory = os.listdir(base_directory+str(j))
         numbers = []

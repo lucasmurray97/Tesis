@@ -32,7 +32,7 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
             plt.xlabel("Actions") 
             plt.ylabel("Action Probability") 
             plt.title(f"Action probabilities in state {i} after training in trajectory of agent")
-            plt.savefig(f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/{episodes}_ep/probabilities/post_train/probs_after_training_"+ str(i) +".png")
+            plt.savefig(f"{path}/{env_version}/{instance}/sub{size}x{size}/{net_version}/{algorithm}/{episodes}_ep/probabilities/post_train/probs_after_training_"+ str(i) +".png")
             plt.show()
             selected = a.multinomial(1).detach()
         state, _, done = env.step(selected)
@@ -42,7 +42,7 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
             plt.imshow(mat)
             plt.colorbar()
             plt.title(f"Agent's trajectory")
-            plt.savefig(f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/{episodes}_ep/trajectory/trajectory.png")
+            plt.savefig(f"{path}/{env_version}/{instance}/sub{size}x{size}/{net_version}/{algorithm}/{episodes}_ep/trajectory/trajectory.png")
             plt.show()
 
 def plot_trayectory_probs(env,episodes, net, env_version, net_version, algorithm, size, instance, test = False, params = {}):
@@ -76,7 +76,7 @@ def plot_trayectory_probs(env,episodes, net, env_version, net_version, algorithm
             plt.xlabel("Actions") 
             plt.ylabel("Action Probability") 
             plt.title(f"Action probabilities in state {i} after training in trajectory of agent")
-            plt.savefig(f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/probabilities/{params_dir}/{episodes}_ep/probs_after_training_"+ str(i) +".png")
+            plt.savefig(f"{path}/{env_version}/{instance}/sub{size}x{size}/{net_version}/{algorithm}/probabilities/{params_dir}/{episodes}_ep/probs_after_training_"+ str(i) +".png")
             plt.show()
             selected = a.multinomial(1).detach()
         state, _, done = env.step(selected)
@@ -86,7 +86,7 @@ def plot_trayectory_probs(env,episodes, net, env_version, net_version, algorithm
             plt.imshow(mat)
             plt.colorbar()
             plt.title(f"Agent's trajectory")
-            plt.savefig(f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/trajectory_episodes={episodes}_{params_dir}.png")
+            plt.savefig(f"{path}/{env_version}/{instance}/sub{size}x{size}/{net_version}/{algorithm}/trajectory_episodes={episodes}_{params_dir}.png")
             plt.show()
 
 def plot_moving_av(env, returns, episodes, env_version, net_version, algorithm, window = 100, drl = True, test = False, params = {}, instance = "sub20x20"):
@@ -105,7 +105,7 @@ def plot_moving_av(env, returns, episodes, env_version, net_version, algorithm, 
             plt.xlabel("Episode") 
             plt.ylabel("Returns") 
             plt.title(f"Returns for {episodes} episodes")
-            plt.savefig(f"{base_dir}/{env_version}/{instance}/{net_version}/{algorithm}/returns_episodes={episodes}_{params_dir}.png")
+            plt.savefig(f"{base_dir}/{env_version}/{instance}/sub{env.size}x{env.size}/{net_version}/{algorithm}/returns_episodes={episodes}_{params_dir}.png")
             plt.show() 
         else:
             ret = np.cumsum(returns, dtype=float)
@@ -116,7 +116,7 @@ def plot_moving_av(env, returns, episodes, env_version, net_version, algorithm, 
             plt.xlabel("Episode") 
             plt.ylabel("Average return") 
             plt.title(f"Average returns for {episodes} episodes")
-            plt.savefig(f"{base_dir}/{env_version}/{instance}/{net_version}/{algorithm}/returns_episodes={episodes}_{params_dir}.png")
+            plt.savefig(f"{base_dir}/{env_version}/{instance}/sub{env.size}x{env.size}/{net_version}/{algorithm}/returns_episodes={episodes}_{params_dir}.png")
             plt.show() 
     else:
         if len(returns) < window:
@@ -126,7 +126,7 @@ def plot_moving_av(env, returns, episodes, env_version, net_version, algorithm, 
             plt.xlabel("Episode") 
             plt.ylabel("Returns") 
             plt.title(f"Returns for {episodes} episodes")   
-            plt.savefig(f"{base_dir}/{env_version}/{instance}/{algorithm}/returns_episodes={episodes}_{params_dir}.png")
+            plt.savefig(f"{base_dir}/{env_version}/{instance}/sub{env.size}x{env.size}/{algorithm}/returns_episodes={episodes}_{params_dir}.png")
             plt.show() 
         else:
             ret = np.cumsum(returns, dtype=float)
@@ -137,7 +137,7 @@ def plot_moving_av(env, returns, episodes, env_version, net_version, algorithm, 
             plt.xlabel("Episode") 
             plt.ylabel("Average return") 
             plt.title(f"Average returns for {episodes} episodes")
-            plt.savefig(f"{base_dir}/{env_version}/{instance}/{algorithm}/returns_episodes={episodes}_{params_dir}.png")
+            plt.savefig(f"{base_dir}/{env_version}/{instance}/sub{env.size}x{env.size}/{algorithm}/returns_episodes={episodes}_{params_dir}.png")
             plt.show() 
 
 def plot_loss(env, loss, episodes, env_version, instance, net_version, algorithm, test, params = {}):
@@ -154,7 +154,7 @@ def plot_loss(env, loss, episodes, env_version, instance, net_version, algorithm
     plt.xlabel("Episode") 
     plt.ylabel("Loss") 
     plt.title(f"Loss for {episodes} episodes")
-    plt.savefig(f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/loss_episodes={episodes}_{params_dir}.png")
+    plt.savefig(f"{path}/{env_version}/{instance}/sub{env.size}x{env.size}/{net_version}/{algorithm}/loss_episodes={episodes}_{params_dir}.png")
     plt.show() 
 
 

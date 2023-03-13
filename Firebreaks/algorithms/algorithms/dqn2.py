@@ -135,6 +135,6 @@ def dqn2(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0.9
     params_dir = f"episodes={episodes*n_envs}_"
     for key in params.keys():
             params_dir += key + "=" + str(params[key]) + "_"
-    with open(f"data/{env.envs[0].name}/{instance}/{env_version}/{net_version}/2dqn/stats_{params_dir}.json", "w+") as write_file:
+    with open(f"data/{env.envs[0].name}/{env_version}/{instance}/sub{env.envs[0].size}x{env.envs[0].size}/{net_version}/2dqn/stats_{params_dir}.json", "w+") as write_file:
         json.dump(stats, write_file, indent=4)
     return stats

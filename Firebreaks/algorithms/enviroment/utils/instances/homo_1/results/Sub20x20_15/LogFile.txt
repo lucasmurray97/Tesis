@@ -1,0 +1,24 @@
+------ Command line values ------
+InFolder: /home/lucas/Tesis/Firebreaks/algorithms/enviroment/utils/instances/homo_1/data/Sub20x20_15/ 
+OutFolder: /home/lucas/Tesis/Firebreaks/algorithms/enviroment/utils/instances/homo_1/results/Sub20x20_15/ 
+WeatherOpt: random 
+HarvestPlan: /home/lucas/Tesis/Firebreaks/algorithms/enviroment/utils/instances/homo_1/firewall_grids/HarvestedCells_15.csv 
+Ignitions: 1 
+OutputGrids: 1 
+FinalGrid: 1 
+TotalYears: 1 
+TotalSims: 50 
+NWeatherFiles: 10 
+FirePeriodLength: 1.0 
+IgnitionRadius: 9 
+ROSThreshold: 0.1 
+HFIThreshold: 0.1 
+ROS-CV: 0.0 
+seed: 123 
+Forest DataFrame from instance /home/lucas/Tesis/Firebreaks/algorithms/enviroment/utils/instances/homo_1/data/Sub20x20_15/Data.csv
+Number of cells: 400
+
+To Harvest Cells :
+ 1: 57 58 77 78 97 98 117 118 165 166 171 172 185 186 191 192 339 340 359 360 
+
+Weather DataFrame from instance /home/lucas/Tesis/Firebreaks/algorithms/enviroment/utils/instances/homo_1/data/Sub20x20_15/Weather.csv

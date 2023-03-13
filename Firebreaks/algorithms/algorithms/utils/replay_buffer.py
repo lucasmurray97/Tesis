@@ -3,7 +3,7 @@ import torch
 import json
 import pickle
 class ReplayMemory:
-    def __init__(self, input_dims, max_mem, batch_size, demonstrate = False, n_dem = None, prioritized = False, env = "FG", version = 1, size = 20, n_envs = 16, gamma = 1., landa = 1., alpha = 0.6, beta = 0.4):
+    def __init__(self, input_dims, max_mem, batch_size, demonstrate = False, n_dem = None, prioritized = False, env = "FG", instance = "homo_1", version = 1, size = 20, n_envs = 16, gamma = 1., landa = 1., alpha = 0.6, beta = 0.4):
         self.size = size
         self.version = version
         self.demonstrate = demonstrate
@@ -11,6 +11,7 @@ class ReplayMemory:
         self.gamma = gamma
         self.landa = landa
         self.prioritized = prioritized
+        self.instance = instance
         if prioritized:
             self.buffer = PrioritizedReplayMemory(input_dims=input_dims, max_mem=max_mem, batch_size=batch_size, env=env, size=size, n_envs=n_envs, alpha = 0.6, beta = 0.4, eps = 1e-6)
         else:
@@ -23,8 +24,8 @@ class ReplayMemory:
         return self.buffer.mem_cntr > self.buffer.batch_size
 
     def load_demonstrations(self):
-        print("Loading demonstrations!")
-        file = open(f"algorithms/dpv/demonstrations/Sub{self.size}x{self.size}_full_grid_{self.version}.pkl", 'rb')
+        print(f"Loading demonstrations from {self.instance} Sub{self.size}x{self.size}!")
+        file = open(f"algorithms/dpv/demonstrations/{self.instance}/Sub{self.size}x{self.size}_full_grid_{self.version}.pkl", 'rb')
         demonstrations = pickle.load(file)
         n = 0
         end_flag = False

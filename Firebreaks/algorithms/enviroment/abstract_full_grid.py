@@ -9,8 +9,8 @@ import torchvision
 import torchvision.transforms.functional as F
 import os
 class Abstract_Full_Grid(Env):
-    def __init__(self, size, burn_value = 10, n_sims_final = 50, env_id = 0):
-        super().__init__(size, burn_value, env_id)
+    def __init__(self, size, burn_value = 10, n_sims_final = 50, env_id = 0, instance = "homo_1"):
+        super().__init__(size, burn_value, env_id, instance)
         assert size%2 == 0
         self.n_sims_final = n_sims_final
         self.name = "full_grid"
@@ -22,13 +22,14 @@ class Abstract_Full_Grid(Env):
         for i in range(self.size):
             for j in range(self.size):
                 self.action_map[pos] = (i,j)
-                if i < int((self.size**2)*0.05)//2:
-                    if j < int((self.size**2)*0.05)//2:
-                        self.forbidden_cells.append(pos)
+                if instance == "homo_1":
+                    if i < int((self.size**2)*0.05)//2:
+                        if j < int((self.size**2)*0.05)//2:
+                            self.forbidden_cells.append(pos)
                 pos += 1
         # Se incorpora la información correspondiente al tipo de combustible
         absolute_path = os.path.dirname(__file__)
-        path = f"{absolute_path}/utils/data/Sub20x20_{self.env_id}/Forest.asc"
+        path = f"{absolute_path}/utils/instances/{self.instance}/data/Sub20x20_{self.env_id}/Forest.asc"
         prop = self.size / 20
         a = self.down_scale(path, prop)
         forest = self.down_scale(path, prop)/101

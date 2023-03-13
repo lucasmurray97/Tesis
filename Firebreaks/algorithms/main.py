@@ -45,16 +45,16 @@ parser.add_argument('--gamma', type=float, required=False, nargs="?", default= 1
 parser.add_argument('--landa', type=float, required=False, nargs="?", default= 1)
 parser.add_argument('--exploration_fraction', type=float, required=False, nargs="?", default= 0.3)
 parser.add_argument('--epsilon', type=float, required=False, nargs="?", default= 1)
-parser.add_argument('--instance', type=str, required=False, nargs="?", default="sub20x20")
+parser.add_argument('--instance', type=str, required=False, nargs="?", default="homo_1")
 parser.add_argument('--test', action=argparse.BooleanOptionalAction, default=False)
 parser.add_argument('--save_weights', action=argparse.BooleanOptionalAction, default=False)
 parser.add_argument('--target_update', type=int, required=False, nargs="?", default=100)
 parser.add_argument('--max_mem', type=int, required=False, nargs="?", default=1000)
 parser.add_argument('--demonstrate', action=argparse.BooleanOptionalAction, default=False)
-parser.add_argument('--n_dem', type=int, required=False, nargs="?", default=1000)
+parser.add_argument('--n_dem', type=int, required=False, nargs="?", default=0)
 parser.add_argument('--prioritized', action=argparse.BooleanOptionalAction, default=False)
 parser.add_argument('--lr_decay', type=float, required=False, nargs="?", default= 0.01)
-parser.add_argument('--pre_epochs', type=int, required=False, nargs="?", default= 1000)
+parser.add_argument('--pre_epochs', type=int, required=False, nargs="?", default = 0)
 args = parser.parse_args()
 # We create the enviroment
 if args.env == "moving_grid":
@@ -73,11 +73,11 @@ elif args.env == "full_grid":
     if args.env_version == "v1":
         input_size =  1
         grid_size = args.size
-        env = Parallel_Wrapper(Full_Grid_V1, n_envs = n_envs, parameters = {"size": args.size})
+        env = Parallel_Wrapper(Full_Grid_V1, n_envs = n_envs, parameters = {"size": args.size, "instance": args.instance})
     elif args.env_version == "v2":
         input_size =  2
         grid_size = args.size
-        env = Parallel_Wrapper(Full_Grid_V2, n_envs = n_envs, parameters = {"size": args.size})
+        env = Parallel_Wrapper(Full_Grid_V2, n_envs = n_envs, parameters = {"size": args.size, "instance": args.instance})
     else:
         raise("Non existent version of enviroment")
 else:

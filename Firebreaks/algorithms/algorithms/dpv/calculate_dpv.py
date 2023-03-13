@@ -16,12 +16,12 @@ def blockPrint():
 def enablePrint():
     sys.stdout = sys.__stdout__
 
-def calculate_dpv(seed, n_sims):
+def calculate_dpv(seed, n_sims, instance = "homo_1"):
     absolute_path = os.path.dirname(__file__)
     """Function that generates the reward associated with the fire simulation"""
-    data_directory = f"{absolute_path}/data_dpv/Sub20x20/"
-    results_directory = f"{absolute_path}/data_dpv/Sub20x20/results/"
-    harvest_directory = f"{absolute_path}/data_dpv/Sub20x20/firebreaks/HarvestedCells.csv"
+    data_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/"
+    results_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/results/"
+    harvest_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"
     try:
         shutil.rmtree(f'{results_directory}Grids/')
         shutil.rmtree(f'{results_directory}Messages/')
@@ -34,7 +34,7 @@ def calculate_dpv(seed, n_sims):
     main()
     enablePrint()
     # Se leen los datos del bosque
-    Folder = f'{absolute_path}/data_dpv/Sub20x20/'
+    Folder = f'{absolute_path}/data_dpv/{instance}/Sub20x20/'
     #FBPlookup = Folder + 'fbp_lookup_table.csv' # Diccionario
     FBPlookup = Folder + 'fbp_lookup_table.csv' # Diccionario
     ForestFile = Folder + 'Forest.asc'   # Combustible

@@ -13,16 +13,16 @@ import pickle
 from tqdm import tqdm
 sys.path.append("../../")
 absolute_path = os.path.dirname(__file__)
-def baseline(size, n_sims, forbidden):
+def baseline(size, n_sims, forbidden, instance):
     quant = int((size**2)*0.05)
     if quant%2 == 0:
         quant += 1
-    erase_firebreaks()
+    erase_firebreaks(instance)
     seed = random.randint(0, 10000)
     firebreaks = [0]
     upscaled_firebreaks = [0]
     for _ in range(quant):
-        firebreaks = calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims, forbidden)
+        firebreaks = calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims, forbidden, instance)
     for i in firebreaks[1:]:
         if i in forbidden:
             print(firebreaks[1:], forbidden)
@@ -33,18 +33,18 @@ def baseline(size, n_sims, forbidden):
     return firebreaks[1:]
 
 
-def erase_firebreaks():
+def erase_firebreaks(instance):
     header = ['Year Number','Cell Numbers']
-    path = f"{absolute_path}/data_dpv/Sub20x20/firebreaks/HarvestedCells.csv"   
+    path = f"{absolute_path}/data_dpv/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"   
     # We empty out the firebreaks file
     with open(path, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         # write the header
         writer.writerow(header)
 
-def write_firebreaks(firebreaks):
+def write_firebreaks(firebreaks, instance):
     header = ['Year Number','Cell Numbers']
-    path = f"{absolute_path}/data_dpv/Sub20x20/firebreaks/HarvestedCells.csv"   
+    path = f"{absolute_path}/data_dpv/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"   
     # We empty out the firebreaks file
     with open(path, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
@@ -53,17 +53,18 @@ def write_firebreaks(firebreaks):
 
         writer.writerow(firebreaks)
 
-def eval(size, n_sims):
-    data_directory = f"{absolute_path}/data_dpv/Sub20x20/"
-    results_directory = f"{absolute_path}/data_dpv/Sub20x20/results/"
-    harvest_directory = f"{absolute_path}/data_dpv/Sub20x20/firebreaks/HarvestedCells.csv"
+def eval(size, n_sims, instance):
+    data_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/"
+    results_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/results/"
+    harvest_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"
     try:
         shutil.rmtree(f'{results_directory}Grids/')
         shutil.rmtree(f'{results_directory}Messages/')
     except:
         pass
     # A command line input is simulated
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', '9', '--grids', '--output-messages', '--HarvestedCells', harvest_directory]
+    ignition_rad = 4 if instance == "homo_2" else 9
+    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', str(ignition_rad), '--grids', '--output-messages', '--HarvestedCells', harvest_directory]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
     main()
@@ -83,17 +84,17 @@ def eval(size, n_sims):
                 reward-= 1
     return (reward/n_sims)
 
-def simulate_episode(size, n_sims, n_sims_eval, forbidden):
-    solution = baseline(size, n_sims, forbidden)
-    reward = eval(size, n_sims_eval)
+def simulate_episode(size, n_sims, n_sims_eval, forbidden, instance):
+    solution = baseline(size, n_sims, forbidden, instance)
+    reward = eval(size, n_sims_eval, instance)
     episode_data = []
     for i in range(len(solution)-1):
         episode_data.append([solution[i], 0, False])
     episode_data.append([solution[-1], reward, True])
     return episode_data
 
-def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims, forbidden):
-    dpvs = calculate_dpv(seed, n_sims)
+def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims, forbidden, instance):
+    dpvs = calculate_dpv(seed, n_sims, instance=instance)
     dpvs = dict(enumerate(list(dpvs.values()), 0))
     if size == 20:
         for j in forbidden:
@@ -104,7 +105,7 @@ def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims, forbidd
         if dpvs[firebreak] == 0:
             firebreak = random.choice(list(dpvs.keys()))
         firebreaks.append(firebreak)
-        write_firebreaks(map(lambda x:x+1, firebreaks))
+        write_firebreaks(map(lambda x:x+1, firebreaks), instance)
         return firebreaks
     else:
         values = list(dpvs.values())
@@ -128,14 +129,14 @@ def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims, forbidd
         for i in upscaled_flattened.keys():
             if upscaled_flattened[i] == 1:
                 upscaled_firebreaks.append(i)
-        write_firebreaks(map(lambda x:x+1, upscaled_firebreaks))
+        write_firebreaks(map(lambda x:x+1, upscaled_firebreaks), instance)
         return firebreaks
 
-def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version):
+def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version, instance = "homo_1"):
     data = {}
     forbidden = env.forbidden_cells
     for i in  tqdm(range(episodes)):
-        episode = simulate_episode(size, n_sims, n_sims_eval, forbidden)
+        episode = simulate_episode(size, n_sims, n_sims_eval, forbidden, instance)
         data[i] = {}
         step = 0
         state = env.reset()
@@ -151,11 +152,11 @@ def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version):
             state = next_state
             step += 1
             j += 1
-    with open(f"algorithms/dpv/demonstrations/Sub{size}x{size}_full_grid_{version}.pkl", "wb+") as write_file:
+    with open(f"algorithms/dpv/demonstrations/{instance}/Sub{size}x{size}_full_grid_{version}.pkl", "wb+") as write_file:
         pickle.dump(data, write_file)
-    file = open(f"algorithms/dpv/demonstrations/Sub{size}x{size}_full_grid_{version}.pkl", 'rb')    
+    file = open(f"algorithms/dpv/demonstrations/{instance}/Sub{size}x{size}_full_grid_{version}.pkl", 'rb')    
     n_dems = pickle.load(file)
-    print(len(n_dems.keys()))
+    print(f"Wrote {len(n_dems.keys())} demons in dpv/demonstrations/{instance}/Sub{size}x{size}_full_grid_{version}")
 
 # env = Full_Grid_V2(6)
 # generate_demonstrations(10, 6, 1, 10, env, 1)

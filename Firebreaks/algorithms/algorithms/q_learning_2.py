@@ -6,7 +6,7 @@ from algorithms.utils.q_learning_tools import Q_Table_2, Q_Table
 from algorithms.utils.plot_progress import plot_moving_av
 import matplotlib.pyplot as plt
 import json
-def q_learning(size, env, episodes, env_version, plot_episode = [], alpha = 1e-5, gamma = 0.99, n_envs = 8, epsilon = 0.15, instance = "sub2x2", window = 10):
+def q_learning(size, env, episodes, env_version, plot_episode = [], alpha = 1e-5, gamma = 0.99, n_envs = 8, epsilon = 0.15, instance = "homo_1", window = 10):
     if env.envs[0].name == "moving_grid":
         q_table = Q_Table_2(size = size, alpha = alpha, gamma = gamma, epsilon = epsilon, n_envs = n_envs)
     else:
@@ -30,6 +30,7 @@ def q_learning(size, env, episodes, env_version, plot_episode = [], alpha = 1e-5
     state = env.envs[0].reset()
     step = 0
     for i in range(env.envs[0].get_episode_len()):
+        state = state.cuda()
         selected = q_table.max_action(state, step)
         state, done, _ = env.envs[0].step(selected)
         step += 1
@@ -39,12 +40,12 @@ def q_learning(size, env, episodes, env_version, plot_episode = [], alpha = 1e-5
             plt.imshow(mat)
             plt.colorbar()
             plt.title(f"Agent's trajectory after {episodes} episodes")
-            plt.savefig(f"figures_tuning/{env.envs[0].get_name()}/{env_version}/{instance}/q_learning_2/trajectory_episodes={episodes}_lr={alpha}_eps={epsilon}.png")
+            plt.savefig(f"figures_tuning/{env.envs[0].get_name()}/{env_version}/{instance}/sub{env.envs[0].size}x{env.envs[0].size}/q_learning_2/trajectory_episodes={episodes}_lr={alpha}_eps={epsilon}.png")
             plt.show()
     params_dir = f"episodes={episodes*n_envs}_"
     for key in params.keys():
             params_dir += key + "=" + str(params[key]) + "_"
     stats = {"Returns": returns}
-    with open(f"data/{env.envs[0].name}/{instance}/q_learning/stats_{params_dir}.json", "w+") as write_file:
+    with open(f"data/{env.envs[0].name}/{env_version}/{instance}/sub{env.envs[0].size}x{env.envs[0].size}/q_learning/stats_{params_dir}.json", "w+") as write_file:
         json.dump(stats, write_file, indent=4)
     return returns, q_table
