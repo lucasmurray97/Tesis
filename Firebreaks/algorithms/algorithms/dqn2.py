@@ -20,7 +20,7 @@ def dqn2(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0.9
     lambda1 = lambda epoch: 1/(1 + lr_decay*epoch)
     scheduler = LambdaLR(optimizer,lr_lambda=lambda1)
     env_shape = env.env_shape
-    memory = ReplayMemory(env_shape, max_mem=max_mem, batch_size=batch_size, demonstrate=demonstrate, n_dem=n_dem, env="FG", version=env_version[1], size=env_shape[1],n_envs=n_envs, gamma = gamma, landa = landa, prioritized=prioritized)
+    memory = ReplayMemory(env_shape, max_mem=max_mem, batch_size=batch_size, demonstrate=demonstrate, n_dem=n_dem, env="FG", version=env_version[1], size=env_shape[1],n_envs=n_envs, gamma = gamma, landa = landa, prioritized=prioritized, instance=instance)
     target_net = copy.deepcopy(net)
     exploration = LinearSchedule(schedule_timesteps=int(exploration_fraction * total_timesteps),
                                  initial_p=epsilon,
