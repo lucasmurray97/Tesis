@@ -24,7 +24,7 @@ class ReplayMemory:
         return self.buffer.mem_cntr > self.buffer.batch_size
 
     def load_demonstrations(self):
-        print(f"Loading demonstrations from {self.instance} Sub{self.size}x{self.size}!")
+        print(f"Loading demonstrations from {self.instance} Sub{self.size}x{self.size} version {self.version}!")
         file = open(f"algorithms/dpv/demonstrations/{self.instance}/Sub{self.size}x{self.size}_full_grid_{self.version}.pkl", 'rb')
         demonstrations = pickle.load(file)
         n = 0

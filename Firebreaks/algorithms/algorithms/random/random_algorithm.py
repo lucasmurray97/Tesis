@@ -19,18 +19,18 @@ def blockPrint():
 def enablePrint():
     sys.stdout = sys.__stdout__
 
-def erase_firebreaks():
+def erase_firebreaks(instance):
     header = ['Year Number','Cell Numbers']
-    path = f"{absolute_path}/data_random/Sub20x20/firebreaks/HarvestedCells.csv"   
+    path = f"{absolute_path}/data_random/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"   
     # We empty out the firebreaks file
     with open(path, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         # write the header
         writer.writerow(header)
 
-def write_firebreaks(firebreaks):
+def write_firebreaks(firebreaks, instance):
     header = ['Year Number','Cell Numbers']
-    path = f"{absolute_path}/data_random/Sub20x20/firebreaks/HarvestedCells.csv"   
+    path = f"{absolute_path}/data_random/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"   
     # We empty out the firebreaks file
     with open(path, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
@@ -38,8 +38,8 @@ def write_firebreaks(firebreaks):
         writer.writerow(header)
 
         writer.writerow(firebreaks)
-def random_firebreaks(size, forbidden):
-    erase_firebreaks()
+def random_firebreaks(size, forbidden, instance):
+    erase_firebreaks(instance)
     n_cells = size**2
     n_firebreaks = int((n_cells)*0.05)
     available_cells = [i for i in range(n_cells)]
@@ -55,26 +55,27 @@ def random_firebreaks(size, forbidden):
         for i in upscaled_flattened.keys():
             if upscaled_flattened[i] == 1:
                 upscaled_firebreaks.append(i)
-        write_firebreaks([0] + upscaled_firebreaks)
+        write_firebreaks([0] + upscaled_firebreaks, instance)
         return firebreaks
     else:
-        write_firebreaks([0] + firebreaks)
+        write_firebreaks([0] + firebreaks, instance)
         return firebreaks
 
-def run_sim(size, env, seed=seed, n_sims=10):
+def run_sim(size, env, instance,seed=seed, n_sims=10):
     """Function that generates the reward associated with the fire simulation"""
     forbidden = env.forbidden_cells
-    firebreaks = random_firebreaks(size, forbidden)
-    data_directory = f"{absolute_path}/data_random/Sub20x20/"
-    results_directory = f"{absolute_path}/data_random/Sub20x20/results/"
-    harvest_directory = f"{absolute_path}/data_random/Sub20x20/firebreaks/HarvestedCells.csv"
+    firebreaks = random_firebreaks(size, forbidden, instance)
+    data_directory = f"{absolute_path}/data_random/{instance}/Sub20x20/"
+    results_directory = f"{absolute_path}/data_random/{instance}/Sub20x20/results/"
+    harvest_directory = f"{absolute_path}/data_random/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"
     try:
         shutil.rmtree(f'{results_directory}Grids/')
         shutil.rmtree(f'{results_directory}Messages/')
     except:
         pass
     # A command line input is simulated
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', '9', '--grids', '--output-messages', '--HarvestedCells', harvest_directory, '--seed', str(seed) ]
+    ignition_rad = 4
+    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', str(ignition_rad), '--grids', '--output-messages', '--HarvestedCells', harvest_directory, '--seed', str(seed) ]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
     main()
@@ -94,13 +95,13 @@ def run_sim(size, env, seed=seed, n_sims=10):
                 reward-= 1
     return firebreaks, (reward/n_sims)*(size/20)*10
 
-def generate_solutions(episodes, size, env, n_sims = 10, seed = seed):
+def generate_solutions(episodes, size, env, instance, n_sims = 10, seed = seed):
     rewards = []
     for i in tqdm(range(episodes)):
-        firebreaks, reward = run_sim(size, env, n_sims)
+        firebreaks, reward = run_sim(size, env,instance, n_sims)
         rewards.append(reward)
-    with open(f"{absolute_path}/solutions/Sub{size}x{size}_full_grid.pkl", "wb+") as write_file:
+    with open(f"{absolute_path}/solutions/{instance}/Sub{size}x{size}_full_grid.pkl", "wb+") as write_file:
             pickle.dump(rewards, write_file)
-    file = open(f"{absolute_path}/solutions/Sub{size}x{size}_full_grid.pkl", 'rb')    
+    file = open(f"{absolute_path}/solutions/{instance}/Sub{size}x{size}_full_grid.pkl", 'rb')    
     n_r = pickle.load(file)
     print(len(n_r))

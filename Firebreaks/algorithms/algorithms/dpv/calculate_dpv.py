@@ -28,7 +28,7 @@ def calculate_dpv(seed, n_sims, instance = "homo_1"):
     except:
         pass
     # A command line input is simulated
-    ignition_rad = 4 if instance == "homo_2" else 9
+    ignition_rad = 4
     sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', str(ignition_rad), '--grids', '--output-messages', '--HarvestedCells', harvest_directory, '--seed', str(seed) ]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()

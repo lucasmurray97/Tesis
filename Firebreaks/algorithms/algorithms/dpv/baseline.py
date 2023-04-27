@@ -63,7 +63,7 @@ def eval(size, n_sims, instance):
     except:
         pass
     # A command line input is simulated
-    ignition_rad = 4 if instance == "homo_2" else 9
+    ignition_rad = 4
     sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', str(ignition_rad), '--grids', '--output-messages', '--HarvestedCells', harvest_directory]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
@@ -82,7 +82,7 @@ def eval(size, n_sims, instance):
         for cell in my_data.flatten():
             if cell == 1:
                 reward-= 1
-    return (reward/n_sims)
+    return (reward/n_sims)*(size/20)*10
 
 def simulate_episode(size, n_sims, n_sims_eval, forbidden, instance):
     solution = baseline(size, n_sims, forbidden, instance)
