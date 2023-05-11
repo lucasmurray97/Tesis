@@ -63,8 +63,16 @@ def eval(size, n_sims, instance):
     except:
         pass
     # A command line input is simulated
-    ignition_rad = 4
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', str(ignition_rad), '--grids', '--output-messages', '--HarvestedCells', harvest_directory]
+    if instance == "homo_1":
+        if size == 20:
+            ignition_rad = 9
+        elif size == 10:
+            ignition_rad = 2
+        else:
+            ignition_rad = 1
+    else:
+        ignition_rad = 4
+    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '1.0', '--IgnitionRad', str(ignition_rad), '--grids', '--output-messages', '--HarvestedCells', harvest_directory]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
     main()
