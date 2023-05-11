@@ -14,7 +14,7 @@ class Abstract_Full_Grid(Env):
         assert size%2 == 0
         self.n_sims_final = n_sims_final
         self.name = "full_grid"
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         self._space = torch.zeros(2, self.size, self.size)
         self.action_map = {}
         self.forbidden_cells = []

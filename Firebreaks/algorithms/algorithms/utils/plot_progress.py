@@ -15,16 +15,16 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
         os.remove(probs_dir+i)
     for i in range(env.get_episode_len()):
         if algorithm == "reinforce":
-            a, _ = net.forward(state.cuda())
+            a, _ = net.forward(state)
         elif algorithm == "ddqn":
-            adv, value = net.forward(state.cuda())
+            adv, value = net.forward(state)
             q_pred = torch.add(value, (adv - adv.mean(dim=1, keepdim=True)))
             selected = net.sample(q_pred, state.unsqueeze(0))
         elif algorithm == "dqn" or algorithm == "2dqn":
-            q_pred = net.forward(state.cuda())
+            q_pred = net.forward(state)
             selected = net.sample(q_pred, state.unsqueeze(0))
         else:
-            a,_, _ = net.forward(state.cuda())
+            a,_, _ = net.forward(state)
         if algorithm != "ddqn" and algorithm != "dqn" and algorithm != "2dqn":
             f2 = plt.figure()
             plt.clf()
@@ -56,16 +56,16 @@ def plot_trayectory_probs(env,episodes, net, env_version, net_version, algorithm
         path = f"figures/{env.get_name()}"
     for i in range(env.get_episode_len()):
         if algorithm == "reinforce":
-            a, _ = net.forward(state.cuda())
+            a, _ = net.forward(state)
         elif algorithm == "ddqn":
-            adv, value = net.forward(state.cuda())
+            adv, value = net.forward(state)
             q_pred = torch.add(value, (adv - adv.mean(dim=1, keepdim=True)))
             selected = net.sample(q_pred, state.unsqueeze(0))
         elif algorithm == "dqn" or algorithm == "2dqn":
-            q_pred = net.forward(state.cuda())
+            q_pred = net.forward(state)
             selected = net.sample(q_pred, state.unsqueeze(0))
         else:
-            a,_, _ = net.forward(state.cuda())
+            a,_, _ = net.forward(state)
         path_ = f"{path}/{env_version}/{instance}/{net_version}/{algorithm}/probabilities/{params_dir}/{episodes}_ep"
         if not os.path.exists(path_):
             os.makedirs(path_)

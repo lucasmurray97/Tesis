@@ -97,7 +97,7 @@ else:
     path = "figures"
 # We create the net if needed:
 if args.net_version != None:
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
     only_q = args.algorithm == "dqn" or  args.algorithm =="2dqn"
     if args.net_version == "small":
         if args.env_version != "v2":

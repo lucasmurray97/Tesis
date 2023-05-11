@@ -7,7 +7,7 @@ import itertools
 import numpy as np
 class Q_Table:
     def __init__(self, size, alpha = 1e-4, gamma = 0.99, n_envs = 8, epsilon = 0.1):
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         self.size = size
         self.alpha = alpha
         self.gamma = gamma
@@ -127,7 +127,7 @@ class Q_Table:
 
 class Q_Table_2:
     def __init__(self, size, alpha = 1e-4, gamma = 0.99, n_envs = 8, epsilon = 0.1):
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         self.size = size
         self.alpha = alpha
         self.gamma = gamma

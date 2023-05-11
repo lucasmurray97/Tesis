@@ -10,7 +10,7 @@ class Parallel_Wrapper():
         self.env = env
         parameters["env_id"] = 0
         self.envs = [env(**parameters)] 
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         self.lock = threading.Lock()
         for i in range(self.n_envs - 1):
             parameters["env_id"] = i + 1

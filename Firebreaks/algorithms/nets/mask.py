@@ -11,7 +11,7 @@ class CategoricalMasked(Categorical):
     def __init__(self, logits: torch.Tensor, mask: Optional[torch.Tensor] = None):
         self.mask = mask
         self.batch, self.nb_action = logits.size()
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         logits.to(self.device)
         if mask is None:
             super(CategoricalMasked, self).__init__(logits=logits)
@@ -38,7 +38,7 @@ class CategoricalMasked(Categorical):
         return -reduce(p_log_p, "b a -> b", "sum", b=self.batch, a=self.nb_action)
     
 def generate_mask(state, forbidden_cells, version):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cpu')
     masks = []
     for i in range(state.shape[0]):
         masks.append(generate_mask_indiv(state[i], forbidden_cells = forbidden_cells, version=version))
@@ -61,7 +61,7 @@ def generate_mask_indiv(state, forbidden_cells, version):
 
 class Q_Mask:
     def __init__(self, forbidden_cells, version):
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         self.forbidden_cells = forbidden_cells
         self.version = version
 

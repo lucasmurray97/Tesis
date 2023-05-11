@@ -46,7 +46,7 @@ class ReplayMemory:
 
 class ReplayMemoryBaseline:
     def __init__(self, input_dims, max_mem, batch_size, n_envs):
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         self.mem_size = max_mem
         self.batch_size = batch_size
         self.mem_cntr = 0
@@ -149,7 +149,7 @@ class ReplayMemoryBaseline:
         
 class PrioritizedReplayMemory:
     def __init__(self, input_dims, max_mem, batch_size, n_envs, env = "FG", size = 20, alpha = 0.6, beta = 0.4, eps = 1e-6):
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         self.mem_size = max_mem
         self.batch_size = batch_size
         self.alpha = alpha

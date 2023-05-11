@@ -15,7 +15,7 @@ class Moving_Grid(Env):
         self.name = "moving_grid"
         self.agent_dim = agent_dim # Dimensión del scope del agente
         self.agent_id = agent_id # Número que representa las celdas en donde está el agente
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cpu')
         self._space = torch.zeros(3, self.size, self.size) # Privado, corresponde al espacio del ambiente -> Tensor de 3 x size x size
         self.shape = (3, self.size**2, self.size**2)
         self._agent_location = np.zeros(2, dtype=int) # Privado, ubicación de la primera entrada del scope del agente 
