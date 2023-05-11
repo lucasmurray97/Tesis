@@ -31,7 +31,7 @@ except:
   pass
 n_sims = 10
 ignition_rad = 9
-sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', str(ignition_rad),'--stats', '--allPlots', '--grids', '--output-messages', '--combine']
+sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '1.0', '--IgnitionRad', str(ignition_rad),'--stats', '--grids', '--output-messages', '--combine']
 main()
 base_directory = f"{results_directory}Grids/Grids"
 reward = 0
