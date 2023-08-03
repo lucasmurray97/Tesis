@@ -70,7 +70,7 @@ def eval(size, n_sims, instance):
         elif size == 10:
             ignition_rad = 2
         else:
-            ignition_rad = 1
+            ignition_rad = 0
     else:
         ros_cv = 0.0
         ignition_rad = 4
@@ -123,7 +123,7 @@ def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims, forbidd
         new_dpvs = dict(enumerate(shrinked.flatten(), 0))
         for j in forbidden:
             new_dpvs.pop(j, None)
-        for k in firebreaks:
+        for k in firebreaks[1:]:
             new_dpvs.pop(k, None)
         firebreak = max(new_dpvs, key=new_dpvs.get)
         if new_dpvs[firebreak] == 0:
@@ -166,8 +166,6 @@ def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version, i
     n_dems = pickle.load(file)
     print(f"Wrote {len(n_dems.keys())} demons in dpv/demonstrations/{instance}/Sub{size}x{size}_full_grid_{version}")
 
-# env = Full_Grid_V2(6)
-# generate_demonstrations(10, 6, 1, 10, env, 1)
 
 
 

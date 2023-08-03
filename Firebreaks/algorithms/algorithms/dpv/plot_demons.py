@@ -2,7 +2,7 @@ import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-size = 10
+size = 6
 instance = "homo_2"
 quant = int((size**2)*0.05)
 if quant%2 == 0:
