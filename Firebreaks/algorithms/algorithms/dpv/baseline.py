@@ -64,6 +64,7 @@ def eval(size, n_sims, instance):
         pass
     # A command line input is simulated
     if instance == "homo_1":
+        ros_cv = 1.0
         if size == 20:
             ignition_rad = 9
         elif size == 10:
@@ -71,21 +72,20 @@ def eval(size, n_sims, instance):
         else:
             ignition_rad = 1
     else:
+        ros_cv = 0.0
         ignition_rad = 4
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '1.0', '--IgnitionRad', str(ignition_rad), '--grids', '--output-messages', '--HarvestedCells', harvest_directory]
+    seed = random.randrange(0,10000)
+    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '350', '--Fire-Period-Length', '1.0', '--ROS-CV', str(ros_cv), '--IgnitionRad', str(ignition_rad), '--HarvestedCells', harvest_directory, '--seed', str(seed)]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
     main()
     enablePrint()
     reward = 0
-    base_directory = f"{results_directory}/Grids/Grids"
+    base_directory = f"{results_directory}Grids/Grids"
     for j in range(1, n_sims+1):
-        directory = os.listdir(base_directory+str(j))
-        numbers = []
-        for i in directory:
-            numbers.append(int(i.split("d")[1].split(".")[0]))
-        maxi = "0"+str(max(numbers))
-        my_data = genfromtxt(base_directory+str(j)+'/ForestGrid' + maxi +'.csv', delimiter=',')
+        dir = f"{base_directory}{str(j)}/"
+        files = os.listdir(dir)
+        my_data = genfromtxt(dir+files[-1], delimiter=',')
         # Burned cells are counted and turned into negative rewards
         for cell in my_data.flatten():
             if cell == 1:

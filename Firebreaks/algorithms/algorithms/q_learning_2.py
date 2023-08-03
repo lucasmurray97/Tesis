@@ -30,7 +30,7 @@ def q_learning(size, env, episodes, env_version, plot_episode = [], alpha = 1e-5
     state = env.envs[0].reset()
     step = 0
     for i in range(env.envs[0].get_episode_len()):
-        state = state.cuda()
+        # state = state.cuda()
         selected = q_table.max_action(state, step)
         state, done, _ = env.envs[0].step(selected)
         step += 1

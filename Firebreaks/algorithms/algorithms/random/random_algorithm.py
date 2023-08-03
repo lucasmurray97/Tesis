@@ -50,7 +50,7 @@ def random_firebreaks(size, forbidden, instance):
         shrinked = np.zeros(n_cells, dtype='uint8')
         shrinked[firebreaks] = 1
         upscaled = cv2.resize(src = shrinked.reshape(size,size), dsize=(20,20), interpolation = 0)
-        upscaled_flattened = dict(enumerate(upscaled.flatten(), 0))
+        upscaled_flattened = dict(enumerate(upscaled.flatten(), 1))
         upscaled_firebreaks = []
         for i in upscaled_flattened.keys():
             if upscaled_flattened[i] == 1:
@@ -75,6 +75,7 @@ def run_sim(size, env, instance,seed=seed, n_sims=10):
         pass
     # A command line input is simulated
     if instance == "homo_1":
+        ros_cv = 1.0
         if size == 20:
             ignition_rad = 9
         elif size == 10:
@@ -82,8 +83,10 @@ def run_sim(size, env, instance,seed=seed, n_sims=10):
         else:
             ignition_rad = 1
     else:
+        ros_cv = 0.0
         ignition_rad = 4
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '1.0', '--IgnitionRad', str(ignition_rad), '--grids', '--output-messages', '--HarvestedCells', harvest_directory, '--seed', str(seed) ]
+    seed = random.randrange(0,10000)
+    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '350', '--Fire-Period-Length', '1.0', '--ROS-CV', str(ros_cv), '--IgnitionRad', str(ignition_rad), '--HarvestedCells', harvest_directory, '--seed', str(seed)]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
     main()
@@ -91,12 +94,9 @@ def run_sim(size, env, instance,seed=seed, n_sims=10):
     reward = 0
     base_directory = f"{results_directory}/Grids/Grids"
     for j in range(1, n_sims+1):
-        directory = os.listdir(base_directory+str(j))
-        numbers = []
-        for i in directory:
-            numbers.append(int(i.split("d")[1].split(".")[0]))
-        maxi = "0"+str(max(numbers))
-        my_data = genfromtxt(base_directory+str(j)+'/ForestGrid' + maxi +'.csv', delimiter=',')
+        dir = f"{base_directory}{str(j)}/"
+        files = os.listdir(dir)
+        my_data = genfromtxt(dir+files[-1], delimiter=',')
         # Burned cells are counted and turned into negative rewards
         for cell in my_data.flatten():
             if cell == 1:

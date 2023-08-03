@@ -3,18 +3,18 @@ import json
 import numpy as np
 import pickle
 size = 20
-instance = "homo_1"
-env_version = "v1"
-net_version = "small"
+instance = "homo_2"
+env_version = "v2"
+net_version = "big"
 demonstrations = True
 if demonstrations:
     pre_epochs = 20000
-    n_dem = 50000
-    episodes = 32000
+    n_dem = 100000
+    episodes = 3200
 else:
     pre_epochs = 0
     n_dem = 0
-    episodes = 16000
+    episodes = 8000
 file_dqn = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/dqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=False_n_dem={n_dem}_exploration=0.5_pre_epochs={pre_epochs}_.json", 'r')
 stats_dqn = json.load(file_dqn)
 file_2dqn = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/2dqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=False_n_dem={n_dem}_exploration=0.5_pre_epochs={pre_epochs}_.json", 'r')
@@ -26,8 +26,8 @@ file_dqn_p = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_ver
 stats_dqn_p = json.load(file_dqn_p)
 file_2dqn_p = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/2dqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=True_n_dem={n_dem}_exploration=0.5_pre_epochs={pre_epochs}_.json", 'r')
 stats_2dqn_p = json.load(file_2dqn_p)
-# file_ddqn_p = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/ddqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=True_n_dem={n_dem}_exploration=0.5_pre_epochs={pre_epochs}_.json", 'r')
-# # stats_ddqn_p = json.load(file_ddqn_p)
+file_ddqn_p = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/ddqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=True_n_dem={n_dem}_exploration=0.5_pre_epochs={pre_epochs}_.json", 'r')
+stats_ddqn_p = json.load(file_ddqn_p)
 
 file_baseline = open(f"../algorithms/dpv/demonstrations/{instance}/Sub{size}x{size}_full_grid_1.pkl", 'rb')
 stats_baseline = pickle.load(file_baseline)
@@ -35,15 +35,17 @@ stats_baseline = pickle.load(file_baseline)
 file_random = open(f"../algorithms/random/solutions/{instance}/Sub{size}x{size}_full_grid.pkl", 'rb')
 stats_random = pickle.load(file_random)
 
+if instance == "homo_1":
+    file_optimal = open(f"../algorithms/optimal/solutions/{instance}/Sub{size}x{size}_full_grid.pkl", 'rb')
+    stats_optimal = pickle.load(file_optimal)
 returns = []
 for i in stats_baseline.keys():
     ep_ret = 0
     for j in stats_baseline[i].keys():
         ep_ret += stats_baseline[i][j][2]
         if stats_baseline[i][j][3]:
-            print(stats_baseline[i][j][2])
             returns.append(stats_baseline[i][j][2])
-window = 5000
+window = 800
 
 ret_dqn = np.cumsum(stats_dqn["Returns"], dtype=float)
 x = np.linspace(0, 1, len(ret_dqn[window - 1:]))
@@ -58,9 +60,9 @@ x = np.linspace(0, 1, len(ret_dqn_p[window - 1:]))
 ret_dqn_p[window:] = ret_dqn_p[window:] - ret_dqn_p[:-window]
 ret_2dqn_p = np.cumsum(stats_2dqn_p["Returns"], dtype=float)
 ret_2dqn_p[window:] = ret_2dqn_p[window:] - ret_2dqn_p[:-window]
-# # ret_ddqn_p = np.cumsum(stats_ddqn_p["Returns"], dtype=float)
-# # # ret_ddqn_p[window:] = ret_ddqn_p[window:] - ret_ddqn_p[:-window]
-window2 = 50
+ret_ddqn_p = np.cumsum(stats_ddqn_p["Returns"], dtype=float)
+ret_ddqn_p[window:] = ret_ddqn_p[window:] - ret_ddqn_p[:-window]
+window2 = 3000
 ret_baseline = np.cumsum(returns, dtype=float)
 ret_baseline[window2:] = ret_baseline[window2:] - ret_baseline[:-window2]
 x2 = np.linspace(0, 1, len(ret_baseline[window2 - 1:]))
@@ -76,10 +78,15 @@ plt.plot(np.linspace(0, 1, len(ret_ddqn[window - 1:])), ret_ddqn[window - 1:] / 
 
 plt.plot(np.linspace(0, 1, len(ret_dqn_p[window - 1:])), ret_dqn_p[window - 1:] / window, label = "dqn_p")
 plt.plot(np.linspace(0, 1, len(ret_2dqn_p[window - 1:])), ret_2dqn_p[window - 1:] / window, label = "2dqn_p")
-# # # plt.plot(np.linspace(0, 1, len(ret_ddqn_p[window - 1:])), ret_ddqn_p[window - 1:] / window, label = "ddqn_p")
+plt.plot(np.linspace(0, 1, len(ret_ddqn_p[window - 1:])), ret_ddqn_p[window - 1:] / window, label = "ddqn_p")
 
 plt.plot(x2, ret_baseline[window2 - 1:] / window2, label = "baseline")
 plt.plot(x3, ret_random[window2 - 1:] / window2, label = "random")
+if instance == "homo_1":
+    window_opt = 1000
+    ret_optimal = np.cumsum(stats_optimal, dtype=float)
+    ret_optimal[window_opt:] = ret_optimal[window_opt:] - ret_optimal[:-window_opt]
+    plt.plot(np.linspace(0, 1, len(ret_optimal[window_opt - 1:])), ret_optimal[window_opt-1:]/window_opt, label = "optimal")
 
 plt.legend()
 plt.xlabel("Episode") 

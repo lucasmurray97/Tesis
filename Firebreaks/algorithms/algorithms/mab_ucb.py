@@ -80,7 +80,7 @@ def mab_ucb(env, size, episodes, window, instance):
     for i in tqdm(range(episodes)):
         reward, _ = mab.simulate_action()
         rewards.append(reward)
-    with open(f"data/{env.envs[0].name}/{instance}/sub{size}x{size}/mab_ucb/stats_{episodes}.json", "w+") as write_file:
+    with open(f"data/{env.envs[0].name}/v1/{instance}/sub{size}x{size}/mab_ucb/stats_{episodes}.json", "w+") as write_file:
         json.dump(rewards, write_file, indent=4)
     ret = np.cumsum(rewards, dtype=float)
     ret[window:] = ret[window:] - ret[:-window]

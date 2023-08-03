@@ -1,0 +1,25 @@
+------ Command line values ------
+InFolder: /home/maquinon/tesislucas/Tesis/Firebreaks/algorithms/algorithms/random/data_random/homo_2/Sub20x20/ 
+OutFolder: /home/maquinon/tesislucas/Tesis/Firebreaks/algorithms/algorithms/random/data_random/homo_2/Sub20x20/results/ 
+WeatherOpt: random 
+HarvestPlan: /home/maquinon/tesislucas/Tesis/Firebreaks/algorithms/algorithms/random/data_random/homo_2/Sub20x20/firebreaks/HarvestedCells.csv 
+Ignitions: 1 
+OutputGrids: 1 
+FinalGrid: 1 
+TotalYears: 1 
+TotalSims: 10 
+NWeatherFiles: 10 
+FirePeriodLength: 1.0 
+IgnitionRadius: 4 
+ROSThreshold: 0.1 
+HFIThreshold: 0.1 
+ROS-CV: 0.0 
+seed: 123 
+Forest DataFrame from instance /home/maquinon/tesislucas/Tesis/Firebreaks/algorithms/algorithms/random/data_random/homo_2/Sub20x20/Data.csv
+Number of cells: 400
+
+To Harvest Cells :
+ 1: 0 1 2 3 20 21 22 23 40 41 42 43 60 61 62 63 
+
+Weather DataFrame from instance /home/maquinon/tesislucas/Tesis/Firebreaks/algorithms/algorithms/random/data_random/homo_2/Sub20x20/Weather.csv
+Weather file selected: /home/maquinon/tesislucas/Tesis/Firebreaks/algorithms/algorithms/random/data_random/homo_2/Sub20x20/Weathers/Weather1.csv

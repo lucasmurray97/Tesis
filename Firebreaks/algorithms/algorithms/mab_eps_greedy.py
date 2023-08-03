@@ -7,7 +7,7 @@ from enviroment.utils.final_reward import write_firewall_file, generate_reward
 from tqdm import tqdm
 import random
 import matplotlib.pyplot as plt
-
+import json
 class MAB_eps_greedy:
     def __init__(self, size, c = 2, n_sims = 50, burn_value = 10, eps = 0.1):
         self.size = size
@@ -78,14 +78,16 @@ class MAB_eps_greedy_FG(MAB_eps_greedy):
 def mab_greedy(env, size, episodes, epsilon, window, instance):
     if env.envs[0].get_name() == "moving_grid":
         mab = MAB_eps_greedy_MG(size, eps = epsilon)
-        path = f"figures_tuning/moving_grid/mab/epsilon_greedy/{instance}"
+        path = f"figures_tuning/moving_grid/mab/{instance}/epsilon_greedy/sub{size}x{size}"
     else:
         mab = MAB_eps_greedy_FG(size, eps = epsilon)
-        path = f"figures_tuning/full_grid/mab/epsilon_greedy/{instance}"
+        path = f"figures_tuning/full_grid/mab/{instance}/epsilon_greedy/sub{size}x{size}"
     rewards = []
     for i in tqdm(range(episodes)):
         reward, solution = mab.simulate_action()
         rewards.append(reward)
+    with open(f"data/{env.envs[0].name}/v1/{instance}/sub{size}x{size}/mab_greedy/stats_{episodes}.json", "w+") as write_file:
+        json.dump(rewards, write_file, indent=4)
     ret = np.cumsum(rewards, dtype=float)
     ret[window:] = ret[window:] - ret[:-window]
     figure2 = plt.figure()

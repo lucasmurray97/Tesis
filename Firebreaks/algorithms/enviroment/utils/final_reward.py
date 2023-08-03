@@ -9,6 +9,7 @@ from cell2fire.Cell2FireC_class import Cell2FireC
 from cell2fire.main import main
 import os
 import shutil
+import random
 def blockPrint():
     sys.stdout = open(os.devnull, 'w')
 def enablePrint():
@@ -46,6 +47,7 @@ def generate_reward(n_sims, size, env_id = 0, instance = "homo_1"):
         pass
     # A command line input is simulated
     if instance == "homo_1":
+        ros_cv = 1.0
         if size == 20:
             ignition_rad = 9
         elif size == 10:
@@ -53,8 +55,10 @@ def generate_reward(n_sims, size, env_id = 0, instance = "homo_1"):
         else:
             ignition_rad = 1
     else:
+        ros_cv = 0.0
         ignition_rad = 4
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '1.0', '--IgnitionRad', str(ignition_rad), '--grids', '--HarvestedCells', harvest_directory]
+    seed = random.randrange(0,10000)
+    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '350', '--Fire-Period-Length', '1.0', '--ROS-CV', str(ros_cv), '--IgnitionRad', str(ignition_rad), '--HarvestedCells', harvest_directory, '--seed', str(seed)]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
     main()
@@ -63,12 +67,9 @@ def generate_reward(n_sims, size, env_id = 0, instance = "homo_1"):
     reward = 0
     base_directory = f"{absolute_path}/instances/{instance}/results/Sub20x20_{env_id}/Grids/Grids"
     for j in range(1, n_sims+1):
-        directory = os.listdir(base_directory+str(j))
-        numbers = []
-        for i in directory:
-            numbers.append(int(i.split("d")[1].split(".")[0]))
-        maxi = "0"+str(max(numbers))
-        my_data = genfromtxt(base_directory+str(j)+'/ForestGrid' + maxi +'.csv', delimiter=',')
+        dir = f"{base_directory}{str(j)}/"
+        files = os.listdir(dir)
+        my_data = genfromtxt(dir+files[-1], delimiter=',')
         # Burned cells are counted and turned into negative rewards
         for cell in my_data.flatten():
             if cell == 1:
