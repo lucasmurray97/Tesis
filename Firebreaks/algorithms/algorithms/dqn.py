@@ -13,7 +13,7 @@ from algorithms.utils.annealing import LinearSchedule
 import json
 import copy
 import random
-
+import os
 def dqn(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0.99, exploration_fraction = 0.3, landa = 0.95, epsilon = 1, n_envs = 8, pre_epochs = 1000, batch_size = 64, instance = "homo_1", test = False, window = 10, demonstrate = True, n_dem = 10, prioritized = False, max_mem = 1000, target_update = 100, lr_decay = 0.01, lambda_1=1.0, lambda_2=1.0):
     total_timesteps = env.envs[0].get_episode_len()*episodes
     optimizer = AdamW(net.parameters(), lr = alpha, amsgrad=True, weight_decay=1e-5)
@@ -37,8 +37,11 @@ def dqn(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0.99
             indices_d, state_d, action_d, reward_d, next_state_d, _, _, done_d, importance_d, dem_d = memory.buffer.sample_memory()
             net.zero_grad()
             q_pred_e = net.forward(state_d).gather(1, action_d.unsqueeze(1).type(torch.int64))
+            # print(q_pred_e.shape)
             q_target = target_net.forward(state_d)
+            # print(q_target.shape)
             q_target_next = net.max(target_net.forward(next_state_d), next_state_d)
+            # print(q_target_next.shape)
             J_E = target_net.je_loss(action_d, q_target, state_d, dem_d) - torch.sum(q_pred_e*dem_d)
             target = reward_d + gamma*q_target_next*(~done_d)
             criterion = nn.SmoothL1Loss()
@@ -128,6 +131,10 @@ def dqn(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0.99
     params_dir = f"episodes={episodes*n_envs}_"
     for key in params.keys():
             params_dir += key + "=" + str(params[key]) + "_"
+    try:
+        os.makedirs(f"data/{env.envs[0].name}/{env_version}/{instance}/sub{env.envs[0].size}x{env.envs[0].size}/{net_version}/dqn/")
+    except OSError as error:  
+        print(error)
     with open(f"data/{env.envs[0].name}/{env_version}/{instance}/sub{env.envs[0].size}x{env.envs[0].size}/{net_version}/dqn/stats_{params_dir}.json", "w+") as write_file:
         json.dump(stats, write_file, indent=4)
     return stats

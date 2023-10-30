@@ -1,4 +1,5 @@
 from algorithms.dpv.calculate_dpv import calculate_dpv, blockPrint, enablePrint, main
+from enviroment.utils.final_reward import write_firewall_file, generate_reward 
 import random
 import os
 import csv
@@ -35,7 +36,7 @@ def baseline(size, n_sims, forbidden, instance):
 
 def erase_firebreaks(instance):
     header = ['Year Number','Cell Numbers']
-    path = f"{absolute_path}/data_dpv/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"   
+    path = f"{absolute_path}/../../enviroment/utils/instances/{instance}/firewall_grids/HarvestedCells_0.csv"
     # We empty out the firebreaks file
     with open(path, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
@@ -44,7 +45,7 @@ def erase_firebreaks(instance):
 
 def write_firebreaks(firebreaks, instance):
     header = ['Year Number','Cell Numbers']
-    path = f"{absolute_path}/data_dpv/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"   
+    path = f"{absolute_path}/../../enviroment/utils/instances/{instance}/firewall_grids/HarvestedCells_0.csv"   
     # We empty out the firebreaks file
     with open(path, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
@@ -54,43 +55,7 @@ def write_firebreaks(firebreaks, instance):
         writer.writerow(firebreaks)
 
 def eval(size, n_sims, instance):
-    data_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/"
-    results_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/results/"
-    harvest_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"
-    try:
-        shutil.rmtree(f'{results_directory}Grids/')
-        shutil.rmtree(f'{results_directory}Messages/')
-    except:
-        pass
-    # A command line input is simulated
-    if instance == "homo_1":
-        ros_cv = 1.0
-        if size == 20:
-            ignition_rad = 9
-        elif size == 10:
-            ignition_rad = 2
-        else:
-            ignition_rad = 0
-    else:
-        ros_cv = 0.0
-        ignition_rad = 4
-    seed = random.randrange(0,10000)
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '350', '--Fire-Period-Length', '1.0', '--ROS-CV', str(ros_cv), '--IgnitionRad', str(ignition_rad), '--HarvestedCells', harvest_directory, '--seed', str(seed)]
-    # The main loop of the simulator is run for an instance of 20x20
-    blockPrint()
-    main()
-    enablePrint()
-    reward = 0
-    base_directory = f"{results_directory}Grids/Grids"
-    for j in range(1, n_sims+1):
-        dir = f"{base_directory}{str(j)}/"
-        files = os.listdir(dir)
-        my_data = genfromtxt(dir+files[-1], delimiter=',')
-        # Burned cells are counted and turned into negative rewards
-        for cell in my_data.flatten():
-            if cell == 1:
-                reward-= 1
-    return (reward/n_sims)*(size/20)*10
+    return generate_reward(n_sims, size, instance = instance)
 
 def simulate_episode(size, n_sims, n_sims_eval, forbidden, instance):
     solution = baseline(size, n_sims, forbidden, instance)
@@ -142,6 +107,7 @@ def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims, forbidd
 
 def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version, instance = "homo_1"):
     data = {}
+    history = {i: 0 for i in range(size**2)}
     forbidden = env.forbidden_cells
     for i in  tqdm(range(episodes)):
         episode = simulate_episode(size, n_sims, n_sims_eval, forbidden, instance)
@@ -152,6 +118,7 @@ def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version, i
         j = 0
         while not done:
             step_data = [state.clone().tolist().copy(), episode[j][0], episode[j][1], episode[j][2]]
+            history[episode[j][0]] += 1
             next_state, _, done = env.step(torch.Tensor([episode[j][0]]))
             step_data.append(next_state.clone().tolist().copy())
             if done:
@@ -160,8 +127,11 @@ def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version, i
             state = next_state
             step += 1
             j += 1
+    print(history)
     with open(f"algorithms/dpv/demonstrations/{instance}/Sub{size}x{size}_full_grid_{version}.pkl", "wb+") as write_file:
         pickle.dump(data, write_file)
+    with open(f"algorithms/dpv/demonstrations/{instance}/history_Sub{size}x{size}_full_grid_{version}.pkl", "wb+") as write_file:
+        pickle.dump(history, write_file)
     file = open(f"algorithms/dpv/demonstrations/{instance}/Sub{size}x{size}_full_grid_{version}.pkl", 'rb')    
     n_dems = pickle.load(file)
     print(f"Wrote {len(n_dems.keys())} demons in dpv/demonstrations/{instance}/Sub{size}x{size}_full_grid_{version}")

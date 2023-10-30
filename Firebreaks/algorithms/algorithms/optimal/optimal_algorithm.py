@@ -12,6 +12,7 @@ from numpy import genfromtxt
 from tqdm import tqdm
 import pickle
 sys.path.append("../../")
+from enviroment.utils.final_reward import write_firewall_file, generate_reward
 seed = random.randint(0, 10000)
 absolute_path = os.path.dirname(__file__)
 def blockPrint():
@@ -21,7 +22,7 @@ def enablePrint():
 
 def erase_firebreaks(instance):
     header = ['Year Number','Cell Numbers']
-    path = f"{absolute_path}/data_optimal/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"   
+    path = f"{absolute_path}/../../enviroment/utils/instances/{instance}/firewall_grids/HarvestedCells_0.csv"
     # We empty out the firebreaks file
     with open(path, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
@@ -30,12 +31,13 @@ def erase_firebreaks(instance):
 
 def write_firebreaks(firebreaks, instance):
     header = ['Year Number','Cell Numbers']
-    path = f"{absolute_path}/data_optimal/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"   
+    path = f"{absolute_path}/../../enviroment/utils/instances/{instance}/firewall_grids/HarvestedCells_0.csv"   
     # We empty out the firebreaks file
     with open(path, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
         # write the header
         writer.writerow(header)
+
         writer.writerow(firebreaks)
 
 def optimal_firebreaks(size, forbidden, instance):
@@ -76,44 +78,8 @@ def run_sim(size, env, instance,seed=seed, n_sims=10):
     """Function that generates the reward associated with the fire simulation"""
     forbidden = env.forbidden_cells
     firebreaks = optimal_firebreaks(size, forbidden, instance)
-    data_directory = f"{absolute_path}/data_optimal/{instance}/Sub20x20/"
-    results_directory = f"{absolute_path}/data_optimal/{instance}/Sub20x20/results/"
-    harvest_directory = f"{absolute_path}/data_optimal/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"
-    try:
-        shutil.rmtree(f'{results_directory}Grids/')
-        shutil.rmtree(f'{results_directory}Messages/')
-    except:
-        pass
-    # A command line input is simulated
-
-    if instance == "homo_1":
-        ros_cv = 1.0
-        if size == 20:
-            ignition_rad = 9
-        elif size == 10:
-            ignition_rad = 2
-        else:
-            ignition_rad = 1
-    else:
-        ros_cv = 0.0
-        ignition_rad = 4
-    seed = random.randrange(0,10000)
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '350', '--Fire-Period-Length', '1.0', '--ROS-CV', str(ros_cv), '--IgnitionRad', str(ignition_rad), '--HarvestedCells', harvest_directory, '--seed', str(seed)]
-    # The main loop of the simulator is run for an instance of 20x20
-    blockPrint()
-    main()
-    enablePrint()
-    reward = 0
-    base_directory = f"{results_directory}/Grids/Grids"
-    for j in range(1, n_sims+1):
-        dir = f"{base_directory}{str(j)}/"
-        files = os.listdir(dir)
-        my_data = genfromtxt(dir+files[-1], delimiter=',')
-        # Burned cells are counted and turned into negative rewards
-        for cell in my_data.flatten():
-            if cell == 1:
-                reward-= 1
-    return firebreaks, (reward/n_sims)*(size/20)*10
+    reward = generate_reward(n_sims, size, instance = instance)
+    return firebreaks, reward
 
 def generate_solutions(episodes, size, env, instance, n_sims = 10, seed = seed):
     rewards = []

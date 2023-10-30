@@ -14,6 +14,7 @@ from algorithms.utils.annealing import LinearSchedule
 import json
 import copy
 import random
+import os
 def ddqnet(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0.99, exploration_fraction = 0.3, landa = 0.95, epsilon = 1, n_envs = 8, pre_epochs = 1000, batch_size = 64, instance = "sub20x20", test = False, window = 10, demonstrate = True, n_dem = 10, prioritized = False, max_mem = 1000, target_update = 100, lr_decay = 0.01, lambda_1=1.0, lambda_2=1.0):
     total_timesteps = env.envs[0].get_episode_len()*episodes
     optimizer = AdamW(net.parameters(), lr = alpha)
@@ -36,15 +37,13 @@ def ddqnet(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0
         for _ in tqdm(range(pre_epochs)):
             indices, state_t, action_t, reward_t, next_state_t, _, _, done_t, importance, dem = memory.buffer.sample_memory()
             net.zero_grad()
-            adv, v = net.forward(state_t)
-            q_pred_e = (v + (adv - adv.mean(dim=1, keepdim=True))).gather(1, action_t.unsqueeze(1).type(torch.int64)).squeeze(1)
-            adv_target, v_target = target_net.forward(state_t)
-            q_target = (v_target + (adv_target - adv_target.mean(dim=1, keepdim=True)))
-            adv_next, v_next = net.forward(next_state_t)
-            q_pred_next = (v_next + (adv_next - adv_next.mean(dim=1, keepdim=True)))
+            q, v = net.forward(state_t)
+            q_pred_e = q.gather(1, action_t.unsqueeze(1).type(torch.int64)).squeeze(1)
+            q_target, v_target = target_net.forward(state_t)
+            q_pred_next, v_next = net.forward(next_state_t)
             max_action_next = net.sample(q_pred_next, next_state_t)
-            adv_next_target, v_next_target = target_net.forward(next_state_t)
-            q_target_next = (v_next_target + (adv_next_target - adv_next_target.mean(dim=1, keepdim=True))).gather(1, max_action_next.type(torch.int64)).squeeze(1)
+            q_next, v_next_target = target_net.forward(next_state_t)
+            q_target_next = q_next.gather(1, max_action_next.type(torch.int64)).squeeze(1)
             J_E = target_net.je_loss(action_t, q_target, state_t, dem) - torch.sum(q_pred_e)
             target = reward_t + gamma*q_target_next*(~done_t)
             criterion = nn.SmoothL1Loss()
@@ -53,8 +52,7 @@ def ddqnet(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0
             else:
                 J_DQN = criterion(torch.sum(q_pred_e), torch.sum(target))
             n_rewards, n_state, use = memory.buffer.get_n_steps(indices)
-            adv_n, v_n = target_net.forward(n_state)
-            n_q_target = (v_n + (adv_n - adv_n.mean(dim=1, keepdim=True)))
+            n_q_target, v_n = target_net.forward(n_state)
             n_max_action = net.sample(n_q_target, n_state)
             n_target = n_rewards[:,0] + n_rewards[:,1] * gamma + (gamma**2)*n_q_target.gather(1, n_max_action.type(torch.int64)).squeeze(0)*(use.squeeze(1))
             J_N = criterion(torch.sum(q_pred_e), torch.sum(n_target))
@@ -80,8 +78,7 @@ def ddqnet(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0
         I = 1.
         while not done:
             state_c = state.clone()
-            adv, v = net.forward(state_c)
-            q = (v + (adv - adv.mean(dim=1, keepdim=True)))
+            q, v = net.forward(state_c)
             if random.uniform(0, 1) > epsilon:
                 action = net.sample(q, state_c)
             else:
@@ -102,15 +99,13 @@ def ddqnet(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0
                     memory.buffer.set_beta(value=beta_schedule.value(steps))
             indices, state_t, action_t, reward_t, next_state_t, _, _, done_t, importance, dem = memory.buffer.sample_memory()
             net.zero_grad()
-            adv, v = net.forward(state_t)
-            q_pred = (v + (adv - adv.mean(dim=1, keepdim=True))).gather(1, action_t.unsqueeze(1).type(torch.int64)).squeeze(1)
-            adv_target, v_target = target_net.forward(state_t)
-            q_target = (v_target + (adv_target - adv_target.mean(dim=1, keepdim=True)))
-            adv_next, v_next = net.forward(next_state_t)
-            q_pred_next = (v_next + (adv_next - adv_next.mean(dim=1, keepdim=True)))
+            q, v = net.forward(state_t)
+            q_pred = q.gather(1, action_t.unsqueeze(1).type(torch.int64)).squeeze(1)
+            q_target, v_target = target_net.forward(state_t)
+            q_pred_next, v_next = net.forward(next_state_t)
             max_action_next = net.sample(q_pred_next, next_state_t)
-            adv_next_target, v_next_target = target_net.forward(next_state_t)
-            q_target_next = (v_next_target + (adv_next_target - adv_next_target.mean(dim=1, keepdim=True))).gather(1, max_action_next.type(torch.int64)).squeeze(1)
+            q_next_target, v_next_target = target_net.forward(next_state_t)
+            q_target_next = q_next_target.gather(1, max_action_next.type(torch.int64)).squeeze(1)
             J_E = target_net.je_loss(action_t, q_target, state_t, dem) - torch.sum(q_pred*dem)
             target = reward_t + gamma*q_target_next*(~done_t)
             criterion = nn.SmoothL1Loss()
@@ -119,8 +114,7 @@ def ddqnet(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0
             else:
                 J_DQN = criterion(torch.sum(q_pred), torch.sum(target))
             n_rewards, n_state, use = memory.buffer.get_n_steps(indices)
-            adv_n, v_n = target_net.forward(n_state)
-            n_q_target = (v_n + (adv_n - adv_n.mean(dim=1, keepdim=True)))
+            n_q_target, v_n = target_net.forward(n_state)
             n_max_action = net.sample(n_q_target, n_state)
             n_target = n_rewards[:,0] + n_rewards[:,1] * gamma + (gamma**2)*n_q_target.gather(1, n_max_action.type(torch.int64)).squeeze(0)*(use.squeeze(1))
             J_N = criterion(torch.sum(q_pred), torch.sum(n_target))
@@ -146,6 +140,10 @@ def ddqnet(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0
     params_dir = f"episodes={episodes*n_envs}_"
     for key in params.keys():
             params_dir += key + "=" + str(params[key]) + "_"
+    try:
+        os.makedirs(f"data/{env.envs[0].name}/{env_version}/{instance}/sub{env.envs[0].size}x{env.envs[0].size}/{net_version}/ddqn/")
+    except OSError as error:  
+        print(error)
     with open(f"data/{env.envs[0].name}/{env_version}/{instance}/sub{env.envs[0].size}x{env.envs[0].size}/{net_version}/ddqn/stats_{params_dir}.json", "w+") as write_file:
         json.dump(stats, write_file, indent=4)
     return stats

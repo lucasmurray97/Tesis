@@ -19,9 +19,9 @@ def enablePrint():
 def calculate_dpv(seed, n_sims, instance = "homo_1"):
     absolute_path = os.path.dirname(__file__)
     """Function that generates the reward associated with the fire simulation"""
-    data_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/"
-    results_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/results/"
-    harvest_directory = f"{absolute_path}/data_dpv/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"
+    data_directory = f"{absolute_path}/../../enviroment/utils/instances/{instance}/data/Sub20x20_0/"
+    results_directory = f"{absolute_path}/../../enviroment/utils/instances/{instance}/results/Sub20x20_0/"
+    harvest_directory = f"{absolute_path}/../../enviroment/utils/instances/{instance}/firewall_grids/HarvestedCells_0.csv"
     try:
         shutil.rmtree(f'{results_directory}Grids/')
         shutil.rmtree(f'{results_directory}Messages/')
@@ -35,7 +35,7 @@ def calculate_dpv(seed, n_sims, instance = "homo_1"):
     main()
     enablePrint()
     # Se leen los datos del bosque
-    Folder = f'{absolute_path}/data_dpv/{instance}/Sub20x20/'
+    Folder = data_directory
     #FBPlookup = Folder + 'fbp_lookup_table.csv' # Diccionario
     FBPlookup = Folder + 'fbp_lookup_table.csv' # Diccionario
     ForestFile = Folder + 'Forest.asc'   # Combustible
@@ -90,14 +90,14 @@ def calculate_dpv(seed, n_sims, instance = "homo_1"):
         FAG.add_edges_from([(i,j) for j in Adjacents[i]])
         ColorsAvail[i] = Colors[i-1]
 
-    cmdoutput1 = os.listdir(Folder + 'results/Messages')
+    cmdoutput1 = os.listdir(results_directory + 'Messages/')
     if ".DS_Store" in cmdoutput1:
         idx = cmdoutput1.index('.DS_Store') # Busca el indice que hay que eliminar
         del cmdoutput1[idx]
     if "desktop.ini" in cmdoutput1:
         idx = cmdoutput1.index('desktop.ini') # Busca el indice que hay que eliminar
         del cmdoutput1[idx]
-    pathmessages = Folder + 'results/Messages/'
+    pathmessages = results_directory + 'Messages/'
 
     dpv_values = downtream_protection_value(FAG,pathmessages)
     return dpv_values

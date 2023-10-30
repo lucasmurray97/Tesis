@@ -11,7 +11,10 @@ import cv2
 from numpy import genfromtxt
 from tqdm import tqdm
 import pickle
+from tqdm import tqdm
 sys.path.append("../../")
+from enviroment.full_grid_v1 import Full_Grid_V1
+from enviroment.utils.final_reward import write_firewall_file, generate_reward
 seed = random.randint(0, 10000)
 absolute_path = os.path.dirname(__file__)
 def blockPrint():
@@ -21,7 +24,7 @@ def enablePrint():
 
 def erase_firebreaks(instance):
     header = ['Year Number','Cell Numbers']
-    path = f"{absolute_path}/data_random/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"   
+    path = f"{absolute_path}/../../enviroment/utils/instances/{instance}/firewall_grids/HarvestedCells_0.csv"
     # We empty out the firebreaks file
     with open(path, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
@@ -30,7 +33,7 @@ def erase_firebreaks(instance):
 
 def write_firebreaks(firebreaks, instance):
     header = ['Year Number','Cell Numbers']
-    path = f"{absolute_path}/data_random/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"   
+    path = f"{absolute_path}/../../enviroment/utils/instances/{instance}/firewall_grids/HarvestedCells_0.csv"   
     # We empty out the firebreaks file
     with open(path, 'w', encoding='UTF8') as f:
         writer = csv.writer(f)
@@ -65,43 +68,8 @@ def run_sim(size, env, instance,seed=seed, n_sims=10):
     """Function that generates the reward associated with the fire simulation"""
     forbidden = env.forbidden_cells
     firebreaks = random_firebreaks(size, forbidden, instance)
-    data_directory = f"{absolute_path}/data_random/{instance}/Sub20x20/"
-    results_directory = f"{absolute_path}/data_random/{instance}/Sub20x20/results/"
-    harvest_directory = f"{absolute_path}/data_random/{instance}/Sub20x20/firebreaks/HarvestedCells.csv"
-    try:
-        shutil.rmtree(f'{results_directory}Grids/')
-        shutil.rmtree(f'{results_directory}Messages/')
-    except:
-        pass
-    # A command line input is simulated
-    if instance == "homo_1":
-        ros_cv = 1.0
-        if size == 20:
-            ignition_rad = 9
-        elif size == 10:
-            ignition_rad = 2
-        else:
-            ignition_rad = 1
-    else:
-        ros_cv = 0.0
-        ignition_rad = 4
-    seed = random.randrange(0,10000)
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '350', '--Fire-Period-Length', '1.0', '--ROS-CV', str(ros_cv), '--IgnitionRad', str(ignition_rad), '--HarvestedCells', harvest_directory, '--seed', str(seed)]
-    # The main loop of the simulator is run for an instance of 20x20
-    blockPrint()
-    main()
-    enablePrint()
-    reward = 0
-    base_directory = f"{results_directory}/Grids/Grids"
-    for j in range(1, n_sims+1):
-        dir = f"{base_directory}{str(j)}/"
-        files = os.listdir(dir)
-        my_data = genfromtxt(dir+files[-1], delimiter=',')
-        # Burned cells are counted and turned into negative rewards
-        for cell in my_data.flatten():
-            if cell == 1:
-                reward-= 1
-    return firebreaks, (reward/n_sims)*(size/20)*10
+    reward = generate_reward(n_sims, size, instance = instance)
+    return firebreaks, reward
 
 def generate_solutions(episodes, size, env, instance, n_sims = 10, seed = seed):
     rewards = []
@@ -111,5 +79,44 @@ def generate_solutions(episodes, size, env, instance, n_sims = 10, seed = seed):
     with open(f"{absolute_path}/solutions/{instance}/Sub{size}x{size}_full_grid.pkl", "wb+") as write_file:
             pickle.dump(rewards, write_file)
     file = open(f"{absolute_path}/solutions/{instance}/Sub{size}x{size}_full_grid.pkl", 'rb')    
+    n_r = pickle.load(file)
+    print(len(n_r))
+
+
+def generate_complete_random(env, size, instance, n_sims = 10):
+    forbidden = env.forbidden_cells
+    erase_firebreaks(instance)
+    n_cells = size**2
+    n_firebreaks = int((n_cells)*0.05)
+    available_cells = [i for i in range(n_cells)]
+    for i in forbidden:
+        available_cells.remove(i)
+    firebreaks = np.random.choice(available_cells, size=n_firebreaks, replace=False)
+    if size < 20:
+        shrinked = np.zeros(n_cells, dtype='uint8')
+        shrinked[firebreaks] = 1
+        upscaled = cv2.resize(src = shrinked.reshape(size,size), dsize=(20,20), interpolation = 0)
+        upscaled_flattened = dict(enumerate(upscaled.flatten(), 1))
+        upscaled_firebreaks = []
+        for i in upscaled_flattened.keys():
+            if upscaled_flattened[i] == 1:
+                upscaled_firebreaks.append(i)
+        write_firebreaks([0] + upscaled_firebreaks, instance)
+    else:
+        write_firebreaks([0] + firebreaks, instance)
+    state = np.zeros(n_cells, dtype='uint8')
+    state[firebreaks] = 1
+    state = state.reshape(size,size)
+    reward = generate_reward(n_sims, size, instance = instance)
+    return state, reward
+
+def generate_solutions_complete(observations, env, size, instance, n_sims = 10):
+    data = []
+    for i in tqdm(range(observations)):
+        state, evaluation = generate_complete_random(env, size, instance, n_sims)
+        data.append([state, evaluation])
+    with open(f"{absolute_path}/complete_random/{instance}/Sub{size}x{size}_full_grid.pkl", "wb+") as write_file:
+            pickle.dump(data, write_file)
+    file = open(f"{absolute_path}/complete_random/{instance}/Sub{size}x{size}_full_grid.pkl", 'rb')    
     n_r = pickle.load(file)
     print(len(n_r))
