@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from enviroment.utils.final_reward import write_firewall_file, generate_reward 
 import random
+import os
 class Env(ABC):
     def __init__(self, size, burn_value = 10, env_id = 0, instance = "homo_1"):
         self.size = size

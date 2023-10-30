@@ -14,6 +14,7 @@ from algorithms.utils.annealing import LinearSchedule
 import json
 import copy
 import random
+import os
 def dqn2(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0.99, exploration_fraction = 0.3, landa = 0.95, epsilon = 1, n_envs = 8, pre_epochs = 1000, batch_size = 64, instance = "sub20x20", test = False, window = 10, demonstrate = True, n_dem = 10, prioritized = False, max_mem = 1000, target_update = 100, lr_decay = 0.01, lambda_1=1.0, lambda_2=1.0):
     total_timesteps = env.envs[0].get_episode_len()*episodes
     optimizer = AdamW(net.parameters(), lr = alpha)
@@ -135,6 +136,10 @@ def dqn2(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0.9
     params_dir = f"episodes={episodes*n_envs}_"
     for key in params.keys():
             params_dir += key + "=" + str(params[key]) + "_"
+    try:
+        os.makedirs(f"data/{env.envs[0].name}/{env_version}/{instance}/sub{env.envs[0].size}x{env.envs[0].size}/{net_version}/2dqn/")
+    except OSError as error:  
+        print(error)
     with open(f"data/{env.envs[0].name}/{env_version}/{instance}/sub{env.envs[0].size}x{env.envs[0].size}/{net_version}/2dqn/stats_{params_dir}.json", "w+") as write_file:
         json.dump(stats, write_file, indent=4)
     return stats

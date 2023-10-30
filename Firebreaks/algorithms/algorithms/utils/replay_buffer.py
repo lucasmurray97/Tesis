@@ -60,7 +60,7 @@ class ReplayMemoryBaseline:
         self.reward_memory = np.zeros(self.mem_size, dtype=np.float32)
         self.gammas_memory = np.zeros(self.mem_size, dtype=np.float32)
         self.landas_memory = np.zeros(self.mem_size, dtype=np.float32)
-        self.dones_memory = np.zeros(self.mem_size, dtype=np.bool)
+        self.dones_memory = np.zeros(self.mem_size, dtype=np.bool_)
 
     def store_transition(self, state, action, reward, state_, done, gamma, landa):
         for i in range(state.shape[0]):
@@ -166,7 +166,7 @@ class PrioritizedReplayMemory:
         self.reward_memory = np.zeros(self.mem_size, dtype=np.float32)
         self.gammas_memory = np.zeros(self.mem_size, dtype=np.float32)
         self.landas_memory = np.zeros(self.mem_size, dtype=np.float32)
-        self.dones_memory = np.zeros(self.mem_size, dtype=np.bool)
+        self.dones_memory = np.zeros(self.mem_size, dtype=np.bool_)
         self.temporal_errors = np.full(self.mem_size, 1., dtype=np.float32)
 
     def store_transition(self, state, action, reward, state_, done, gamma, landa):

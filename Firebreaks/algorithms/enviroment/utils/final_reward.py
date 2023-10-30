@@ -3,6 +3,7 @@ import numpy as np
 from numpy import genfromtxt
 import csv  
 import pprint
+import os
 # We add the path to the simulator in order to execute it
 sys.path.append("../../../../Simulador/Cell2Fire/Cell2Fire/")
 from cell2fire.Cell2FireC_class import Cell2FireC
@@ -34,8 +35,8 @@ def write_firewall_file(final_state, env_id = 0, instance = "homo_1"):
         writer.writerow(firewalls)
     return
 def generate_reward(n_sims, size, env_id = 0, instance = "homo_1"):
-    absolute_path = os.path.dirname(__file__)
     """Function that generates the reward associated with the fire simulation"""
+    absolute_path = os.path.dirname(__file__)
     data_directory = ""
     results_directory = ""
     data_directory = f"{absolute_path}/instances/{instance}/data/Sub20x20_{env_id}/"
@@ -53,12 +54,13 @@ def generate_reward(n_sims, size, env_id = 0, instance = "homo_1"):
         elif size == 10:
             ignition_rad = 2
         else:
-            ignition_rad = 1
+            ignition_rad = 0
     else:
         ros_cv = 0.0
         ignition_rad = 4
     seed = random.randrange(0,10000)
-    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '350', '--Fire-Period-Length', '1.0', '--ROS-CV', str(ros_cv), '--IgnitionRad', str(ignition_rad), '--HarvestedCells', harvest_directory, '--seed', str(seed)]
+    n_weathers = len(os.listdir(data_directory+"Weathers/"))-1
+    sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', str(n_weathers), '--Fire-Period-Length', '1.0', '--ROS-CV', str(ros_cv), '--IgnitionRad', str(ignition_rad), '--HarvestedCells', harvest_directory, '--seed', str(seed)]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()
     main()

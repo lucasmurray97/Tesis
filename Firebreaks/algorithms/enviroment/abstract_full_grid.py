@@ -18,25 +18,26 @@ class Abstract_Full_Grid(Env):
         self._space = torch.zeros(2, self.size, self.size)
         self.action_map = {}
         self.forbidden_cells = []
-        pos = 0
-        for i in range(self.size):
-            for j in range(self.size):
-                self.action_map[pos] = (i,j)
-                if instance == "homo_1":
-                    if i < int((self.size**2)*0.05)//2:
-                        if j < int((self.size**2)*0.05)//2:
-                            self.forbidden_cells.append(pos)
-                pos += 1
         # Se incorpora la información correspondiente al tipo de combustible
         absolute_path = os.path.dirname(__file__)
         path = f"{absolute_path}/utils/instances/{self.instance}/data/Sub20x20_{self.env_id}/Forest.asc"
         prop = self.size / 20
         a = self.down_scale(path, prop)
-        forest = self.down_scale(path, prop)/101
+        forest = self.down_scale(path, prop)/a.max()
+        pos = 0
+        for i in range(self.size):
+            for j in range(self.size):
+                self.action_map[pos] = (i,j)
+                if self.instance == "homo_1":
+                    if i < int((self.size**2)*0.05)//2:
+                        if j < int((self.size**2)*0.05)//2:
+                            self.forbidden_cells.append(pos)
+                if a[i][j] == 101. and pos not in self.forbidden_cells:
+                    self.forbidden_cells.append(pos)
+                pos += 1
         self._space[1] = forest
         self.forest = forest
         self.actions_history = torch.ones(self.size**2, dtype=torch.bool)
-
     def get_name(self):
         return self.name
 
