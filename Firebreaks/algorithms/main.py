@@ -29,7 +29,9 @@ from nets.local_small_net_q_v2 import LOCAL_CNN_SMALL_Q_v2
 from nets.big_net_v1 import CNN_BIG_V1
 from nets.big_net_v2 import CNN_BIG_V2
 from algorithms.utils.plot_progress import plot_moving_av
-from enviroment.utils.parallel_wrapper import Parallel_Wrapper 
+from enviroment.utils.parallel_wrapper import Parallel_Wrapper
+from nets.mobile_net import small_mobile, big_mobile 
+from nets.efficient_net import efficient_net
 import os
 import argparse
 n_envs = os.cpu_count()
@@ -80,6 +82,9 @@ nets = {
     "small": CNN_SMALL_Q_v2,
     "big": CNN_BIG_Q,
     "small-local": LOCAL_CNN_SMALL_Q_v2,
+    "small-mobile": small_mobile,
+    "big-mobile": big_mobile,
+    "efficient-net": efficient_net,
 }
 
 value = True
@@ -94,6 +99,7 @@ net = nets[args.net_version](grid_size, input_size, output_size, value, env.forb
 net.to(device)    
  
 plot_episode = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 20000, 30000, 40000, 50000]
+
 # We retrieve the algorithm parameter:
 algorithms = {
     "dqn": dqn,
@@ -108,6 +114,7 @@ elif args.algorithm == "mab_greedy":
     mab_greedy(env, args.size, args.episodes, window = args.window, instance = args.instance, epsilon = args.epsilon)
 else:
     stats = algorithms[args.algorithm](env, net, args.episodes, args.env_version, args.net_version, alpha = args.alpha, gamma = args.gamma, landa = args.landa, exploration_fraction = args.exploration_fraction, epsilon=args.epsilon, instance = args.instance, test = args.test, n_envs = n_envs, pre_epochs = args.pre_epochs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized, lr_decay=args.lr_decay)
+
 # Guardamos los parametros de la red
 if args.save_weights:
     path_ = f"./weights/{args.env}/{args.instance}/sub{args.size}x{args.size}/{args.env_version}/{args.net_version}/"

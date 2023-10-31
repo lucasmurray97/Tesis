@@ -19,10 +19,13 @@ from enviroment.utils.final_reward import generate_reward
 from algorithms.utils.replay_buffer import ReplayMemory
 from nets.mask import CategoricalMasked, generate_mask
 from nets.local_small_net_q_v2 import LOCAL_CNN_SMALL_Q_v2
+from nets.mobile_net import small_mobile, big_mobile
+from nets.efficient_net import efficient_net
 from algorithms.ddqnet import ddqnet
-net = LOCAL_CNN_SMALL_Q_v2(10, 1, 100, only_q=False, version=2)
-env = Full_Grid_V1(size = 10)
-env_shape = (1, 10, 10)
+net = efficient_net(20, 1, 400, only_q=False, version=2)
+net.eval()
+env = Full_Grid_V1(size = 20)
+env_shape = (1, 20, 20)
 state = env.reset()
 q, _ = net(state)
-print(q.shape)
+print(sum(p.numel() for p in net.parameters() if p.requires_grad))
