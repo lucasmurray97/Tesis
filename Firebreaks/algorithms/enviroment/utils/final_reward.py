@@ -59,7 +59,8 @@ def generate_reward(n_sims, size, env_id = 0, instance = "homo_1"):
         ros_cv = 0.0
         ignition_rad = 4
     seed = random.randrange(0,10000)
-    n_weathers = len(os.listdir(data_directory+"Weathers/"))-1
+    # n_weathers = 350
+    n_weathers = len([i for i in os.listdir(data_directory+"Weathers/") if i.endswith('.csv')])-2
     sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', str(n_weathers), '--Fire-Period-Length', '1.0', '--ROS-CV', str(ros_cv), '--IgnitionRad', str(ignition_rad), '--HarvestedCells', harvest_directory, '--seed', str(seed)]
     # The main loop of the simulator is run for an instance of 20x20
     blockPrint()

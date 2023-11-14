@@ -5,6 +5,7 @@ import os
 import torch
 def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, instance, test = False, params = {}):
     state = env.reset()
+    net.eval()
     if test:
         path = f"figures_tuning/{env.get_name()}"
     else:
@@ -35,6 +36,7 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
             plt.show()
 
 def plot_trayectory_probs(env,episodes, net, env_version, net_version, algorithm, size, instance, test = False, params = {}):
+    net.eval()
     params_dir = ""
     for key in params.keys():
             params_dir += key + "=" + str(params[key]) + "_"

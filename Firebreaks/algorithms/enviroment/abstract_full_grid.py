@@ -23,7 +23,7 @@ class Abstract_Full_Grid(Env):
         path = f"{absolute_path}/utils/instances/{self.instance}/data/Sub20x20_{self.env_id}/Forest.asc"
         prop = self.size / 20
         a = self.down_scale(path, prop)
-        forest = self.down_scale(path, prop)/a.max()
+        forest = self.down_scale(path, prop)/101
         pos = 0
         for i in range(self.size):
             for j in range(self.size):
@@ -32,8 +32,10 @@ class Abstract_Full_Grid(Env):
                     if i < int((self.size**2)*0.05)//2:
                         if j < int((self.size**2)*0.05)//2:
                             self.forbidden_cells.append(pos)
+                            
                 if a[i][j] == 101. and pos not in self.forbidden_cells:
                     self.forbidden_cells.append(pos)
+                    forest[i][j] = 1.
                 pos += 1
         self._space[1] = forest
         self.forest = forest
