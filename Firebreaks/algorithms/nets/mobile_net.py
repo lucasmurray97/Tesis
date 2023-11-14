@@ -27,7 +27,7 @@ class small_mobile(torch.nn.Module):
                 for param in self.layers[self.n_layers].parameters():
                     param.requires_grad = False
             self.n_layers += 1
-        self.conv1 = self.conv1 = nn.Conv2d(in_channels=self.input_size, out_channels=3, kernel_size=1, stride=1, padding = 0, bias = True)
+        self.conv1 = nn.Conv2d(in_channels=self.input_size, out_channels=3, kernel_size=1, stride=1, padding = 0, bias = True)
         self.conv_blocks = nn.Sequential(*self.layers)
         self.linear_1 = nn.Linear(576, 512)
         self.linear_2 = nn.Linear(512, self.output_size) 
@@ -92,7 +92,7 @@ class big_mobile(torch.nn.Module):
                 for param in self.layers[self.n_layers].parameters():
                     param.requires_grad = False
             self.n_layers += 1
-        self.conv1 = self.conv1 = nn.Conv2d(in_channels=self.input_size, out_channels=3, kernel_size=1, stride=1, padding = 0, bias = True)
+        self.conv1 = nn.Conv2d(in_channels=self.input_size, out_channels=3, kernel_size=1, stride=1, padding = 0, bias = True)
         self.conv_blocks = nn.Sequential(*self.layers)
         self.linear_1 = nn.Linear(960, 512)
         self.linear_2 = nn.Linear(512, self.output_size) 

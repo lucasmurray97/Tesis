@@ -28,6 +28,7 @@ from nets.small_net_q_v2 import CNN_SMALL_Q_v2
 from nets.local_small_net_q_v2 import LOCAL_CNN_SMALL_Q_v2
 from nets.big_net_v1 import CNN_BIG_V1
 from nets.big_net_v2 import CNN_BIG_V2
+from nets.big_net_q_v2 import CNN_BIG_Q_v2
 from algorithms.utils.plot_progress import plot_moving_av
 from enviroment.utils.parallel_wrapper import Parallel_Wrapper
 from nets.mobile_net import small_mobile, big_mobile 
@@ -80,7 +81,7 @@ action_dims = env.envs[0].get_action_space_dims()
 # Different versions of the network are stored in a dict for later calls
 nets = {
     "small": CNN_SMALL_Q_v2,
-    "big": CNN_BIG_Q,
+    "big": CNN_BIG_Q_v2,
     "small-local": LOCAL_CNN_SMALL_Q_v2,
     "small-mobile": small_mobile,
     "big-mobile": big_mobile,
@@ -122,4 +123,4 @@ if args.save_weights:
         os.makedirs(path_)
     except OSError as error:  
         print(error)
-    torch.save(net.state_dict(), path_+f"{args.algorithm}.pth")
+    torch.save(net.state_dict(), path_+f"{args.algorithm}_{args.net_version}_episodes={args.episodes}_dem={args.n_dem}.pth")
