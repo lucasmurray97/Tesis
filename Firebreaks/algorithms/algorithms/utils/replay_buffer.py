@@ -3,7 +3,7 @@ import torch
 import json
 import pickle
 class ReplayMemory:
-    def __init__(self, input_dims, max_mem, batch_size, demonstrate = False, n_dem = None, prioritized = False, env = "FG", instance = "homo_1", version = 1, size = 20, n_envs = 16, gamma = 1., landa = 1., alpha = 0.6, beta = 0.4):
+    def __init__(self, input_dims, max_mem, batch_size, demonstrate = False, n_dem = None, prioritized = False, env = "FG", instance = "homo_1", version = 1, size = 20, n_envs = 16, gamma = 1., landa = 1., alpha = 0.6, beta = 0.4, gpu=False):
         self.size = size
         self.version = version
         self.demonstrate = demonstrate
@@ -13,9 +13,9 @@ class ReplayMemory:
         self.prioritized = prioritized
         self.instance = instance
         if prioritized:
-            self.buffer = PrioritizedReplayMemory(input_dims=input_dims, max_mem=max_mem, batch_size=batch_size, env=env, size=size, n_envs=n_envs, alpha = 0.6, beta = 0.4, eps = 1e-6)
+            self.buffer = PrioritizedReplayMemory(input_dims=input_dims, max_mem=max_mem, batch_size=batch_size, env=env, size=size, n_envs=n_envs, alpha = 0.6, beta = 0.4, eps = 1e-6, gpu=False)
         else:
-            self.buffer = ReplayMemoryBaseline(input_dims=input_dims, max_mem=max_mem, batch_size=batch_size, n_envs=n_envs)
+            self.buffer = ReplayMemoryBaseline(input_dims=input_dims, max_mem=max_mem, batch_size=batch_size, n_envs=n_envs, gpu=False)
         if self.demonstrate:
             self.load_demonstrations()
         
@@ -45,8 +45,11 @@ class ReplayMemory:
         print(f"Succesfully loaded {n + 1} demonstrations!")
 
 class ReplayMemoryBaseline:
-    def __init__(self, input_dims, max_mem, batch_size, n_envs):
-        self.device = torch.device('cpu')
+    def __init__(self, input_dims, max_mem, batch_size, n_envs, gpu=False):
+        if gpu:
+            self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        else:
+	    self.device = torch.device('cpu') self.device = torch.device('cpu')
         self.mem_size = max_mem
         self.batch_size = batch_size
         self.mem_cntr = 0
@@ -148,8 +151,11 @@ class ReplayMemoryBaseline:
         
         
 class PrioritizedReplayMemory:
-    def __init__(self, input_dims, max_mem, batch_size, n_envs, env = "FG", size = 20, alpha = 0.6, beta = 0.4, eps = 1e-6):
-        self.device = torch.device('cpu')
+    def __init__(self, input_dims, max_mem, batch_size, n_envs, env = "FG", size = 20, alpha = 0.6, beta = 0.4, eps = 1e-6): 
+        if gpu:
+            self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        else:
+            self.device = torch.device('cpu')
         self.mem_size = max_mem
         self.batch_size = batch_size
         self.alpha = alpha
