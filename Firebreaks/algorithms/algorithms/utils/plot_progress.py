@@ -6,6 +6,8 @@ import torch
 def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, instance, test = False, params = {}):
     state = env.reset()
     net.eval()
+    net.cpu()
+    net.mask.device = torch.device('cpu')
     if test:
         path = f"figures_tuning/{env.get_name()}"
     else:
@@ -20,10 +22,10 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
         os.remove(probs_dir+i)
     for i in range(env.get_episode_len()):
         if algorithm == "ddqn":
-            q_pred, value = net.forward(state)
+            q_pred, value = net.forward(state.to('cpu'))
             selected = net.sample(q_pred, state.unsqueeze(0))
         else:
-            q_pred = net.forward(state)
+            q_pred = net.forward(state.to('cpu'))
             selected = net.sample(q_pred, state.unsqueeze(0))
         state, _, done = env.step(selected)
         if done:
@@ -37,6 +39,8 @@ def plot_prog(env,episodes, net, env_version, net_version, algorithm, size, inst
 
 def plot_trayectory_probs(env,episodes, net, env_version, net_version, algorithm, size, instance, test = False, params = {}):
     net.eval()
+    net.cpu()
+    net.mask.device = torch.device('cpu')
     params_dir = ""
     for key in params.keys():
             params_dir += key + "=" + str(params[key]) + "_"
@@ -51,10 +55,10 @@ def plot_trayectory_probs(env,episodes, net, env_version, net_version, algorithm
         print(error)
     for i in range(env.get_episode_len()):
         if algorithm == "ddqn":
-            q_pred, value = net.forward(state)
+            q_pred, value = net.forward(state.to('cpu'))
             selected = net.sample(q_pred, state.unsqueeze(0))
         else:
-            q_pred = net.forward(state)
+            q_pred = net.forward(state.to('cpu'))
             selected = net.sample(q_pred, state.unsqueeze(0))
         state, _, done = env.step(selected)
         if done:

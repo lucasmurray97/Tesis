@@ -97,7 +97,7 @@ else:
 # We create the net if needed:
 if args.gpu:
             device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        else
+else:
             device = torch.device('cpu')
 only_q = args.algorithm == "dqn" or  args.algorithm =="2dqn"
 net = nets[args.net_version](grid_size, input_size, output_size, value, env.forbidden_cells, only_q=only_q, version = 1, gpu = args.gpu)
@@ -118,7 +118,7 @@ elif args.algorithm == "mab_ucb":
 elif args.algorithm == "mab_greedy":
     mab_greedy(env, args.size, args.episodes, window = args.window, instance = args.instance, epsilon = args.epsilon)
 else:
-    stats = algorithms[args.algorithm](env, net, args.episodes, args.env_version, args.net_version, alpha = args.alpha, gamma = args.gamma, landa = args.landa, exploration_fraction = args.exploration_fraction, epsilon=args.epsilon, instance = args.instance, test = args.test, n_envs = n_envs, pre_epochs = args.pre_epochs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized, lr_decay=args.lr_decay)
+    stats = algorithms[args.algorithm](env, net, args.episodes, args.env_version, args.net_version, alpha = args.alpha, gamma = args.gamma, landa = args.landa, exploration_fraction = args.exploration_fraction, epsilon=args.epsilon, instance = args.instance, test = args.test, n_envs = n_envs, pre_epochs = args.pre_epochs, window = args.window, demonstrate=args.demonstrate, n_dem=args.n_dem, max_mem=args.max_mem, target_update=args.target_update, prioritized=args.prioritized, lr_decay=args.lr_decay, gpu=args.gpu)
 
 # Guardamos los parametros de la red
 if args.save_weights:
