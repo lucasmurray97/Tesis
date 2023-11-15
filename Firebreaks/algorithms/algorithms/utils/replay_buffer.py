@@ -13,9 +13,9 @@ class ReplayMemory:
         self.prioritized = prioritized
         self.instance = instance
         if prioritized:
-            self.buffer = PrioritizedReplayMemory(input_dims=input_dims, max_mem=max_mem, batch_size=batch_size, env=env, size=size, n_envs=n_envs, alpha = 0.6, beta = 0.4, eps = 1e-6, gpu=False)
+            self.buffer = PrioritizedReplayMemory(input_dims=input_dims, max_mem=max_mem, batch_size=batch_size, env=env, size=size, n_envs=n_envs, alpha = 0.6, beta = 0.4, eps = 1e-6, gpu=gpu)
         else:
-            self.buffer = ReplayMemoryBaseline(input_dims=input_dims, max_mem=max_mem, batch_size=batch_size, n_envs=n_envs, gpu=False)
+            self.buffer = ReplayMemoryBaseline(input_dims=input_dims, max_mem=max_mem, batch_size=batch_size, n_envs=n_envs, gpu=gpu)
         if self.demonstrate:
             self.load_demonstrations()
         
@@ -49,7 +49,7 @@ class ReplayMemoryBaseline:
         if gpu:
             self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         else:
-	        self.device = torch.device('cpu') self.device = torch.device('cpu')
+	        self.device = torch.device('cpu')
         self.mem_size = max_mem
         self.batch_size = batch_size
         self.mem_cntr = 0

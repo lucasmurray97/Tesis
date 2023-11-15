@@ -14,13 +14,13 @@ import json
 import copy
 import random
 import os
-def dqn(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0.99, exploration_fraction = 0.3, landa = 0.95, epsilon = 1, n_envs = 8, pre_epochs = 1000, batch_size = 64, instance = "homo_1", test = False, window = 10, demonstrate = True, n_dem = 10, prioritized = False, max_mem = 1000, target_update = 100, lr_decay = 0.01, lambda_1=1.0, lambda_2=1.0):
+def dqn(env, net, episodes, env_version, net_version, alpha = 1e-5, gamma = 0.99, exploration_fraction = 0.3, landa = 0.95, epsilon = 1, n_envs = 8, pre_epochs = 1000, batch_size = 64, instance = "homo_1", test = False, window = 10, demonstrate = True, n_dem = 10, prioritized = False, max_mem = 1000, target_update = 100, lr_decay = 0.01, lambda_1=1.0, lambda_2=1.0, gpu=False):
     total_timesteps = env.envs[0].get_episode_len()*episodes
     optimizer = AdamW(net.parameters(), lr = alpha, amsgrad=True, weight_decay=1e-5)
     lambda1 = lambda epoch: 1/(1 + lr_decay*epoch)
     scheduler = LambdaLR(optimizer,lr_lambda=lambda1)
     env_shape = env.env_shape
-    memory = ReplayMemory(env_shape, max_mem=max_mem, batch_size=batch_size, demonstrate=demonstrate, n_dem=n_dem, prioritized=prioritized, env="FG", version=env_version[1], size=env_shape[1],n_envs=n_envs, gamma = gamma, landa = landa, instance=instance)
+    memory = ReplayMemory(env_shape, max_mem=max_mem, batch_size=batch_size, demonstrate=demonstrate, n_dem=n_dem, prioritized=prioritized, env="FG", version=env_version[1], size=env_shape[1],n_envs=n_envs, gamma = gamma, landa = landa, instance=instance, gpu=gpu)
     target_net = copy.deepcopy(net)
     exploration = LinearSchedule(schedule_timesteps=int(exploration_fraction * total_timesteps),
                                  initial_p=epsilon,
