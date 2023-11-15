@@ -18,7 +18,7 @@ class LOCAL_CNN_SMALL_Q_v2(torch.nn.Module):
     self.output_size = output_size
     self.value = value
     self.forbidden = forbidden
-    self.mask = Q_Mask(self.forbidden, version)
+    self.mask = Q_Mask(self.forbidden, version,gpu)
     # Definimos capas (automáticamente se registran como parametros)
     # Capas compartidas
     out_size_1 = (self.grid_size - 2)//1 + 1

@@ -17,7 +17,7 @@ class CNN_BIG_Q_v2(torch.nn.Module):
     self.output_size = output_size
     self.value = value
     self.forbidden = forbidden
-    self.mask = Q_Mask(self.forbidden, version)
+    self.mask = Q_Mask(self.forbidden, version,gpu)
     # Definimos capas (automáticamente se registran como parametros)
     # Capas compartidas
     self.conv1 = nn.Conv2d(in_channels=self.input_size, out_channels=16, kernel_size=(2,2), stride=1, padding = 2, bias = True)
