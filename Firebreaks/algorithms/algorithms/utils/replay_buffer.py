@@ -49,7 +49,7 @@ class ReplayMemoryBaseline:
         if gpu:
             self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         else:
-	    self.device = torch.device('cpu') self.device = torch.device('cpu')
+	        self.device = torch.device('cpu') self.device = torch.device('cpu')
         self.mem_size = max_mem
         self.batch_size = batch_size
         self.mem_cntr = 0
