@@ -16,7 +16,7 @@ class Abstract_Full_Grid(Env):
         self.name = "full_grid"
         if gpu:
             self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        else
+        else:
             self.device = torch.device('cpu')
         self._space = torch.zeros(2, self.size, self.size)
         self.action_map = {}

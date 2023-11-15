@@ -7,9 +7,12 @@ from torch.optim import AdamW
 from nets.mask import CategoricalMasked, generate_mask, Q_Mask
 
 class efficient_net(torch.nn.Module):
-    def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = [], only_q = False, version = 1):
+    def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = [], only_q = False, version = 1, gpu=False):
         super(efficient_net, self).__init__()
-        self.device = torch.device('cpu')
+        if gpu:
+            self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        else:
+            self.device = torch.device('cpu')
         self.grid_size = grid__size
         self.input_size = input_size
         self.output_size = output_size

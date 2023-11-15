@@ -63,7 +63,7 @@ class Q_Mask:
     def __init__(self, forbidden_cells, version, gpu = False):
         if gpu:
             self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        else
+        else:
             self.device = torch.device('cpu')
         self.forbidden_cells = forbidden_cells
         self.version = version
