@@ -60,6 +60,7 @@ parser.add_argument('--n_dem', type=int, required=False, nargs="?", default=0)
 parser.add_argument('--prioritized', action=argparse.BooleanOptionalAction, default=False)
 parser.add_argument('--lr_decay', type=float, required=False, nargs="?", default= 0.01)
 parser.add_argument('--pre_epochs', type=int, required=False, nargs="?", default = 0)
+parser.add_argument('--gpu', action=argparse.BooleanOptionalAction, default=False)
 args = parser.parse_args()
 # We create the enviroment
 args.env == "full_grid"
@@ -67,11 +68,11 @@ output_size = args.size**2
 if args.env_version == "v1":
     input_size =  1
     grid_size = args.size
-    env = Parallel_Wrapper(Full_Grid_V1, n_envs = n_envs, parameters = {"size": args.size, "instance": args.instance})
+    env = Parallel_Wrapper(Full_Grid_V1, n_envs = n_envs, parameters = {"size": args.size, "instance": args.instance, "gpu": args.gpu})
 elif args.env_version == "v2":
     input_size =  2
     grid_size = args.size
-    env = Parallel_Wrapper(Full_Grid_V2, n_envs = n_envs, parameters = {"size": args.size, "instance": args.instance})
+    env = Parallel_Wrapper(Full_Grid_V2, n_envs = n_envs, parameters = {"size": args.size, "instance": args.instance, "gpu": args.gpu})
 else:
     raise("Non existent version of enviroment")
 
@@ -94,9 +95,12 @@ if args.test:
 else:
     path = "figures"
 # We create the net if needed:
-device = torch.device('cpu')
+if args.gpu:
+            device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        else
+            device = torch.device('cpu')
 only_q = args.algorithm == "dqn" or  args.algorithm =="2dqn"
-net = nets[args.net_version](grid_size, input_size, output_size, value, env.forbidden_cells, only_q=only_q, version = 1)
+net = nets[args.net_version](grid_size, input_size, output_size, value, env.forbidden_cells, only_q=only_q, version = 1, gpu = args.gpu)
 net.to(device)    
  
 plot_episode = [1, 5, 10, 50, 100, 500, 1000, 5000, 10000, 20000, 30000, 40000, 50000]

@@ -8,9 +8,13 @@ class Parallel_Wrapper():
         self.size = parameters["size"]
         self.n_envs = n_envs
         self.env = env
+        gpu = parameters["gpu"]
         parameters["env_id"] = 0
         self.envs = [env(**parameters)] 
-        self.device = torch.device('cpu')
+        if gpu:
+            self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        else
+            self.device = torch.device('cpu')
         self.lock = threading.Lock()
         for i in range(self.n_envs - 1):
             parameters["env_id"] = i + 1
