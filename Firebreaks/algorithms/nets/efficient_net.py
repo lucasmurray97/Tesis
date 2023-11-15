@@ -18,7 +18,7 @@ class efficient_net(torch.nn.Module):
         self.output_size = output_size
         self.value = value
         self.forbidden = forbidden
-        self.mask = Q_Mask(self.forbidden, version)
+        self.mask = Q_Mask(self.forbidden, version,gpu)
         self.only_q = only_q
         self.efficient_net = efficientnet_b0(weights="DEFAULT")
         self.layers = []
