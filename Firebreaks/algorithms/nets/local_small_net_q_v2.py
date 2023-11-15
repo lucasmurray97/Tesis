@@ -11,8 +11,8 @@ class LOCAL_CNN_SMALL_Q_v2(torch.nn.Module):
     super(LOCAL_CNN_SMALL_Q_v2, self).__init__()
     if gpu:
             self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        else:
-            self.device = torch.device('cpu')
+    else:
+        self.device = torch.device('cpu')
     self.grid_size = grid__size
     self.input_size = input_size
     self.output_size = output_size
