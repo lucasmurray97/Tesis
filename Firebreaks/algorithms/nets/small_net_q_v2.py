@@ -6,7 +6,7 @@ from torch.optim import AdamW
 from nets.mask import CategoricalMasked, generate_mask, Q_Mask
 # Red estilo pytorch
 class CNN_SMALL_Q_v2(torch.nn.Module):
-  def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = [], only_q = False, version = 1):
+  def __init__(self, grid__size = 20, input_size = 2, output_size = 16, value = True, forbidden = [], only_q = False, version = 1, gpu=True):
     super(CNN_SMALL_Q_v2, self).__init__()
     self.device = torch.device('cpu')
     self.grid_size = grid__size
@@ -14,7 +14,7 @@ class CNN_SMALL_Q_v2(torch.nn.Module):
     self.output_size = output_size
     self.value = value
     self.forbidden = forbidden
-    self.mask = Q_Mask(self.forbidden, version)
+    self.mask = Q_Mask(self.forbidden, version, gpu)
     # Definimos capas (automáticamente se registran como parametros)
     # Capas compartidas
     self.conv1 = nn.Conv2d(in_channels=self.input_size, out_channels=32, kernel_size=(2,2), stride=1, padding = 0, bias = True)

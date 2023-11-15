@@ -9,12 +9,15 @@ import torchvision
 import torchvision.transforms.functional as F
 import os
 class Abstract_Full_Grid(Env):
-    def __init__(self, size, burn_value = 10, n_sims_final = 50, env_id = 0, instance = "homo_1"):
+    def __init__(self, size, burn_value = 10, n_sims_final = 50, env_id = 0, instance = "homo_1", gpu=False):
         super().__init__(size, burn_value, env_id, instance)
         assert size%2 == 0
         self.n_sims_final = n_sims_final
         self.name = "full_grid"
-        self.device = torch.device('cpu')
+        if gpu:
+            self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        else
+            self.device = torch.device('cpu')
         self._space = torch.zeros(2, self.size, self.size)
         self.action_map = {}
         self.forbidden_cells = []

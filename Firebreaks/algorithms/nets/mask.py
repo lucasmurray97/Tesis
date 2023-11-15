@@ -60,8 +60,11 @@ def generate_mask_indiv(state, forbidden_cells, version):
     return mask.bool()
 
 class Q_Mask:
-    def __init__(self, forbidden_cells, version):
-        self.device = torch.device('cpu')
+    def __init__(self, forbidden_cells, version, gpu = False):
+        if gpu:
+            self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        else
+            self.device = torch.device('cpu')
         self.forbidden_cells = forbidden_cells
         self.version = version
 
