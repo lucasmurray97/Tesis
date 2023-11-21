@@ -76,6 +76,10 @@ def generate_solutions(episodes, size, env, instance, n_sims = 10, seed = seed):
     for i in tqdm(range(episodes)):
         firebreaks, reward = run_sim(size, env,instance, n_sims)
         rewards.append(reward)
+    try:
+        os.makedirs(f"{absolute_path}/solutions/{instance}/")
+    except OSError as error:  
+        print(error)
     with open(f"{absolute_path}/solutions/{instance}/Sub{size}x{size}_full_grid.pkl", "wb+") as write_file:
             pickle.dump(rewards, write_file)
     file = open(f"{absolute_path}/solutions/{instance}/Sub{size}x{size}_full_grid.pkl", 'rb')    
