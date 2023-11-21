@@ -115,6 +115,10 @@ def generate_solutions_complete(observations, env, size, instance, n_sims = 10):
     for i in tqdm(range(observations)):
         state, evaluation = generate_complete_random(env, size, instance, n_sims)
         data.append([state, evaluation])
+    try:
+        os.makedirs(f"{absolute_path}/complete_random/{instance}/")
+    except OSError as error:  
+        print(error)
     with open(f"{absolute_path}/complete_random/{instance}/Sub{size}x{size}_full_grid.pkl", "wb+") as write_file:
             pickle.dump(data, write_file)
     file = open(f"{absolute_path}/complete_random/{instance}/Sub{size}x{size}_full_grid.pkl", 'rb')    
