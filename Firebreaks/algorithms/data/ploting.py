@@ -3,37 +3,38 @@ import json
 import numpy as np
 import pickle
 size = 20
-instance = "homo_2"
-env_version = "v2"
-net_version = "big"
+instance = "hetero_1"
+env_version = "v1"
+net_version = "efficient-net"
 demonstrations = True
 if demonstrations:
-    pre_epochs = 20000
+    pre_epochs = 40000
     n_dem = 100000
-    episodes = 3200
+    episodes = 2400
 else:
     pre_epochs = 0
     n_dem = 0
     episodes = 8000
-file_dqn = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/dqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=False_n_dem={n_dem}_exploration=0.5_pre_epochs={pre_epochs}_.json", 'r')
+file_dqn = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/dqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=False_n_dem={n_dem}_exploration=0.7_pre_epochs={pre_epochs}_.json", 'r')
 stats_dqn = json.load(file_dqn)
-file_2dqn = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/2dqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=False_n_dem={n_dem}_exploration=0.5_pre_epochs={pre_epochs}_.json", 'r')
+file_2dqn = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/2dqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=False_n_dem={n_dem}_exploration=0.7_pre_epochs={pre_epochs}_.json", 'r')
 stats_2dqn = json.load(file_2dqn)
-file_ddqn = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/ddqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=False_n_dem={n_dem}_exploration=0.5_pre_epochs={pre_epochs}_.json", 'r')
+file_ddqn = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/ddqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=False_n_dem={n_dem}_exploration=0.7_pre_epochs={pre_epochs}_.json", 'r')
 stats_ddqn = json.load(file_ddqn)
 
+"""
 file_dqn_p = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/dqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=True_n_dem={n_dem}_exploration=0.5_pre_epochs={pre_epochs}_.json", 'r')
 stats_dqn_p = json.load(file_dqn_p)
 file_2dqn_p = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/2dqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=True_n_dem={n_dem}_exploration=0.5_pre_epochs={pre_epochs}_.json", 'r')
 stats_2dqn_p = json.load(file_2dqn_p)
 file_ddqn_p = open(f"full_grid/{env_version}/{instance}/sub{size}x{size}/{net_version}/ddqn/stats_episodes={episodes}_alpha=5e-05_gamma=1.0_epsilon=1_target_update=200_prioritized=True_n_dem={n_dem}_exploration=0.5_pre_epochs={pre_epochs}_.json", 'r')
 stats_ddqn_p = json.load(file_ddqn_p)
-
+"""
 file_baseline = open(f"../algorithms/dpv/demonstrations/{instance}/Sub{size}x{size}_full_grid_1.pkl", 'rb')
 stats_baseline = pickle.load(file_baseline)
 
-file_random = open(f"../algorithms/random/solutions/{instance}/Sub{size}x{size}_full_grid.pkl", 'rb')
-stats_random = pickle.load(file_random)
+#file_random = open(f"../algorithms/random/solutions/{instance}/Sub{size}x{size}_full_grid.pkl", 'rb')
+#stats_random = pickle.load(file_random)
 
 if instance == "homo_1":
     file_optimal = open(f"../algorithms/optimal/solutions/{instance}/Sub{size}x{size}_full_grid.pkl", 'rb')
@@ -54,7 +55,7 @@ ret_2dqn = np.cumsum(stats_2dqn["Returns"], dtype=float)
 ret_2dqn[window:] = ret_2dqn[window:] - ret_2dqn[:-window]
 ret_ddqn = np.cumsum(stats_ddqn["Returns"], dtype=float)
 ret_ddqn[window:] = ret_ddqn[window:] - ret_ddqn[:-window]
-
+"""
 ret_dqn_p = np.cumsum(stats_dqn_p["Returns"], dtype=float)
 x = np.linspace(0, 1, len(ret_dqn_p[window - 1:]))
 ret_dqn_p[window:] = ret_dqn_p[window:] - ret_dqn_p[:-window]
@@ -62,26 +63,27 @@ ret_2dqn_p = np.cumsum(stats_2dqn_p["Returns"], dtype=float)
 ret_2dqn_p[window:] = ret_2dqn_p[window:] - ret_2dqn_p[:-window]
 ret_ddqn_p = np.cumsum(stats_ddqn_p["Returns"], dtype=float)
 ret_ddqn_p[window:] = ret_ddqn_p[window:] - ret_ddqn_p[:-window]
+"""
 window2 = 3000
-ret_baseline = np.cumsum(returns, dtype=float)
+ret_baseline = np.cumsum(returns, dtype=float)*10
 ret_baseline[window2:] = ret_baseline[window2:] - ret_baseline[:-window2]
 x2 = np.linspace(0, 1, len(ret_baseline[window2 - 1:]))
 
-ret_random = np.cumsum(stats_random, dtype=float)
-ret_random[window2:] = ret_random[window2:] - ret_random[:-window2]
-x3 = np.linspace(0, 1, len(ret_random[window2 - 1:]))
+#ret_random = np.cumsum(stats_random, dtype=float)
+#ret_random[window2:] = ret_random[window2:] - ret_random[:-window2]
+#x3 = np.linspace(0, 1, len(ret_random[window2 - 1:]))
 
 
 plt.plot(np.linspace(0, 1, len(ret_dqn[window - 1:])), ret_dqn[window - 1:] / window, label = "dqn")
 plt.plot(np.linspace(0, 1, len(ret_2dqn[window - 1:])), ret_2dqn[window - 1:] / window, label = "2dn")
 plt.plot(np.linspace(0, 1, len(ret_ddqn[window - 1:])), ret_ddqn[window - 1:] / window, label = "ddqn")
-
+"""
 plt.plot(np.linspace(0, 1, len(ret_dqn_p[window - 1:])), ret_dqn_p[window - 1:] / window, label = "dqn_p")
 plt.plot(np.linspace(0, 1, len(ret_2dqn_p[window - 1:])), ret_2dqn_p[window - 1:] / window, label = "2dqn_p")
 plt.plot(np.linspace(0, 1, len(ret_ddqn_p[window - 1:])), ret_ddqn_p[window - 1:] / window, label = "ddqn_p")
-
+"""
 plt.plot(x2, ret_baseline[window2 - 1:] / window2, label = "baseline")
-plt.plot(x3, ret_random[window2 - 1:] / window2, label = "random")
+#plt.plot(x3, ret_random[window2 - 1:] / window2, label = "random")
 if instance == "homo_1":
     window_opt = 1000
     ret_optimal = np.cumsum(stats_optimal, dtype=float)

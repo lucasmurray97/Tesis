@@ -128,6 +128,10 @@ def generate_demonstrations(episodes, size, n_sims, n_sims_eval, env, version, i
             step += 1
             j += 1
     print(history)
+    try:
+        os.makedirs(f"algorithms/dpv/demonstrations/{instance}/")
+    except OSError as error:  
+        print(error)
     with open(f"algorithms/dpv/demonstrations/{instance}/Sub{size}x{size}_full_grid_{version}.pkl", "wb+") as write_file:
         pickle.dump(data, write_file)
     with open(f"algorithms/dpv/demonstrations/{instance}/history_Sub{size}x{size}_full_grid_{version}.pkl", "wb+") as write_file:
