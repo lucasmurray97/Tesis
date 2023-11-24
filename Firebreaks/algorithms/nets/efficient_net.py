@@ -32,9 +32,10 @@ class efficient_net(torch.nn.Module):
             self.n_layers += 1
         self.conv1 = self.conv1 = nn.Conv2d(in_channels=self.input_size, out_channels=3, kernel_size=1, stride=1, padding = 0, bias = True)
         self.conv_blocks = nn.Sequential(*self.layers)
-        self.linear_1 = nn.Linear(1280, 512)
+        latent_dim = 1280 if grid__size == 20 else 5120
+        self.linear_1 = nn.Linear(latent_dim, 512)
         self.linear_2 = nn.Linear(512, self.output_size) 
-        self.linear_1_2 = nn.Linear(1280, 512)
+        self.linear_1_2 = nn.Linear(latent_dim, 512)
         self.linear_2_2 = nn.Linear(512, 1) 
     def forward(self, x):
         if len(x.shape) == 3:

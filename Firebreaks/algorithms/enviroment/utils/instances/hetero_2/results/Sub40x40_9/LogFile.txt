@@ -1,0 +1,23 @@
+------ Command line values ------
+InFolder: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_9/ 
+OutFolder: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/results/Sub40x40_9/ 
+WeatherOpt: random 
+HarvestPlan: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/firewall_grids/HarvestedCells_9.csv 
+Ignitions: 1 
+FinalGrid: 1 
+TotalYears: 1 
+TotalSims: 50 
+NWeatherFiles: 127 
+FirePeriodLength: 1.0 
+IgnitionRadius: 9 
+ROSThreshold: 0.1 
+HFIThreshold: 0.1 
+ROS-CV: 0.0 
+seed: 3754 
+Forest DataFrame from instance /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_9/Data.csv
+Number of cells: 1600
+
+To Harvest Cells :
+ 1: 54 60 83 114 128 159 167 175 180 216 217 220 253 294 311 363 370 372 381 405 435 450 453 467 504 547 555 579 601 616 675 676 716 718 725 730 739 767 770 780 792 812 834 875 886 904 929 964 969 987 992 999 1068 1085 1125 1126 1221 1232 1263 1275 1281 1282 1284 1328 1341 1350 1369 1394 1406 1411 1413 1424 1429 1430 1445 1449 1454 1462 1500 1533 1543 
+
+Weather DataFrame from instance /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_9/Weather.csv

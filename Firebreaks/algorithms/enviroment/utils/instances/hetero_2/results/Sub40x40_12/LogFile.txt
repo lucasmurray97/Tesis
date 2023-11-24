@@ -1,0 +1,465 @@
+------ Command line values ------
+InFolder: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/ 
+OutFolder: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/results/Sub40x40_12/ 
+WeatherOpt: random 
+HarvestPlan: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/firewall_grids/HarvestedCells_12.csv 
+Ignitions: 1 
+FinalGrid: 1 
+TotalYears: 1 
+TotalSims: 50 
+NWeatherFiles: 127 
+FirePeriodLength: 1.0 
+IgnitionRadius: 9 
+ROSThreshold: 0.1 
+HFIThreshold: 0.1 
+ROS-CV: 0.0 
+seed: 6067 
+Forest DataFrame from instance /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Data.csv
+Number of cells: 1600
+
+To Harvest Cells :
+ 1: 54 60 78 89 108 164 175 220 235 274 333 348 363 372 396 436 437 447 450 467 492 512 513 547 576 579 585 610 638 667 676 718 725 730 753 770 788 790 837 852 855 860 862 869 875 887 902 932 943 964 993 1014 1044 1065 1068 1107 1114 1133 1186 1195 1200 1204 1217 1232 1273 1275 1282 1313 1316 1343 1350 1352 1367 1395 1406 1411 1413 1429 1447 1451 1533 
+
+Weather DataFrame from instance /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weather.csv
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather7.csv
+
+Selected ignition point for Year 1, sim 1: 772
+----------------------------- Results -----------------------------
+Total Available Cells:    1239 - % of the Forest: 77.4375%
+Total Burnt Cells:        124 - % of the Forest: 7.75%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather55.csv
+
+Selected ignition point for Year 1, sim 2: 749
+----------------------------- Results -----------------------------
+Total Available Cells:    852 - % of the Forest: 53.25%
+Total Burnt Cells:        511 - % of the Forest: 31.9375%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather54.csv
+
+Selected ignition point for Year 1, sim 3: 663Next year...
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather38.csv
+
+Selected ignition point for Year 1, sim 4: 787
+----------------------------- Results -----------------------------
+Total Available Cells:    835 - % of the Forest: 52.1875%
+Total Burnt Cells:        528 - % of the Forest: 33%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather60.csv
+
+Selected ignition point for Year 1, sim 5: 978
+----------------------------- Results -----------------------------
+Total Available Cells:    1332 - % of the Forest: 83.25%
+Total Burnt Cells:        31 - % of the Forest: 1.9375%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather90.csv
+
+Selected ignition point for Year 1, sim 6: 579Next year...
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather24.csv
+
+Selected ignition point for Year 1, sim 7: 1174
+----------------------------- Results -----------------------------
+Total Available Cells:    1082 - % of the Forest: 67.625%
+Total Burnt Cells:        281 - % of the Forest: 17.5625%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather122.csv
+
+Selected ignition point for Year 1, sim 8: 974
+----------------------------- Results -----------------------------
+Total Available Cells:    1219 - % of the Forest: 76.1875%
+Total Burnt Cells:        144 - % of the Forest: 9%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather89.csv
+
+Selected ignition point for Year 1, sim 9: 1178
+----------------------------- Results -----------------------------
+Total Available Cells:    1335 - % of the Forest: 83.4375%
+Total Burnt Cells:        28 - % of the Forest: 1.75%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather123.csv
+
+Selected ignition point for Year 1, sim 10: 1057
+----------------------------- Results -----------------------------
+Total Available Cells:    1231 - % of the Forest: 76.9375%
+Total Burnt Cells:        132 - % of the Forest: 8.25%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather103.csv
+
+Selected ignition point for Year 1, sim 11: 824
+----------------------------- Results -----------------------------
+Total Available Cells:    970 - % of the Forest: 60.625%
+Total Burnt Cells:        393 - % of the Forest: 24.5625%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather65.csv
+
+Selected ignition point for Year 1, sim 12: 1028
+----------------------------- Results -----------------------------
+Total Available Cells:    1241 - % of the Forest: 77.5625%
+Total Burnt Cells:        122 - % of the Forest: 7.625%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather100.csv
+
+Selected ignition point for Year 1, sim 13: 1184
+----------------------------- Results -----------------------------
+Total Available Cells:    1173 - % of the Forest: 73.3125%
+Total Burnt Cells:        190 - % of the Forest: 11.875%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather126.csv
+
+Selected ignition point for Year 1, sim 14: 539
+----------------------------- Results -----------------------------
+Total Available Cells:    1267 - % of the Forest: 79.1875%
+Total Burnt Cells:        96 - % of the Forest: 6%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather17.csv
+
+Selected ignition point for Year 1, sim 15: 741
+----------------------------- Results -----------------------------
+Total Available Cells:    958 - % of the Forest: 59.875%
+Total Burnt Cells:        405 - % of the Forest: 25.3125%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather51.csv
+
+Selected ignition point for Year 1, sim 16: 869Next year...
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather74.csv
+
+Selected ignition point for Year 1, sim 17: 501Next year...
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather11.csv
+
+Selected ignition point for Year 1, sim 18: 573
+----------------------------- Results -----------------------------
+Total Available Cells:    1349 - % of the Forest: 84.3125%
+Total Burnt Cells:        14 - % of the Forest: 0.875%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather22.csv
+
+Selected ignition point for Year 1, sim 19: 867
+----------------------------- Results -----------------------------
+Total Available Cells:    921 - % of the Forest: 57.5625%
+Total Burnt Cells:        442 - % of the Forest: 27.625%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather73.csv
+
+Selected ignition point for Year 1, sim 20: 1174
+----------------------------- Results -----------------------------
+Total Available Cells:    1053 - % of the Forest: 65.8125%
+Total Burnt Cells:        310 - % of the Forest: 19.375%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather122.csv
+
+Selected ignition point for Year 1, sim 21: 776
+----------------------------- Results -----------------------------
+Total Available Cells:    1124 - % of the Forest: 70.25%
+Total Burnt Cells:        239 - % of the Forest: 14.9375%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather56.csv
+
+Selected ignition point for Year 1, sim 22: 1051
+----------------------------- Results -----------------------------
+Total Available Cells:    1172 - % of the Forest: 73.25%
+Total Burnt Cells:        191 - % of the Forest: 11.9375%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather101.csv
+
+Selected ignition point for Year 1, sim 23: 1096
+----------------------------- Results -----------------------------
+Total Available Cells:    1044 - % of the Forest: 65.25%
+Total Burnt Cells:        319 - % of the Forest: 19.9375%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather110.csv
+
+Selected ignition point for Year 1, sim 24: 939
+----------------------------- Results -----------------------------
+Total Available Cells:    1325 - % of the Forest: 82.8125%
+Total Burnt Cells:        38 - % of the Forest: 2.375%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather84.csv
+
+Selected ignition point for Year 1, sim 25: 1178
+----------------------------- Results -----------------------------
+Total Available Cells:    993 - % of the Forest: 62.0625%
+Total Burnt Cells:        370 - % of the Forest: 23.125%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather123.csv
+
+Selected ignition point for Year 1, sim 26: 1052
+----------------------------- Results -----------------------------
+Total Available Cells:    1171 - % of the Forest: 73.1875%
+Total Burnt Cells:        192 - % of the Forest: 12%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather101.csv
+
+Selected ignition point for Year 1, sim 27: 866
+----------------------------- Results -----------------------------
+Total Available Cells:    994 - % of the Forest: 62.125%
+Total Burnt Cells:        369 - % of the Forest: 23.0625%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather73.csv
+
+Selected ignition point for Year 1, sim 28: 505
+----------------------------- Results -----------------------------
+Total Available Cells:    1002 - % of the Forest: 62.625%
+Total Burnt Cells:        361 - % of the Forest: 22.5625%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather12.csv
+
+Selected ignition point for Year 1, sim 29: 617
+----------------------------- Results -----------------------------
+Total Available Cells:    1133 - % of the Forest: 70.8125%
+Total Burnt Cells:        230 - % of the Forest: 14.375%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather30.csv
+
+Selected ignition point for Year 1, sim 30: 584
+----------------------------- Results -----------------------------
+Total Available Cells:    1152 - % of the Forest: 72%
+Total Burnt Cells:        211 - % of the Forest: 13.1875%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather25.csv
+
+Selected ignition point for Year 1, sim 31: 1108
+----------------------------- Results -----------------------------
+Total Available Cells:    896 - % of the Forest: 56%
+Total Burnt Cells:        467 - % of the Forest: 29.1875%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather114.csv
+
+Selected ignition point for Year 1, sim 32: 941
+----------------------------- Results -----------------------------
+Total Available Cells:    1315 - % of the Forest: 82.1875%
+Total Burnt Cells:        48 - % of the Forest: 3%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather84.csv
+
+Selected ignition point for Year 1, sim 33: 1020
+----------------------------- Results -----------------------------
+Total Available Cells:    1265 - % of the Forest: 79.0625%
+Total Burnt Cells:        98 - % of the Forest: 6.125%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather97.csv
+
+Selected ignition point for Year 1, sim 34: 545
+----------------------------- Results -----------------------------
+Total Available Cells:    1158 - % of the Forest: 72.375%
+Total Burnt Cells:        205 - % of the Forest: 12.8125%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather19.csv
+
+Selected ignition point for Year 1, sim 35: 465
+----------------------------- Results -----------------------------
+Total Available Cells:    1155 - % of the Forest: 72.1875%
+Total Burnt Cells:        208 - % of the Forest: 13%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather6.csv
+
+Selected ignition point for Year 1, sim 36: 501Next year...
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather11.csv
+
+Selected ignition point for Year 1, sim 37: 501Next year...
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+
+----------------------------- Results -----------------------------
+Total Available Cells:    1363 - % of the Forest: 85.1875%
+Total Burnt Cells:        0 - % of the Forest: 0%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather11.csv
+
+Selected ignition point for Year 1, sim 38: 785
+----------------------------- Results -----------------------------
+Total Available Cells:    1117 - % of the Forest: 69.8125%
+Total Burnt Cells:        246 - % of the Forest: 15.375%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather59.csv
+
+Selected ignition point for Year 1, sim 39: 1067
+----------------------------- Results -----------------------------
+Total Available Cells:    1093 - % of the Forest: 68.3125%
+Total Burnt Cells:        270 - % of the Forest: 16.875%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather107.csv
+
+Selected ignition point for Year 1, sim 40: 981
+----------------------------- Results -----------------------------
+Total Available Cells:    1279 - % of the Forest: 79.9375%
+Total Burnt Cells:        84 - % of the Forest: 5.25%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather91.csv
+
+Selected ignition point for Year 1, sim 41: 1061
+----------------------------- Results -----------------------------
+Total Available Cells:    1191 - % of the Forest: 74.4375%
+Total Burnt Cells:        172 - % of the Forest: 10.75%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather104.csv
+
+Selected ignition point for Year 1, sim 42: 654
+----------------------------- Results -----------------------------
+Total Available Cells:    1204 - % of the Forest: 75.25%
+Total Burnt Cells:        159 - % of the Forest: 9.9375%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather35.csv
+
+Selected ignition point for Year 1, sim 43: 1025
+----------------------------- Results -----------------------------
+Total Available Cells:    767 - % of the Forest: 47.9375%
+Total Burnt Cells:        596 - % of the Forest: 37.25%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather99.csv
+
+Selected ignition point for Year 1, sim 44: 1020
+----------------------------- Results -----------------------------
+Total Available Cells:    1270 - % of the Forest: 79.375%
+Total Burnt Cells:        93 - % of the Forest: 5.8125%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather97.csv
+
+Selected ignition point for Year 1, sim 45: 824
+----------------------------- Results -----------------------------
+Total Available Cells:    1086 - % of the Forest: 67.875%
+Total Burnt Cells:        277 - % of the Forest: 17.3125%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather65.csv
+
+Selected ignition point for Year 1, sim 46: 1178
+----------------------------- Results -----------------------------
+Total Available Cells:    1317 - % of the Forest: 82.3125%
+Total Burnt Cells:        46 - % of the Forest: 2.875%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather124.csv
+
+Selected ignition point for Year 1, sim 47: 934
+----------------------------- Results -----------------------------
+Total Available Cells:    1334 - % of the Forest: 83.375%
+Total Burnt Cells:        29 - % of the Forest: 1.8125%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather82.csv
+
+Selected ignition point for Year 1, sim 48: 743
+----------------------------- Results -----------------------------
+Total Available Cells:    950 - % of the Forest: 59.375%
+Total Burnt Cells:        413 - % of the Forest: 25.8125%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather52.csv
+
+Selected ignition point for Year 1, sim 49: 979
+----------------------------- Results -----------------------------
+Total Available Cells:    982 - % of the Forest: 61.375%
+Total Burnt Cells:        381 - % of the Forest: 23.8125%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%
+Weather file selected: /home/lucas/Desktop/Universidad/Tesis/firebreaks/Tesis/Firebreaks/algorithms/enviroment/utils/instances/hetero_2/data/Sub40x40_12/Weathers/Weather90.csv
+
+Selected ignition point for Year 1, sim 50: 738
+----------------------------- Results -----------------------------
+Total Available Cells:    1331 - % of the Forest: 83.1875%
+Total Burnt Cells:        32 - % of the Forest: 2%
+Total Non-Burnable Cells: 156 - % of the Forest: 9.75%
+Total Harvested Cells: 81 - % of the Forest: 5.0625%

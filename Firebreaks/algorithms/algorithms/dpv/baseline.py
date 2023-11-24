@@ -69,7 +69,7 @@ def simulate_episode(size, n_sims, n_sims_eval, forbidden, instance):
 def calc_firebreaks(size, firebreaks, upscaled_firebreaks, seed, n_sims, forbidden, instance):
     dpvs = calculate_dpv(seed, n_sims, instance=instance)
     dpvs = dict(enumerate(list(dpvs.values()), 0))
-    if size == 20:
+    if size >= 20:
         for j in forbidden:
             dpvs.pop(j, None)
         for k in firebreaks:

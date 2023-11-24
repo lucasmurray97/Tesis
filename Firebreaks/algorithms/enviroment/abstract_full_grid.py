@@ -23,8 +23,11 @@ class Abstract_Full_Grid(Env):
         self.forbidden_cells = []
         # Se incorpora la información correspondiente al tipo de combustible
         absolute_path = os.path.dirname(__file__)
-        path = f"{absolute_path}/utils/instances/{self.instance}/data/Sub20x20_{self.env_id}/Forest.asc"
-        prop = self.size / 20
+        path = f"{absolute_path}/utils/instances/{self.instance}/data/Sub{self.size}x{self.size}_{self.env_id}/Forest.asc"
+        if self.size < 20:
+            prop = self.size / 20
+        else: 
+            prop = 1
         a = self.down_scale(path, prop)
         forest = self.down_scale(path, prop)/101
         pos = 0
