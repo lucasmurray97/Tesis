@@ -36,6 +36,8 @@ class CNN_BIG_Q_v2(torch.nn.Module):
         self.linear1 = nn.Linear(288, 48)
     elif grid__size == 20:
        self.linear1 = nn.Linear(2048, 48)
+    elif grid__size == 40:
+       self.linear1 = nn.Linear(10368, 48)
     else:
       raise("Non existent grid size")
     self.linear2 = nn.Linear(48, 32)
@@ -49,6 +51,8 @@ class CNN_BIG_Q_v2(torch.nn.Module):
           self.linear_1 = nn.Linear(288, 48)
       elif grid__size == 20:
         self.linear_1 = nn.Linear(2048, 48)
+      elif grid__size == 40:
+       self.linear1 = nn.Linear(10368, 48)
       else:
         raise("Non existent grid size")
       self.linear_2 = nn.Linear(48, 32)

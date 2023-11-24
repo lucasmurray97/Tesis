@@ -39,8 +39,9 @@ def generate_reward(n_sims, size, env_id = 0, instance = "homo_1"):
     absolute_path = os.path.dirname(__file__)
     data_directory = ""
     results_directory = ""
-    data_directory = f"{absolute_path}/instances/{instance}/data/Sub20x20_{env_id}/"
-    results_directory = f"{absolute_path}/instances/{instance}/results/Sub20x20_{env_id}/"
+    base_size = 20 if size < 20 else size
+    data_directory = f"{absolute_path}/instances/{instance}/data/Sub{base_size}x{base_size}_{env_id}/"
+    results_directory = f"{absolute_path}/instances/{instance}/results/Sub{base_size}x{base_size}_{env_id}/"
     harvest_directory = f"{absolute_path}/instances/{instance}/firewall_grids/HarvestedCells_{env_id}.csv"
     try:
         shutil.rmtree(f'{results_directory}Grids/')
@@ -55,20 +56,23 @@ def generate_reward(n_sims, size, env_id = 0, instance = "homo_1"):
             ignition_rad = 2
         else:
             ignition_rad = 0
-    else:
+    elif instance == "homo_2" or instance == "hetero_1":
         ros_cv = 0.0
         ignition_rad = 4
+    else:
+        ros_cv = 0.0
+        ignition_rad = 9
     seed = random.randrange(0,10000)
     # n_weathers = 350
     n_weathers = len([i for i in os.listdir(data_directory+"Weathers/") if i.endswith('.csv')])-2
     sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', str(n_weathers), '--Fire-Period-Length', '1.0', '--ROS-CV', str(ros_cv), '--IgnitionRad', str(ignition_rad), '--HarvestedCells', harvest_directory, '--seed', str(seed)]
-    # The main loop of the simulator is run for an instance of 20x20
+    # The main loop of the simulator is run for an instance of {base_size}x{base_size}
     blockPrint()
     main()
     enablePrint()
     # The grid from the final period is retrieved
     reward = 0
-    base_directory = f"{absolute_path}/instances/{instance}/results/Sub20x20_{env_id}/Grids/Grids"
+    base_directory = f"{absolute_path}/instances/{instance}/results/Sub{base_size}x{base_size}_{env_id}/Grids/Grids"
     for j in range(1, n_sims+1):
         dir = f"{base_directory}{str(j)}/"
         files = os.listdir(dir)

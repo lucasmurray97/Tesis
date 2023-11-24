@@ -19,8 +19,9 @@ def enablePrint():
 def calculate_dpv(seed, n_sims, instance = "homo_1"):
     absolute_path = os.path.dirname(__file__)
     """Function that generates the reward associated with the fire simulation"""
-    data_directory = f"{absolute_path}/../../enviroment/utils/instances/{instance}/data/Sub20x20_0/"
-    results_directory = f"{absolute_path}/../../enviroment/utils/instances/{instance}/results/Sub20x20_0/"
+    base_size = 20 if instance != "hetero_2" else 40
+    data_directory = f"{absolute_path}/../../enviroment/utils/instances/{instance}/data/Sub{base_size}x{base_size}_0/"
+    results_directory = f"{absolute_path}/../../enviroment/utils/instances/{instance}/results/Sub{base_size}x{base_size}_0/"
     harvest_directory = f"{absolute_path}/../../enviroment/utils/instances/{instance}/firewall_grids/HarvestedCells_0.csv"
     try:
         shutil.rmtree(f'{results_directory}Grids/')
@@ -30,7 +31,7 @@ def calculate_dpv(seed, n_sims, instance = "homo_1"):
     # A command line input is simulated
     ignition_rad = 4
     sys.argv = ['main.py', '--input-instance-folder', data_directory, '--output-folder', results_directory, '--ignitions', '--sim-years', '1', '--nsims', str(n_sims), '--finalGrid', '--weather', 'random', '--nweathers', '10', '--Fire-Period-Length', '1.0', '--ROS-CV', '0.0', '--IgnitionRad', str(ignition_rad), '--grids', '--output-messages', '--HarvestedCells', harvest_directory, '--seed', str(seed) ]
-    # The main loop of the simulator is run for an instance of 20x20
+    # The main loop of the simulator is run for an instance of {base_size}x{base_size}
     blockPrint()
     main()
     enablePrint()

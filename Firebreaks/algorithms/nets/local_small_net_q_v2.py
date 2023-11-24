@@ -38,6 +38,8 @@ class LOCAL_CNN_SMALL_Q_v2(torch.nn.Module):
       self.linear1 = nn.Linear(128, 128)
     elif grid__size == 20:
        self.linear1 = nn.Linear(512, 128)
+    elif grid__size == 40:
+       self.linear1 = nn.Linear(10368, 48)
     else:
       raise("Non existent grid size")
     self.linear2 = nn.Linear(128, self.output_size)
