@@ -5,8 +5,6 @@ import csv
 import pprint
 import os
 # We add the path to the simulator in order to execute it
-sys.path.append("../../../../Simulador/Cell2Fire/")
-sys.path.append("../../Simulador/Cell2Fire/")
 from cell2fire.Cell2FireC_class import Cell2FireC
 from cell2fire.main import main
 import os
