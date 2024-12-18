@@ -33,7 +33,7 @@ The findings and methodologies of this research are detailed in the paper: [Adva
 
 ## Contact
 
-For any questions or inquiries, please contact [your email].
+For any questions or inquiries, please contact lucasmurrayh at gmail dot com.
 
 ## License
 
